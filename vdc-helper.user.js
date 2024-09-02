@@ -24,6 +24,8 @@ FEATURES
 
 * In Licensing Details, highlight in-perp ads in red.
 
+* Hide Performance Details sections that just say "N/A" anyway.
+
 * When responding to a job, automatically fill in the max budget for the bid.
 
 * On the Answered Jobs page and in the Audition History of the Statistics page,
@@ -43,7 +45,6 @@ UPCOMING FEATURE IDEAS:
 
 * Link to appropriate section of GVAA Rate Guide from Job Highlights panel,
   or maybe even calculate recommended GVAA rate range based on licensing details.
-* Collapse/hide Performance Details sections that just contain "N/A" in order to save space.
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.
 * Show number of business days until Project Deadlines.
 * Move Client Details somewhere higher on the Job Details page.
@@ -125,6 +126,33 @@ UPCOMING FEATURE IDEAS:
             .filter(el => el.innerText.indexOf(' Ad ') > 0 && el.innerText.indexOf('In Perpetuity') > 0).forEach(function(el) {
             el.style.backgroundColor = '#ffc4b8';
         });
+
+        // Hide Performance Details sections that just say "N/A" anyway.
+
+        Array.from(document.querySelectorAll('h5'))
+            .filter(el => el.innerText == 'Other Project Requirements'
+                    || el.innerText == 'Reference Link').forEach(function(el) {
+            if (el.nextElementSibling.innerText.trim() == 'N/A') {
+                // Hide the preceding <hr> tab
+                el.previousElementSibling.style.display = 'none';
+                // Hide the header (e.g., "Other Project Requirements")
+                el.style.display = 'none';
+                // Hide the "N/A"
+                el.nextElementSibling.style.display = 'none';
+            }
+        });
+
+        const referenceFileWrapper = document.getElementById('reference-file-wrapper');
+        if (referenceFileWrapper) {
+            const noReferenceFiles = Array.from(referenceFileWrapper.querySelectorAll('p'))
+            .filter(el => el.innerText.trim() == 'N/A').length > 0;
+            if (noReferenceFiles) {
+                // Hide the preceding <hr> tab
+                referenceFileWrapper.previousElementSibling.style.display = 'none';
+                // Hide the empty Reference Files section
+                referenceFileWrapper.style.display = 'none';
+            }
+        }
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.
