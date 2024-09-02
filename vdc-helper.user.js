@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-08-31
+// @version      2024-09-01
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -29,13 +29,14 @@ FEATURES
   Personally, I usually want to view the job posting rather than my response anyway,
   so I figured I might as well link to that by default.
 
+* Automatically show listen % and shortlist % on Statistics page.
+
 * Hide dollar amounts on the Statistics page by default.
   Click on the dollar amount to show it.
   This could be helpful when sharing your screen.
 
 UPCOMING FEATURE IDEAS:
 
-* Automatically show %s on Statistics page (e.g., listen %, shortlist %).
 * Link to appropriate section of GVAA Rate Guide from Job Highlights panel,
   or maybe even calculate recommended GVAA rate range based on licensing details.
 * Highlight certain things in red (e.g., in-perp ads).
@@ -176,7 +177,9 @@ UPCOMING FEATURE IDEAS:
     };
     observer.observe(document.body, config);
 
-    // Hide dollar amounts on the Statistics page by default.
+    // Statistics page improvements:
+    // * Hide dollar amounts by default.
+    // * Show audition listen/shortlist %s.
 
     const REDACTED_TEXT = '(click to show)';
 
@@ -192,15 +195,67 @@ UPCOMING FEATURE IDEAS:
         }
     }
 
-    function hideDollarAmounts(mutationsList, observer) {
+    function onStatsUpdated(mutationsList, observer) {
+        let auditionsSubmitted = 0;
+        let auditionListens = 0;
+        let auditionListenPercentField = document.getElementById('audition-listen-percent');
+        let auditionsShortlisted = 0;
+        let auditionShortlistPercentField = document.getElementById('audition-shortlist-percent');
+        let updatePercents = false;
+
         mutationsList.forEach(mutation => {
             if (mutation.type === 'childList') {
                 const el = mutation.target;
-                if (el.tagName === 'SPAN' && el.classList.contains('stat-figure') && el.innerText.startsWith('$') && el.getAttribute('mask') != 'false') {
+                if (el.tagName === 'SPAN' && el.classList.contains('stat-figure')
+                    && el.innerText.startsWith('$')
+                    && el.getAttribute('mask') != 'false') {
                     hideDollarAmount(el)
                 }
             }
+
+            const dataStatFigure = mutation.target.getAttribute('data-stat-figure');
+
+            if (dataStatFigure == 'auditions_submitted') {
+                auditionsSubmitted = parseInt(mutation.target.innerText);
+                updatePercents = true;
+            } else if (dataStatFigure == 'audition_listens') {
+                const auditionListensField = mutation.target;
+                auditionListens = parseInt(auditionListensField.innerText);
+                if (!auditionListenPercentField) {
+                    auditionListenPercentField = document.createElement('span');
+                    auditionListenPercentField.id = 'audition-listen-percent';
+                    auditionListensField.insertAdjacentElement('afterend', auditionListenPercentField);
+                }
+                updatePercents = true;
+            } else if (dataStatFigure == 'auditions_shortlisted') {
+                const auditionsShortlistedField = mutation.target;
+                auditionsShortlisted = parseInt(auditionsShortlistedField.innerText);
+                if (!auditionShortlistPercentField) {
+                    auditionShortlistPercentField = document.createElement('span');
+                    auditionShortlistPercentField.id = 'audition-shortlist-percent';
+                    auditionsShortlistedField.insertAdjacentElement('afterend', auditionShortlistPercentField);
+                }
+                updatePercents = true;
+            }
         });
+
+        if (updatePercents) {
+            let auditionListenPercent = 0;
+            let auditionShortlistPercent = 0;
+
+            if (auditionsSubmitted > 0) {
+                if (auditionListens > 0) {
+                    auditionListenPercent = (100 * auditionListens / auditionsSubmitted).toFixed(1);
+                }
+
+                if (auditionsShortlisted > 0) {
+                    auditionShortlistPercent = (100 * auditionsShortlisted / auditionsSubmitted).toFixed(1);
+                }
+            }
+
+            auditionListenPercentField.innerHTML = auditionListenPercent > 0 ? ' (' + auditionListenPercent + '%)' : '';
+            auditionShortlistPercentField.innerHTML = auditionShortlistPercent > 0 ? ' (' + auditionShortlistPercent + '%)' : '';
+        }
     }
 
     if (window.location.pathname.startsWith('/talent/statistics')) {
@@ -208,7 +263,7 @@ UPCOMING FEATURE IDEAS:
             .filter(el => el.innerText.startsWith('$'))
             .forEach(hideDollarAmount);
 
-        const observer = new MutationObserver(hideDollarAmounts);
+        const observer = new MutationObserver(onStatsUpdated);
         const config = {
             childList: true,
             subtree: true,
