@@ -26,6 +26,8 @@ FEATURES
 
 * Hide Performance Details sections that just say "N/A" anyway.
 
+* Automatically expand Sample Script rather than requiring you to click Read More.
+
 * When responding to a job, automatically fill in the max budget for the bid.
 
 * On the Answered Jobs page and in the Audition History of the Statistics page,
@@ -153,6 +155,10 @@ UPCOMING FEATURE IDEAS:
                 referenceFileWrapper.style.display = 'none';
             }
         }
+
+        // Automatically expand Sample Script rather than requiring you to click Read More.
+
+        Array.from(document.querySelectorAll('a.readmore-btn')).forEach(btn => btn.click());
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.
