@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-01
+// @version      2024-09-02
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -35,6 +35,8 @@ FEATURES
   Click on the dollar amount to show it.
   This could be helpful when sharing your screen.
 
+* On Statistics page, allow filtering Audition History by Listened/Shortlisted.
+
 UPCOMING FEATURE IDEAS:
 
 * Link to appropriate section of GVAA Rate Guide from Job Highlights panel,
@@ -46,7 +48,6 @@ UPCOMING FEATURE IDEAS:
 * Move Client Details somewhere higher on the Job Details page.
 * Hide "Managed Services Paymnt Policy" block on the top of Job Details page
   because it takes up a lot of vertical space and is kinda unnecessary.
-* On Statistics page, allow filtering Audition History by Listened/Shortlisted.
 * On Statistics page, allow sorting the Demo History table by each different column.
 
 */
@@ -180,6 +181,7 @@ UPCOMING FEATURE IDEAS:
     // Statistics page improvements:
     // * Hide dollar amounts by default.
     // * Show audition listen/shortlist %s.
+    // * Allow filtering Audition History by Listened/Shortlisted.
 
     const REDACTED_TEXT = '(click to show)';
 
@@ -258,10 +260,48 @@ UPCOMING FEATURE IDEAS:
         }
     }
 
+    let auditionHistory = null;
+    let filterAuditionsBy = 'none';
+
+    function changeAuditionFilter(mode) {
+        if (filterAuditionsBy == mode) {
+            filterAuditionsBy = 'none';
+        } else {
+            filterAuditionsBy = mode;
+        }
+        if (auditionHistory) {
+            Array.from(auditionHistory.querySelectorAll('div.table-row')).forEach(function(row) {
+                if (filterAuditionsBy == 'none') {
+                    row.style.display = 'block';
+                } else {
+                    const label = filterAuditionsBy == 'Listened' ? 'Listened To' : 'Shortlisted';
+                    const filter = '[aria-label="' + label + '"]'
+                    const matches = row.querySelector(filter) != null;
+                    row.style.display = matches ? 'block' : 'none';
+                }
+            });
+        }
+    }
+
     if (window.location.pathname.startsWith('/talent/statistics')) {
         Array.from(document.querySelectorAll('.stat-figure'))
             .filter(el => el.innerText.startsWith('$'))
             .forEach(hideDollarAmount);
+
+        Array.from(document.querySelectorAll('h2'))
+            .filter(h2 => h2.innerHTML == 'Audition History').forEach(function(auditionHistoryHeader) {
+            auditionHistory = auditionHistoryHeader.closest('.stats-container');
+        });
+
+        if (auditionHistory) {
+            Array.from(auditionHistory.querySelectorAll('div'))
+                .filter(div => div.innerHTML == 'Listened' || div.innerHTML == 'Shortlisted').forEach(function(div) {
+                div.addEventListener('click', () => {
+                    changeAuditionFilter(div.innerHTML);
+                });
+                div.style.cursor = 'pointer';
+            });
+        }
 
         const observer = new MutationObserver(onStatsUpdated);
         const config = {
