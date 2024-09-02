@@ -22,6 +22,8 @@ FEATURES
   On mobile, long press on the script.
   To restore the previous text, reload the page. (I might add a button for this eventually.)
 
+* In Licensing Details, highlight in-perp ads in red.
+
 * When responding to a job, automatically fill in the max budget for the bid.
 
 * On the Answered Jobs page and in the Audition History of the Statistics page,
@@ -41,7 +43,6 @@ UPCOMING FEATURE IDEAS:
 
 * Link to appropriate section of GVAA Rate Guide from Job Highlights panel,
   or maybe even calculate recommended GVAA rate range based on licensing details.
-* Highlight certain things in red (e.g., in-perp ads).
 * Collapse/hide Performance Details sections that just contain "N/A" in order to save space.
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.
 * Show number of business days until Project Deadlines.
@@ -117,6 +118,13 @@ UPCOMING FEATURE IDEAS:
         document.addEventListener('touchend', cancelLongPress);
         document.addEventListener('touchcancel', cancelLongPress);
         document.addEventListener('touchmove', cancelLongPress);
+
+        // Highlight in-perp ads in red.
+
+        Array.from(document.querySelectorAll('span.tag'))
+            .filter(el => el.innerText.indexOf(' Ad ') > 0 && el.innerText.indexOf('In Perpetuity') > 0).forEach(function(el) {
+            el.style.backgroundColor = '#ffc4b8';
+        });
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.
