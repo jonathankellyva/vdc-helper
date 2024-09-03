@@ -26,6 +26,9 @@ FEATURES
 
 * Hide Performance Details sections that just say "N/A" anyway.
 
+* Hide "Managed Services Payment Policy" block on the top of Job Details page.
+  Instead, add an icon next to job ID at top of the page.
+
 * Automatically expand Sample Script rather than requiring you to click Read More.
 
 * When responding to a job, automatically fill in the max budget for the bid.
@@ -50,7 +53,6 @@ UPCOMING FEATURE IDEAS:
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.
 * Show number of business days until Project Deadlines.
 * Move Client Details somewhere higher on the Job Details page.
-* Hide "Managed Services Paymnt Policy" block on the top of Job Details page
   because it takes up a lot of vertical space and is kinda unnecessary.
 * On Statistics page, allow sorting the Demo History table by each different column.
 
@@ -159,6 +161,36 @@ UPCOMING FEATURE IDEAS:
         // Automatically expand Sample Script rather than requiring you to click Read More.
 
         Array.from(document.querySelectorAll('a.readmore-btn')).forEach(btn => btn.click());
+
+        // Hide Managed Services Payment Policy alert at the top of the page.
+        // Instead, add an icon next to job ID at top of the page.
+
+        const managedJobAlert = document.getElementById('proserve-policy-alert');
+
+        if (managedJobAlert) {
+            const jobTitleDetails = document.getElementById('job_title_details');
+            if (jobTitleDetails) {
+                Array.from(jobTitleDetails.querySelectorAll('span'))
+                    .filter(el => el.innerText.startsWith('Job #')).forEach(jobId => {
+                    const voicesManagedIconSpan = document.createElement('span');
+                    voicesManagedIconSpan.className = 'status-icon status-icon-blue hidden-xs icon-padding';
+                    voicesManagedIconSpan.style.display = 'inline-block';
+                    voicesManagedIconSpan.style.verticalAlign = 'middle';
+                    voicesManagedIconSpan.style.marginTop = '-1px';
+                    voicesManagedIconSpan.setAttribute('data-toggle', 'tooltip');
+                    voicesManagedIconSpan.setAttribute('data-placement', 'top');
+                    voicesManagedIconSpan.setAttribute('data-container', 'body');
+                    voicesManagedIconSpan.setAttribute('data-original-title', 'Job was posted by Voices Managed Services');
+                    const voicesManagedIcon = document.createElement('img');
+                    voicesManagedIcon.className = 'voices-fsj-icon';
+                    voicesManagedIcon.src = 'https://static.voices.com/assets/images/branding/v-logo-white.svg';
+                    voicesManagedIconSpan.appendChild(voicesManagedIcon);
+                    jobId.insertAdjacentElement('afterend', voicesManagedIconSpan);
+                });
+            }
+
+            managedJobAlert.style.display = 'none';
+        }
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.
