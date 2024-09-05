@@ -6,8 +6,8 @@
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voices.com
-// @downloadURL  https://jskva.com/vdc-helper.user.js
-// @updateURL    https://jskva.com/vdc-helper.user.js
+// @downloadURL  https://jskva.com/scripts/vdc-helper.user.js
+// @updateURL    https://jskva.com/scripts/vdc-helper.user.js
 // @grant        none
 // ==/UserScript==
 
