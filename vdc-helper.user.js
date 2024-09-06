@@ -24,8 +24,8 @@ FEATURES
   e.g., "12345 - Awesome Job". This can be useful when naming a project in your DAW.
 
 * Move Client Details to a single, compact line at the top of the page under the job title.
-  This is nicer than having to scroll all the way to the bottom just to see how many
-  reviews the client has, where they're from, etc.
+  This is nicer than having to scroll all the way to the bottom just to see how many reviews the
+  client has, where they're from, etc.
 
 * Hide "Managed Services Payment Policy" block on the top of Job Details page.
   Instead, add an icon next to job ID at top of the page.
@@ -64,10 +64,9 @@ FEATURES
 
 --- Other ---
 
-* On the Answered Jobs page and in the Audition History of the Statistics page,
-  link to the job posting rather than your response.
-  Personally, I usually want to view the job posting rather than my response anyway,
-  so I figured I might as well link to that by default.
+* On the Answered Jobs page and in the Audition History of the Statistics page, link to the job
+  posting rather than your response. Personally, I usually want to view the job posting rather than
+  my response anyway, so I figured I might as well link to that by default.
 
 UPCOMING FEATURE IDEAS:
 
@@ -79,7 +78,7 @@ UPCOMING FEATURE IDEAS:
 
 */
 
-(function() {
+(function () {
     'use strict';
 
     const style = document.createElement('style');
@@ -116,7 +115,7 @@ UPCOMING FEATURE IDEAS:
         pressTimeout = setTimeout(() => handleLongPress(event), LONG_PRESS_DURATION);
     }
 
-    function cancelLongPress(event) {
+    function cancelLongPress() {
         clearTimeout(pressTimeout);
     }
 
@@ -159,7 +158,7 @@ UPCOMING FEATURE IDEAS:
             }
 
             function onKeyPress(event) {
-                if (event.charCode == 13 && isSpecialKeyOrShiftHeld(event)) {
+                if (event.charCode === 13 && isSpecialKeyOrShiftHeld(event)) {
                     finishEditing();
                 }
             }
@@ -170,8 +169,8 @@ UPCOMING FEATURE IDEAS:
     }
 
     function replaceLinks(el) {
-        const urlPattern = /((?:https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{1,256}\.[a-zA-Z0-9]{2,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*[a-zA-Z0-9_#])?)/gi;
-        el.innerHTML = el.innerHTML.replace(urlPattern, function(match, url) {
+        const urlPattern = /((?:https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{1,256}\.[a-zA-Z0-9]{2,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*[a-zA-Z0-9_#])?)/gi;
+        el.innerHTML = el.innerHTML.replace(urlPattern, function (match, url) {
             const href = url.indexOf("://") > 0 ? url : 'https://' + url;
             return `<a href="${href}" target="_blank">${url}</a>`;
         });
@@ -218,16 +217,17 @@ UPCOMING FEATURE IDEAS:
         // Highlight in-perp ads in red.
 
         Array.from(document.querySelectorAll('span.tag'))
-            .filter(el => el.innerText.indexOf(' Ad ') > 0 && el.innerText.indexOf('In Perpetuity') > 0).forEach(function(el) {
-            el.style.backgroundColor = '#ffc4b8';
-        });
+            .filter(el => el.innerText.indexOf(' Ad ') > 0 && el.innerText.indexOf('In Perpetuity') > 0)
+            .forEach(function (el) {
+                el.style.backgroundColor = '#ffc4b8';
+            });
 
         // Hide Performance Details sections that just say "N/A" anyway.
 
         Array.from(document.querySelectorAll('h5'))
-            .filter(el => el.innerText == 'Other Project Requirements'
-                    || el.innerText == 'Reference Link').forEach(function(el) {
-            if (el.nextElementSibling.innerText.trim() == 'N/A') {
+            .filter(el => el.innerText === 'Other Project Requirements'
+                || el.innerText === 'Reference Link').forEach(function (el) {
+            if (el.nextElementSibling.innerText.trim() === 'N/A') {
                 // Hide the preceding <hr> tab
                 el.previousElementSibling.style.display = 'none';
                 // Hide the header (e.g., "Other Project Requirements")
@@ -240,7 +240,7 @@ UPCOMING FEATURE IDEAS:
         const referenceFileWrapper = document.getElementById('reference-file-wrapper');
         if (referenceFileWrapper) {
             const noReferenceFiles = Array.from(referenceFileWrapper.querySelectorAll('p'))
-            .filter(el => el.innerText.trim() == 'N/A').length > 0;
+                .filter(el => el.innerText.trim() === 'N/A').length > 0;
             if (noReferenceFiles) {
                 // Hide the preceding <hr> tab
                 referenceFileWrapper.previousElementSibling.style.display = 'none';
@@ -271,7 +271,8 @@ UPCOMING FEATURE IDEAS:
                     voicesManagedIconSpan.setAttribute('data-toggle', 'tooltip');
                     voicesManagedIconSpan.setAttribute('data-placement', 'top');
                     voicesManagedIconSpan.setAttribute('data-container', 'body');
-                    voicesManagedIconSpan.setAttribute('data-original-title', 'Job was posted by Voices Managed Services');
+                    voicesManagedIconSpan.setAttribute('data-original-title',
+                        'Job was posted by Voices Managed Services');
                     const voicesManagedIcon = document.createElement('img');
                     voicesManagedIcon.className = 'voices-fsj-icon';
                     voicesManagedIcon.src = 'https://static.voices.com/assets/images/branding/v-logo-white.svg';
@@ -315,24 +316,25 @@ UPCOMING FEATURE IDEAS:
                 }
 
                 const clientRating = clientDetails.querySelector('.job-details-rating');
-                const clientReviews = clientRating.parentNode.querySelector('span');
-                if (clientRating != null) {
+                if (clientRating) {
+                    const clientReviews = clientRating.parentNode.querySelector('span');
+
                     newClientDetailsContainer.appendChild(clientRating);
-                }
-                if (clientReviews != null) {
-                    newClientDetailsContainer.appendChild(clientReviews);
+                    if (clientReviews) {
+                        newClientDetailsContainer.appendChild(clientReviews);
+                    }
                 }
 
                 const clientLocation = clientDetails.querySelector('.location');
                 if (clientLocation) {
                     const clientLocationIcon = clientLocation.querySelector('i');
                     const clientLocationText = clientLocation.querySelector('span');
-                    if (clientLocationIcon != null) {
+                    if (clientLocationIcon) {
                         clientLocationIcon.classList.add('muted-text');
                         clientLocationIcon.style.marginLeft = '5px';
                         newClientDetailsContainer.appendChild(clientLocationIcon);
                     }
-                    if (clientLocationText != null) {
+                    if (clientLocationText) {
                         clientLocationText.style.marginLeft = '5px';
                         newClientDetailsContainer.appendChild(clientLocationText);
                     }
@@ -349,13 +351,13 @@ UPCOMING FEATURE IDEAS:
     // When responding to a job, automatically fill in the max budget for the bid.
 
     if (window.location.pathname.startsWith('/talent/jobs/response')) {
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             let maxBudget = 0;
             const jobHighlights = document.querySelector('#job-highlights');
             if (jobHighlights) {
                 let fields = jobHighlights.querySelectorAll('span');
                 let budgetPattern = /(?:\$\d+ - )?\$(\d+)/;
-                fields.forEach(function(field) {
+                fields.forEach(function (field) {
                     let text = field.textContent.trim();
                     let match = text.match(budgetPattern);
                     if (match) {
@@ -364,9 +366,8 @@ UPCOMING FEATURE IDEAS:
                 });
             }
 
-            let quoteField = document.querySelector('input[name="quote"]');
+            const quoteField = document.querySelector('input[name="quote"]');
             if (quoteField && !quoteField.value) {
-                let quote = 0;
                 quoteField.value = maxBudget;
                 quoteField.dispatchEvent(new Event('keyup'));
             }
@@ -383,7 +384,7 @@ UPCOMING FEATURE IDEAS:
         }
     }
 
-    function replacePreviewResponseLinks(mutationsList, observer) {
+    function replacePreviewResponseLinks(mutationsList) {
         mutationsList.forEach(mutation => {
             if (mutation.type === 'childList') {
                 mutation.addedNodes.forEach(node => {
@@ -414,7 +415,7 @@ UPCOMING FEATURE IDEAS:
 
     function hideDollarAmount(el) {
         const amount = el.innerText
-        if (amount != REDACTED_TEXT) {
+        if (amount !== REDACTED_TEXT) {
             el.setAttribute('mask', 'true');
             el.innerText = REDACTED_TEXT;
             el.addEventListener('click', () => {
@@ -424,7 +425,7 @@ UPCOMING FEATURE IDEAS:
         }
     }
 
-    function onStatsUpdated(mutationsList, observer) {
+    function onStatsUpdated(mutationsList) {
         let auditionsSubmitted = 0;
         let auditionListens = 0;
         let auditionListenPercentField = document.getElementById('audition-listen-percent');
@@ -437,17 +438,17 @@ UPCOMING FEATURE IDEAS:
                 const el = mutation.target;
                 if (el.tagName === 'SPAN' && el.classList.contains('stat-figure')
                     && el.innerText.startsWith('$')
-                    && el.getAttribute('mask') != 'false') {
+                    && el.getAttribute('mask') !== 'false') {
                     hideDollarAmount(el)
                 }
             }
 
             const dataStatFigure = mutation.target.getAttribute('data-stat-figure');
 
-            if (dataStatFigure == 'auditions_submitted') {
+            if (dataStatFigure === 'auditions_submitted') {
                 auditionsSubmitted = parseInt(mutation.target.innerText);
                 updatePercents = true;
-            } else if (dataStatFigure == 'audition_listens') {
+            } else if (dataStatFigure === 'audition_listens') {
                 const auditionListensField = mutation.target;
                 auditionListens = parseInt(auditionListensField.innerText);
                 if (!auditionListenPercentField) {
@@ -456,7 +457,7 @@ UPCOMING FEATURE IDEAS:
                     auditionListensField.insertAdjacentElement('afterend', auditionListenPercentField);
                 }
                 updatePercents = true;
-            } else if (dataStatFigure == 'auditions_shortlisted') {
+            } else if (dataStatFigure === 'auditions_shortlisted') {
                 const auditionsShortlistedField = mutation.target;
                 auditionsShortlisted = parseInt(auditionsShortlistedField.innerText);
                 if (!auditionShortlistPercentField) {
@@ -491,17 +492,17 @@ UPCOMING FEATURE IDEAS:
     let filterAuditionsBy = 'none';
 
     function changeAuditionFilter(mode) {
-        if (filterAuditionsBy == mode) {
+        if (filterAuditionsBy === mode) {
             filterAuditionsBy = 'none';
         } else {
             filterAuditionsBy = mode;
         }
         if (auditionHistory) {
-            Array.from(auditionHistory.querySelectorAll('div.table-row')).forEach(function(row) {
-                if (filterAuditionsBy == 'none') {
+            Array.from(auditionHistory.querySelectorAll('div.table-row')).forEach(function (row) {
+                if (filterAuditionsBy === 'none') {
                     row.style.display = 'block';
                 } else {
-                    const label = filterAuditionsBy == 'Listened' ? 'Listened To' : 'Shortlisted';
+                    const label = filterAuditionsBy === 'Listened' ? 'Listened To' : 'Shortlisted';
                     const filter = '[aria-label="' + label + '"]'
                     const matches = row.querySelector(filter) != null;
                     row.style.display = matches ? 'block' : 'none';
@@ -516,18 +517,20 @@ UPCOMING FEATURE IDEAS:
             .forEach(hideDollarAmount);
 
         Array.from(document.querySelectorAll('h2'))
-            .filter(h2 => h2.innerHTML == 'Audition History').forEach(function(auditionHistoryHeader) {
-            auditionHistory = auditionHistoryHeader.closest('.stats-container');
-        });
+            .filter(h2 => h2.innerHTML === 'Audition History')
+            .forEach(function (auditionHistoryHeader) {
+                auditionHistory = auditionHistoryHeader.closest('.stats-container');
+            });
 
         if (auditionHistory) {
             Array.from(auditionHistory.querySelectorAll('div'))
-                .filter(div => div.innerHTML == 'Listened' || div.innerHTML == 'Shortlisted').forEach(function(div) {
-                div.addEventListener('click', () => {
-                    changeAuditionFilter(div.innerHTML);
+                .filter(div => div.innerHTML === 'Listened' || div.innerHTML === 'Shortlisted')
+                .forEach(function (div) {
+                    div.addEventListener('click', () => {
+                        changeAuditionFilter(div.innerHTML);
+                    });
+                    div.style.cursor = 'pointer';
                 });
-                div.style.cursor = 'pointer';
-            });
         }
 
         const observer = new MutationObserver(onStatsUpdated);
