@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-02
+// @version      2024-09-06
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -23,6 +23,10 @@ FEATURES
   To restore the previous text, reload the page. (I might add a button for this eventually.)
 
 * In Licensing Details, highlight in-perp ads in red.
+
+* Move Client Details to a single, compact line at the top of the page under the job title.
+  This is nicer than having to scroll all the way to the bottom just to see how many
+  reviews the client has, where they're from, etc.
 
 * Hide Performance Details sections that just say "N/A" anyway.
 
@@ -57,8 +61,6 @@ UPCOMING FEATURE IDEAS:
   or maybe even calculate recommended GVAA rate range based on licensing details.
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.
 * Show number of business days until Project Deadlines.
-* Move Client Details somewhere higher on the Job Details page.
-  because it takes up a lot of vertical space and is kinda unnecessary.
 * On Statistics page, allow sorting the Demo History table by each different column.
 
 */
@@ -234,6 +236,62 @@ UPCOMING FEATURE IDEAS:
             Array.from(div.querySelectorAll('p')).forEach(replaceLinks);
         });
 
+        // Move Client Details to a single, compact line at the top of the page under the job title.
+
+        const jobHeader = document.querySelector('.job-header');
+        const clientDetailsContainer = document.querySelector('.client-details-container');
+        if (jobHeader && clientDetailsContainer) {
+            const clientDetails = clientDetailsContainer.querySelector('.d-flex');
+            if (clientDetails) {
+                const newClientDetailsContainer = document.createElement('a');
+
+                newClientDetailsContainer.setAttribute('data-toggle', 'modal');
+                newClientDetailsContainer.setAttribute('data-target', '#client-details-modal');
+
+                const clientPhoto = clientDetails.querySelector('.circle-avatar-container');
+                if (clientPhoto != null) {
+                    clientPhoto.style.display = 'inline-flex';
+                    clientPhoto.style.verticalAlign = 'middle';
+                    newClientDetailsContainer.appendChild(clientPhoto);
+                }
+
+                const clientName = clientDetails.querySelector('.client-name');
+                if (clientName != null) {
+                    clientName.style.marginLeft = '5px';
+                    clientName.classList.add('muted-text');
+                    newClientDetailsContainer.appendChild(clientName);
+                }
+
+                const clientRating = clientDetails.querySelector('.job-details-rating');
+                const clientReviews = clientRating.parentNode.querySelector('span');
+                if (clientRating != null) {
+                    newClientDetailsContainer.appendChild(clientRating);
+                }
+                if (clientReviews != null) {
+                    newClientDetailsContainer.appendChild(clientReviews);
+                }
+
+                const clientLocation = clientDetails.querySelector('.location');
+                if (clientLocation) {
+                    const clientLocationIcon = clientLocation.querySelector('i');
+                    const clientLocationText = clientLocation.querySelector('span');
+                    if (clientLocationIcon != null) {
+                        clientLocationIcon.classList.add('muted-text');
+                        clientLocationIcon.style.marginLeft = '5px';
+                        newClientDetailsContainer.appendChild(clientLocationIcon);
+                    }
+                    if (clientLocationText != null) {
+                        clientLocationText.style.marginLeft = '5px';
+                        newClientDetailsContainer.appendChild(clientLocationText);
+                    }
+                }
+
+                if (newClientDetailsContainer.children) {
+                    jobHeader.appendChild(newClientDetailsContainer);
+                    clientDetailsContainer.style.display = 'none';
+                }
+            }
+        }
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.
