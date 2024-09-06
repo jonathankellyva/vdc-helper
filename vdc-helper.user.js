@@ -22,6 +22,9 @@ FEATURES
   On mobile, long press on the script.
   To restore the previous text, reload the page. (I might add a button for this eventually.)
 
+* Clicking on the Job Title copies the Job ID and Title to the clipboard.
+  e.g., "12345 - Awesome Job". This can be useful when naming a project in your DAW.
+
 * In Licensing Details, highlight in-perp ads in red.
 
 * Move Client Details to a single, compact line at the top of the page under the job title.
@@ -156,11 +159,32 @@ UPCOMING FEATURE IDEAS:
     }
 
     if (window.location.pathname.startsWith('/talent/jobs/posting')) {
+        const jobHeader = document.querySelector('.job-header');
+
         document.addEventListener('click', documentClick);
         document.addEventListener('touchstart', startLongPress);
         document.addEventListener('touchend', cancelLongPress);
         document.addEventListener('touchcancel', cancelLongPress);
         document.addEventListener('touchmove', cancelLongPress);
+
+        // Clicking on the Job Title copies the Job ID and Title to the clipboard.
+
+        const jobTitleElement = jobHeader.querySelector('h1');
+        const jobIdElement = jobHeader.querySelector('span');
+        if (jobTitleElement && jobIdElement) {
+            function copyJobIdAndTitleToClipboard() {
+                const jobTitle = jobTitleElement.innerText;
+                const jobIdPattern = /#(\d+)/;
+                const match = jobIdElement.innerText.match(jobIdPattern);
+                if (match) {
+                    const jobId = match[1];
+                    navigator.clipboard.writeText(`${jobId} - ${jobTitle}`);
+                }
+            }
+
+            jobTitleElement.style.cursor = 'pointer';
+            jobTitleElement.addEventListener('click', copyJobIdAndTitleToClipboard);
+        }
 
         // Highlight in-perp ads in red.
 
@@ -238,7 +262,6 @@ UPCOMING FEATURE IDEAS:
 
         // Move Client Details to a single, compact line at the top of the page under the job title.
 
-        const jobHeader = document.querySelector('.job-header');
         const clientDetailsContainer = document.querySelector('.client-details-container');
         if (jobHeader && clientDetailsContainer) {
             const clientDetails = clientDetailsContainer.querySelector('.d-flex');
