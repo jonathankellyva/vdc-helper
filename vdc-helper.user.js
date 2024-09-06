@@ -26,6 +26,11 @@ FEATURES
 
 * Hide Performance Details sections that just say "N/A" anyway.
 
+* In the Performance Details sections, turn URLs into actual links so that you can click them.
+  The links are usually to things like the company's website or YouTube/Vimeo references or
+  things like that, so it's helpful to be able to click them instead of having to copy-paste
+  them into the address bar of a new tab.  Note that these links will open in a new tab.
+
 * Hide "Managed Services Payment Policy" block on the top of Job Details page.
   Instead, add an icon next to job ID at top of the page.
 
@@ -107,14 +112,32 @@ UPCOMING FEATURE IDEAS:
 
             textarea.focus();
 
-            textarea.addEventListener('blur', () => {
+            function finishEditing() {
                 const newP = document.createElement('p');
                 newP.innerText = textarea.value;
-                newP.style.font = textarea.style.font;
+                newP.className = target.className;
 
                 textarea.parentNode.replaceChild(newP, textarea);
-            });
+                replaceLinks(newP);
+            }
+
+            function onKeyPress(event) {
+                if (event.charCode == 13 && (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)) {
+                    finishEditing();
+                }
+            }
+
+            textarea.addEventListener('blur', finishEditing);
+            textarea.addEventListener('keypress', onKeyPress);
         }
+    }
+
+    function replaceLinks(el) {
+        const urlPattern = /((?:https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{1,256}\.[a-zA-Z0-9]{2,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*[a-zA-Z0-9_#])?)/gi;
+        el.innerHTML = el.innerHTML.replace(urlPattern, function(match, url) {
+            const href = url.indexOf("://") > 0 ? url : 'https://' + url;
+            return `<a href="${href}" target="_blank">${url}</a>`;
+        });
     }
 
     if (window.location.pathname.startsWith('/talent/jobs/posting')) {
@@ -191,6 +214,13 @@ UPCOMING FEATURE IDEAS:
 
             managedJobAlert.style.display = 'none';
         }
+
+        // In the Performance Details sections, turn URLs into actual links so that you can click them.
+
+        Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
+            Array.from(div.querySelectorAll('p')).forEach(replaceLinks);
+        });
+
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.
