@@ -66,6 +66,14 @@ UPCOMING FEATURE IDEAS:
 (function() {
     'use strict';
 
+    const style = document.createElement('style');
+    style.textContent = `
+        .readmore-btn {
+            display: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+
     // Allow editing Sample Scripts by clicking on them.
 
     const LONG_PRESS_DURATION = 500; // only for mobile
