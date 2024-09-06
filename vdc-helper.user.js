@@ -517,4 +517,3 @@ UPCOMING FEATURE IDEAS:
         observer.observe(document.body, config);
     }
 })();
-
