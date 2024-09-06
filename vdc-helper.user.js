@@ -17,7 +17,10 @@ FEATURES
 
 --- Job Details Page ---
 
-* Clicking on the Job Title copies the Job ID and Title to the clipboard.
+* Clicking on the Job Title copies the Job Title to the clipboard.
+  Similarly, clicking the Job ID copies the Job ID to the clipboard.
+  Finally, holding down one of the shift/alt/option/windows/command/ctrl keys while clicking on
+  either the Job Title or Job ID will copy both the Job ID and Job Title to the clipboard.
   e.g., "12345 - Awesome Job". This can be useful when naming a project in your DAW.
 
 * Move Client Details to a single, compact line at the top of the page under the job title.
@@ -121,6 +124,14 @@ UPCOMING FEATURE IDEAS:
         makeEditable(event.target);
     }
 
+    function isSpecialKeyHeld(event) {
+        return event.altKey || event.ctrlKey || event.metaKey;
+    }
+
+    function isSpecialKeyOrShiftHeld(event) {
+        return isSpecialKeyHeld(event) || event.shiftKey;
+    }
+
     function makeEditable(target) {
         if (target.tagName === 'P' && target.classList.contains('readmore-content')) {
             const originalText = target.innerText;
@@ -148,7 +159,7 @@ UPCOMING FEATURE IDEAS:
             }
 
             function onKeyPress(event) {
-                if (event.charCode == 13 && (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)) {
+                if (event.charCode == 13 && isSpecialKeyOrShiftHeld(event)) {
                     finishEditing();
                 }
             }
@@ -175,23 +186,33 @@ UPCOMING FEATURE IDEAS:
         document.addEventListener('touchcancel', cancelLongPress);
         document.addEventListener('touchmove', cancelLongPress);
 
-        // Clicking on the Job Title copies the Job ID and Title to the clipboard.
+        // Clicking on the Job Title/ID copies it to the clipboard.
+        // Holding a modifier key down while clicking will copy both (e.g., "12345 - Awesome Job").
 
         const jobTitleElement = jobHeader.querySelector('h1');
         const jobIdElement = jobHeader.querySelector('span');
         if (jobTitleElement && jobIdElement) {
-            function copyJobIdAndTitleToClipboard() {
-                const jobTitle = jobTitleElement.innerText;
-                const jobIdPattern = /#(\d+)/;
-                const match = jobIdElement.innerText.match(jobIdPattern);
-                if (match) {
-                    const jobId = match[1];
-                    navigator.clipboard.writeText(`${jobId} - ${jobTitle}`);
-                }
-            }
+            const jobTitle = jobTitleElement.innerText;
+            const jobIdPattern = /#(\d+)/;
+            const jobIdMatch = jobIdElement.innerText.match(jobIdPattern);
 
-            jobTitleElement.style.cursor = 'pointer';
-            jobTitleElement.addEventListener('click', copyJobIdAndTitleToClipboard);
+            if (jobIdMatch) {
+                const jobId = jobIdMatch[1];
+                const jobIdAndTitle = `${jobId} - ${jobTitle}`;
+
+                function onClickJobTitle(event) {
+                    navigator.clipboard.writeText(isSpecialKeyHeld(event) ? jobIdAndTitle : jobTitle);
+                }
+
+                function onClickJobId(event) {
+                    navigator.clipboard.writeText(isSpecialKeyHeld(event) ? jobIdAndTitle : jobId);
+                }
+
+                jobTitleElement.style.cursor = 'pointer';
+                jobTitleElement.addEventListener('click', onClickJobTitle);
+                jobIdElement.style.cursor = 'pointer';
+                jobIdElement.addEventListener('click', onClickJobId);
+            }
         }
 
         // Highlight in-perp ads in red.
