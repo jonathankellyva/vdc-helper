@@ -37,7 +37,7 @@ FEATURES
   On Mac, hold Command and click on the script.
   On Windows, hold the Windows key and click on the script.
   On mobile, long press on the script.
-  To restore the previous text, reload the page. (I might add a button for this eventually.)
+  To restore the original text, click the Reset button.
 
 * Automatically expand Sample Script rather than requiring you to click Read More.
 
@@ -131,40 +131,99 @@ UPCOMING FEATURE IDEAS:
         return isSpecialKeyHeld(event) || event.shiftKey;
     }
 
+    let sampleScriptField = null;
+    let sampleScriptTextarea = null;
+    let originalSampleScriptText = null;
+    let prevSampleScriptText = null;
+    let editingSampleScript = false;
+
     function makeEditable(target) {
         if (target.tagName === 'P' && target.classList.contains('readmore-content')) {
-            const originalText = target.innerText;
-            const textarea = document.createElement('textarea');
+            sampleScriptField = target;
 
-            textarea.value = originalText;
-            textarea.style.width = target.offsetWidth + 'px';
-            textarea.style.height = target.offsetHeight + 'px';
-            textarea.style.font = window.getComputedStyle(target).font;
-
-            target.parentNode.replaceChild(textarea, target);
-
-            adjustTextareaHeight(textarea);
-            textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
-
-            textarea.focus();
-
-            function finishEditing() {
-                const newP = document.createElement('p');
-                newP.innerText = textarea.value;
-                newP.className = target.className;
-
-                textarea.parentNode.replaceChild(newP, textarea);
-                replaceLinks(newP);
+            prevSampleScriptText = sampleScriptField.innerText;
+            if (!originalSampleScriptText) {
+                originalSampleScriptText = prevSampleScriptText;
             }
 
-            function onKeyPress(event) {
-                if (event.charCode === 13 && isSpecialKeyOrShiftHeld(event)) {
-                    finishEditing();
+            if (!sampleScriptTextarea) {
+                sampleScriptTextarea = document.createElement('textarea');
+                sampleScriptTextarea.style.width = sampleScriptField.offsetWidth + 'px';
+                sampleScriptTextarea.style.height = sampleScriptField.offsetHeight + 'px';
+                sampleScriptTextarea.style.font = window.getComputedStyle(target).font;
+                sampleScriptField.parentNode.appendChild(sampleScriptTextarea);
+
+                sampleScriptTextarea.addEventListener('blur', finishEditing);
+                sampleScriptTextarea.addEventListener('keydown', onKeyDown);
+            }
+
+            sampleScriptTextarea.value = prevSampleScriptText;
+
+            sampleScriptField.style.display = 'none';
+            sampleScriptTextarea.style.display = 'block';
+            sampleScriptTextarea.focus();
+
+            adjustTextareaHeight(sampleScriptTextarea);
+            sampleScriptTextarea.addEventListener('input', () => adjustTextareaHeight(sampleScriptTextarea));
+
+            function closeEditor(newText) {
+                sampleScriptField.innerText = newText;
+                sampleScriptField.style.display = 'block';
+                sampleScriptTextarea.style.display = 'none';
+                editingSampleScript = false;
+                replaceLinks(sampleScriptField);
+            }
+
+            function resetSampleScript() {
+                if (editingSampleScript) {
+                    cancelEditing();
+                }
+
+                sampleScriptField.innerText = originalSampleScriptText;
+                sampleScriptField.style.display = 'block';
+                sampleScriptTextarea.style.display = 'none';
+                replaceLinks(sampleScriptField);
+
+                editingSampleScript = false;
+
+                resetSampleScriptButton.style.display = 'none';
+            }
+
+            function cancelEditing() {
+                if (editingSampleScript) {
+                    closeEditor(prevSampleScriptText);
                 }
             }
 
-            textarea.addEventListener('blur', finishEditing);
-            textarea.addEventListener('keypress', onKeyPress);
+            function finishEditing() {
+                if (editingSampleScript) {
+                    closeEditor(sampleScriptTextarea.value);
+                }
+            }
+
+            function onKeyDown(event) {
+                if (editingSampleScript) {
+                    if (event.key === 'Enter' && isSpecialKeyOrShiftHeld(event)) {
+                        finishEditing();
+                    } else if (event.key === 'Escape') {
+                        cancelEditing();
+                    }
+                }
+            }
+
+            editingSampleScript = true;
+
+            let resetSampleScriptButton = document.getElementById('reset-sample-script');
+            if (!resetSampleScriptButton) {
+                resetSampleScriptButton = document.createElement('button');
+                resetSampleScriptButton.id = 'reset-sample-script';
+                resetSampleScriptButton.textContent = 'Reset';
+                resetSampleScriptButton.style.marginTop = '10px';
+                resetSampleScriptButton.addEventListener('click', resetSampleScript);
+                sampleScriptField.parentNode.appendChild(resetSampleScriptButton);
+            }
+
+            resetSampleScriptButton.style.display = 'block';
         }
     }
 
