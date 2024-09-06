@@ -71,6 +71,11 @@ UPCOMING FEATURE IDEAS:
         .readmore-btn {
             display: none !important;
         }
+
+        #missing-info-alert {
+            border-color: darkred;
+            background-color: pink;
+        }
     `;
     document.head.appendChild(style);
 
