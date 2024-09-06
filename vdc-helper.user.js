@@ -15,6 +15,20 @@
 
 FEATURES
 
+--- Job Details Page ---
+
+* Clicking on the Job Title copies the Job ID and Title to the clipboard.
+  e.g., "12345 - Awesome Job". This can be useful when naming a project in your DAW.
+
+* Move Client Details to a single, compact line at the top of the page under the job title.
+  This is nicer than having to scroll all the way to the bottom just to see how many
+  reviews the client has, where they're from, etc.
+
+* Hide "Managed Services Payment Policy" block on the top of Job Details page.
+  Instead, add an icon next to job ID at top of the page.
+
+* Hide Performance Details sections that just say "N/A" anyway.
+
 * Allow editing Sample Scripts by clicking on them.
   Note that edits are not currently saved across page loads. (I might add this eventually.)
   On Mac, hold Command and click on the script.
@@ -22,41 +36,35 @@ FEATURES
   On mobile, long press on the script.
   To restore the previous text, reload the page. (I might add a button for this eventually.)
 
-* Clicking on the Job Title copies the Job ID and Title to the clipboard.
-  e.g., "12345 - Awesome Job". This can be useful when naming a project in your DAW.
-
-* In Licensing Details, highlight in-perp ads in red.
-
-* Move Client Details to a single, compact line at the top of the page under the job title.
-  This is nicer than having to scroll all the way to the bottom just to see how many
-  reviews the client has, where they're from, etc.
-
-* Hide Performance Details sections that just say "N/A" anyway.
+* Automatically expand Sample Script rather than requiring you to click Read More.
 
 * In the Performance Details sections, turn URLs into actual links so that you can click them.
   The links are usually to things like the company's website or YouTube/Vimeo references or
   things like that, so it's helpful to be able to click them instead of having to copy-paste
   them into the address bar of a new tab.  Note that these links will open in a new tab.
 
-* Hide "Managed Services Payment Policy" block on the top of Job Details page.
-  Instead, add an icon next to job ID at top of the page.
+* In Licensing Details, highlight in-perp ads in red.
 
-* Automatically expand Sample Script rather than requiring you to click Read More.
+--- Job Response Editor ---
 
-* When responding to a job, automatically fill in the max budget for the bid.
+* Automatically fill in the max budget for the bid.
 
-* On the Answered Jobs page and in the Audition History of the Statistics page,
-  link to the job posting rather than your response.
-  Personally, I usually want to view the job posting rather than my response anyway,
-  so I figured I might as well link to that by default.
+--- Statistics Page ---
 
-* Automatically show listen % and shortlist % on Statistics page.
+* Automatically show listen % and shortlist %.
 
 * Hide dollar amounts on the Statistics page by default.
   Click on the dollar amount to show it.
   This could be helpful when sharing your screen.
 
-* On Statistics page, allow filtering Audition History by Listened/Shortlisted.
+* Allow filtering Audition History by Listened/Shortlisted.
+
+--- Other ---
+
+* On the Answered Jobs page and in the Audition History of the Statistics page,
+  link to the job posting rather than your response.
+  Personally, I usually want to view the job posting rather than my response anyway,
+  so I figured I might as well link to that by default.
 
 UPCOMING FEATURE IDEAS:
 
