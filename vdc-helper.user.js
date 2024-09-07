@@ -389,7 +389,10 @@ UPCOMING FEATURE IDEAS:
 
         // Automatically expand Sample Script rather than requiring you to click Read More.
 
-        Array.from(document.querySelectorAll('a.readmore-btn')).forEach(btn => btn.click());
+        const sampleScriptContainer = document.getElementById('readmore-script-content');
+        if (sampleScriptContainer) {
+            sampleScriptContainer.setAttribute('aria-expanded', 'true');
+        }
 
         // Hide Managed Services Payment Policy alert at the top of the page.
         // Instead, add an icon next to job ID at top of the page.
