@@ -235,6 +235,85 @@ UPCOMING FEATURE IDEAS:
         });
     }
 
+    function abbreviateLocation(location) {
+        const abbreviations = {
+            "Alabama": "AL",
+            "Alaska": "AK",
+            "Arizona": "AZ",
+            "Arkansas": "AR",
+            "California": "CA",
+            "Colorado": "CO",
+            "Connecticut": "CT",
+            "Delaware": "DE",
+            "Florida": "FL",
+            "Georgia": "GA",
+            "Hawaii": "HI",
+            "Idaho": "ID",
+            "Illinois": "IL",
+            "Indiana": "IN",
+            "Iowa": "IA",
+            "Kansas": "KS",
+            "Kentucky": "KY",
+            "Louisiana": "LA",
+            "Maine": "ME",
+            "Maryland": "MD",
+            "Massachusetts": "MA",
+            "Michigan": "MI",
+            "Minnesota": "MN",
+            "Mississippi": "MS",
+            "Missouri": "MO",
+            "Montana": "MT",
+            "Nebraska": "NE",
+            "Nevada": "NV",
+            "New Hampshire": "NH",
+            "New Jersey": "NJ",
+            "New Mexico": "NM",
+            "New York": "NY",
+            "North Carolina": "NC",
+            "North Dakota": "ND",
+            "Ohio": "OH",
+            "Oklahoma": "OK",
+            "Oregon": "OR",
+            "Pennsylvania": "PA",
+            "Rhode Island": "RI",
+            "South Carolina": "SC",
+            "South Dakota": "SD",
+            "Tennessee": "TN",
+            "Texas": "TX",
+            "Utah": "UT",
+            "Vermont": "VT",
+            "Virginia": "VA",
+            "Washington": "WA",
+            "West Virginia": "WV",
+            "Wisconsin": "WI",
+            "Wyoming": "WY",
+            "United States": "US",
+            "District of Columbia": "DC",
+            "British Columbia": "BC",
+            "Alberta": "AB",
+            "Manitoba": "MB",
+            "New Brunswick": "NB",
+            "Newfoundland and Labrador": "NL",
+            "Northwest Territories": "NT",
+            "Nova Scotia": "NS",
+            "Nunavut": "NU",
+            "Ontario": "ON",
+            "Prince Edward Island": "PEI",
+            "Quebec": "QC",
+            "Saskatchewan": "SK",
+            "Yukon": "YT",
+            "United Kingdom": "UK",
+        };
+
+        Object.keys(abbreviations).forEach(state => {
+            const abbreviation = abbreviations[state];
+            const regex = new RegExp(`\\b${state}\\b`, "g");
+            location = location.replace(regex, abbreviation);
+        });
+
+        return location;
+    }
+
     if (window.location.pathname.startsWith('/talent/jobs/posting')) {
         const jobHeader = document.querySelector('.job-header');
 
@@ -395,6 +474,7 @@ UPCOMING FEATURE IDEAS:
                         newClientDetailsContainer.appendChild(clientLocationIcon);
                     }
                     if (clientLocationText) {
+                        clientLocationText.innerText = abbreviateLocation(clientLocationText.innerText);
                         clientLocationText.style.marginLeft = '5px';
                         newClientDetailsContainer.appendChild(clientLocationText);
                     }
