@@ -23,7 +23,7 @@ FEATURES
   either the Job Title or Job ID will copy both the Job ID and Job Title to the clipboard.
   e.g., "12345 - Awesome Job". This can be useful when naming a project in your DAW.
 
-* Move Client Details to a single, compact line at the top of the page under the job title.
+* Move Client Details to a single, compact line at the top of the page under the job title/ID.
   This is nicer than having to scroll all the way to the bottom just to see how many reviews the
   client has, where they're from, etc.
 
@@ -349,7 +349,7 @@ UPCOMING FEATURE IDEAS:
             Array.from(div.querySelectorAll('p')).forEach(replaceLinks);
         });
 
-        // Move Client Details to a single, compact line at the top of the page under the job title.
+        // Move Client Details to a single, compact line at the top of the page under the job title/ID.
 
         const clientDetailsContainer = document.querySelector('.client-details-container');
         if (jobHeader && clientDetailsContainer) {
@@ -357,6 +357,7 @@ UPCOMING FEATURE IDEAS:
             if (clientDetails) {
                 const newClientDetailsContainer = document.createElement('a');
 
+                newClientDetailsContainer.style.display = 'block';
                 newClientDetailsContainer.setAttribute('data-toggle', 'modal');
                 newClientDetailsContainer.setAttribute('data-target', '#client-details-modal');
 
