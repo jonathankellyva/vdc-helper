@@ -100,11 +100,6 @@ UPCOMING FEATURE IDEAS:
 
     let pressTimeout;
 
-    function adjustTextareaHeight(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
-    }
-
     function documentClick(event) {
         if (event.metaKey) {
             makeEditable(event.target);
@@ -135,6 +130,7 @@ UPCOMING FEATURE IDEAS:
     let sampleScriptTextarea = null;
     let originalSampleScriptText = null;
     let prevSampleScriptText = null;
+    let resetSampleScriptButton = null;
     let editingSampleScript = false;
 
     function makeEditable(target) {
@@ -162,9 +158,6 @@ UPCOMING FEATURE IDEAS:
             sampleScriptField.style.display = 'none';
             sampleScriptTextarea.style.display = 'block';
             sampleScriptTextarea.focus();
-
-            adjustTextareaHeight(sampleScriptTextarea);
-            sampleScriptTextarea.addEventListener('input', () => adjustTextareaHeight(sampleScriptTextarea));
 
             function closeEditor(newText) {
                 sampleScriptField.innerText = newText;
@@ -211,19 +204,28 @@ UPCOMING FEATURE IDEAS:
                 }
             }
 
+            function onSampleScriptUpdated() {
+                sampleScriptTextarea.style.height = 'auto';
+                sampleScriptTextarea.style.height = sampleScriptTextarea.scrollHeight + 'px';
+                resetSampleScriptButton.style.display =
+                    originalSampleScriptText === sampleScriptTextarea.value ? 'none' : 'block';
+            }
+
             editingSampleScript = true;
 
-            let resetSampleScriptButton = document.getElementById('reset-sample-script');
             if (!resetSampleScriptButton) {
                 resetSampleScriptButton = document.createElement('button');
                 resetSampleScriptButton.id = 'reset-sample-script';
                 resetSampleScriptButton.textContent = 'Reset';
                 resetSampleScriptButton.style.marginTop = '10px';
+                resetSampleScriptButton.style.display = 'none';
                 resetSampleScriptButton.addEventListener('click', resetSampleScript);
                 sampleScriptField.parentNode.appendChild(resetSampleScriptButton);
             }
 
-            resetSampleScriptButton.style.display = 'block';
+            onSampleScriptUpdated(sampleScriptTextarea);
+            sampleScriptTextarea.addEventListener('input', onSampleScriptUpdated);
+
         }
     }
 
