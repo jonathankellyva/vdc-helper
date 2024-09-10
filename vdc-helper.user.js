@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-06
+// @version      2024-09-09
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -70,6 +70,7 @@ FEATURES
 
 UPCOMING FEATURE IDEAS:
 
+* When responding to a job, automatically pick the first response template.
 * Link to appropriate section of GVAA Rate Guide from Job Highlights panel,
   or maybe even calculate recommended GVAA rate range based on licensing details.
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.
