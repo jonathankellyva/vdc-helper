@@ -54,7 +54,7 @@ FEATURES
 
 --- Statistics Page ---
 
-* Automatically show listen % and shortlist %.
+* Automatically show listen % and shortlist %s.
 
 * Hide dollar amounts on the Statistics page by default.
   Click on the dollar amount to show it.
@@ -575,7 +575,8 @@ UPCOMING FEATURE IDEAS:
         let auditionListens = 0;
         let auditionListenPercentField = document.getElementById('audition-listen-percent');
         let auditionsShortlisted = 0;
-        let auditionShortlistPercentField = document.getElementById('audition-shortlist-percent');
+        let submittedAuditionShortlistPercentField = document.getElementById('submitted-audition-shortlist-percent');
+        let listenedAuditionShortlistPercentField = document.getElementById('listened-audition-shortlist-percent');
         let updatePercents = false;
 
         mutationsList.forEach(mutation => {
@@ -597,18 +598,26 @@ UPCOMING FEATURE IDEAS:
                 const auditionListensField = mutation.target;
                 auditionListens = parseInt(auditionListensField.innerText);
                 if (!auditionListenPercentField) {
-                    auditionListenPercentField = document.createElement('span');
+                    auditionListenPercentField = document.createElement('div');
                     auditionListenPercentField.id = 'audition-listen-percent';
+                    auditionListenPercentField.style.fontSize = 'small';
                     auditionListensField.insertAdjacentElement('afterend', auditionListenPercentField);
                 }
                 updatePercents = true;
             } else if (dataStatFigure === 'auditions_shortlisted') {
                 const auditionsShortlistedField = mutation.target;
                 auditionsShortlisted = parseInt(auditionsShortlistedField.innerText);
-                if (!auditionShortlistPercentField) {
-                    auditionShortlistPercentField = document.createElement('span');
-                    auditionShortlistPercentField.id = 'audition-shortlist-percent';
-                    auditionsShortlistedField.insertAdjacentElement('afterend', auditionShortlistPercentField);
+                if (!submittedAuditionShortlistPercentField) {
+                    submittedAuditionShortlistPercentField = document.createElement('div');
+                    submittedAuditionShortlistPercentField.id = 'submitted-audition-shortlist-percent';
+                    submittedAuditionShortlistPercentField.style.fontSize = 'small';
+                    auditionsShortlistedField.insertAdjacentElement('afterend', submittedAuditionShortlistPercentField);
+                }
+                if (!listenedAuditionShortlistPercentField) {
+                    listenedAuditionShortlistPercentField = document.createElement('div');
+                    listenedAuditionShortlistPercentField.id = 'listened-audition-shortlist-percent';
+                    listenedAuditionShortlistPercentField.style.fontSize = 'small';
+                    auditionsShortlistedField.insertAdjacentElement('afterend', listenedAuditionShortlistPercentField);
                 }
                 updatePercents = true;
             }
@@ -616,7 +625,8 @@ UPCOMING FEATURE IDEAS:
 
         if (updatePercents) {
             let auditionListenPercent = 0;
-            let auditionShortlistPercent = 0;
+            let submittedAuditionShortlistPercent = 0;
+            let listenedAuditionShortlistPercent = 0;
 
             if (auditionsSubmitted > 0) {
                 if (auditionListens > 0) {
@@ -624,12 +634,14 @@ UPCOMING FEATURE IDEAS:
                 }
 
                 if (auditionsShortlisted > 0) {
-                    auditionShortlistPercent = (100 * auditionsShortlisted / auditionsSubmitted).toFixed(1);
+                    submittedAuditionShortlistPercent = (100 * auditionsShortlisted / auditionsSubmitted).toFixed(1);
+                    listenedAuditionShortlistPercent = (100 * auditionsShortlisted / auditionListens).toFixed(1);
                 }
             }
 
-            auditionListenPercentField.innerHTML = auditionListenPercent > 0 ? ' (' + auditionListenPercent + '%)' : '';
-            auditionShortlistPercentField.innerHTML = auditionShortlistPercent > 0 ? ' (' + auditionShortlistPercent + '%)' : '';
+            auditionListenPercentField.innerHTML = auditionListenPercent > 0 ? ' (' + auditionListenPercent + '% of submitted)' : '';
+            submittedAuditionShortlistPercentField.innerHTML = submittedAuditionShortlistPercent > 0 ? ' (' + submittedAuditionShortlistPercent + '% of submitted)' : '';
+            listenedAuditionShortlistPercentField.innerHTML = listenedAuditionShortlistPercent > 0 ? ' (' + listenedAuditionShortlistPercent + '% of listened)' : '';
         }
     }
 
