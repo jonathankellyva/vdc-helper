@@ -8,7 +8,9 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voices.com
 // @downloadURL  https://jskva.com/scripts/vdc-helper.user.js
 // @updateURL    https://jskva.com/scripts/vdc-helper.user.js
-// @grant        none
+// @grant        GM_deleteValue
+// @grant        GM_getValue
+// @grant        GM_setValue
 // ==/UserScript==
 
 /*
@@ -33,11 +35,10 @@ FEATURES
 * Hide Performance Details sections that just say "N/A" anyway.
 
 * Allow editing Sample Scripts by clicking on them.
-  Note that edits are not currently saved across page loads. (I might add this eventually.)
   On Mac, hold Command and click on the script.
   On Windows, hold the Windows key and click on the script.
   On mobile, long press on the script.
-  To restore the original text, click the Reset button.
+  Edits are saved across page loads, but you can restore the original text with the Reset button.
 
 * Automatically expand Sample Script rather than requiring you to click Read More.
 
@@ -95,15 +96,15 @@ UPCOMING FEATURE IDEAS:
     `;
     document.head.appendChild(style);
 
-    // Allow editing Sample Scripts by clicking on them.
-
     const LONG_PRESS_DURATION = 500; // only for mobile
+
+    let jobId = null;
 
     let pressTimeout;
 
     function documentClick(event) {
         if (event.metaKey) {
-            makeEditable(event.target);
+            makeScriptEditable(event.target);
         }
     }
 
@@ -116,7 +117,7 @@ UPCOMING FEATURE IDEAS:
     }
 
     function handleLongPress(event) {
-        makeEditable(event.target);
+        makeScriptEditable(event.target);
     }
 
     function isSpecialKeyHeld(event) {
@@ -134,25 +135,74 @@ UPCOMING FEATURE IDEAS:
     let resetSampleScriptButton = null;
     let editingSampleScript = false;
 
-    function makeEditable(target) {
-        if (target.tagName === 'P' && target.classList.contains('readmore-content')) {
-            sampleScriptField = target;
+    function closeEditor(newText) {
+        sampleScriptField.innerText = newText;
+        sampleScriptTextarea.value = newText;
+        sampleScriptField.style.display = 'block';
+        sampleScriptTextarea.style.display = 'none';
+        editingSampleScript = false;
+        replaceLinks(sampleScriptField);
+        saveSampleScript();
+        onSampleScriptUpdated();
+    }
 
+    function resetSampleScript() {
+        if (editingSampleScript) {
+            cancelEditingSampleScript();
+        }
+
+        sampleScriptField.innerText = originalSampleScriptText;
+        sampleScriptField.style.display = 'block';
+        sampleScriptTextarea.style.display = 'none';
+        replaceLinks(sampleScriptField);
+        saveSampleScript();
+
+        editingSampleScript = false;
+
+        resetSampleScriptButton.style.display = 'none';
+    }
+
+    function cancelEditingSampleScript() {
+        if (editingSampleScript) {
+            closeEditor(prevSampleScriptText);
+        }
+    }
+
+    function finishEditingSampleScript() {
+        if (editingSampleScript) {
+            closeEditor(sampleScriptTextarea.value);
+        }
+    }
+
+    function onSampleScriptKeyDown(event) {
+        if (editingSampleScript) {
+            if (event.key === 'Enter' && isSpecialKeyOrShiftHeld(event)) {
+                finishEditingSampleScript();
+            } else if (event.key === 'Escape') {
+                cancelEditingSampleScript();
+            }
+        }
+    }
+
+    function onSampleScriptUpdated() {
+        sampleScriptTextarea.style.height = 'auto';
+        sampleScriptTextarea.style.height = sampleScriptTextarea.scrollHeight + 'px';
+        resetSampleScriptButton.style.display =
+            originalSampleScriptText === sampleScriptTextarea.value ? 'none' : 'block';
+    }
+
+    function saveSampleScript() {
+        const key = `script-${jobId}`;
+        if (originalSampleScriptText !== sampleScriptField.innerText) {
+            GM_setValue(key, sampleScriptTextarea.value);
+        } else {
+            GM_deleteValue(key);
+        }
+    }
+
+    function makeScriptEditable(target) {
+        if (target === sampleScriptField) {
             prevSampleScriptText = sampleScriptField.innerText;
-            if (!originalSampleScriptText) {
-                originalSampleScriptText = prevSampleScriptText;
-            }
-
-            if (!sampleScriptTextarea) {
-                sampleScriptTextarea = document.createElement('textarea');
-                sampleScriptTextarea.style.width = sampleScriptField.offsetWidth + 'px';
-                sampleScriptTextarea.style.height = sampleScriptField.offsetHeight + 'px';
-                sampleScriptTextarea.style.font = window.getComputedStyle(target).font;
-                sampleScriptField.parentNode.appendChild(sampleScriptTextarea);
-
-                sampleScriptTextarea.addEventListener('blur', finishEditing);
-                sampleScriptTextarea.addEventListener('keydown', onKeyDown);
-            }
 
             sampleScriptTextarea.value = prevSampleScriptText;
 
@@ -160,73 +210,8 @@ UPCOMING FEATURE IDEAS:
             sampleScriptTextarea.style.display = 'block';
             sampleScriptTextarea.focus();
 
-            function closeEditor(newText) {
-                sampleScriptField.innerText = newText;
-                sampleScriptField.style.display = 'block';
-                sampleScriptTextarea.style.display = 'none';
-                editingSampleScript = false;
-                replaceLinks(sampleScriptField);
-            }
-
-            function resetSampleScript() {
-                if (editingSampleScript) {
-                    cancelEditing();
-                }
-
-                sampleScriptField.innerText = originalSampleScriptText;
-                sampleScriptField.style.display = 'block';
-                sampleScriptTextarea.style.display = 'none';
-                replaceLinks(sampleScriptField);
-
-                editingSampleScript = false;
-
-                resetSampleScriptButton.style.display = 'none';
-            }
-
-            function cancelEditing() {
-                if (editingSampleScript) {
-                    closeEditor(prevSampleScriptText);
-                }
-            }
-
-            function finishEditing() {
-                if (editingSampleScript) {
-                    closeEditor(sampleScriptTextarea.value);
-                }
-            }
-
-            function onKeyDown(event) {
-                if (editingSampleScript) {
-                    if (event.key === 'Enter' && isSpecialKeyOrShiftHeld(event)) {
-                        finishEditing();
-                    } else if (event.key === 'Escape') {
-                        cancelEditing();
-                    }
-                }
-            }
-
-            function onSampleScriptUpdated() {
-                sampleScriptTextarea.style.height = 'auto';
-                sampleScriptTextarea.style.height = sampleScriptTextarea.scrollHeight + 'px';
-                resetSampleScriptButton.style.display =
-                    originalSampleScriptText === sampleScriptTextarea.value ? 'none' : 'block';
-            }
-
             editingSampleScript = true;
-
-            if (!resetSampleScriptButton) {
-                resetSampleScriptButton = document.createElement('button');
-                resetSampleScriptButton.id = 'reset-sample-script';
-                resetSampleScriptButton.textContent = 'Reset';
-                resetSampleScriptButton.style.marginTop = '10px';
-                resetSampleScriptButton.style.display = 'none';
-                resetSampleScriptButton.addEventListener('click', resetSampleScript);
-                sampleScriptField.parentNode.appendChild(resetSampleScriptButton);
-            }
-
-            onSampleScriptUpdated(sampleScriptTextarea);
-            sampleScriptTextarea.addEventListener('input', onSampleScriptUpdated);
-
+            onSampleScriptUpdated();
         }
     }
 
@@ -318,17 +303,10 @@ UPCOMING FEATURE IDEAS:
     }
 
     if (window.location.pathname.startsWith('/talent/jobs/posting')) {
-        const jobHeader = document.querySelector('.job-header');
-
-        document.addEventListener('click', documentClick);
-        document.addEventListener('touchstart', startLongPress);
-        document.addEventListener('touchend', cancelLongPress);
-        document.addEventListener('touchcancel', cancelLongPress);
-        document.addEventListener('touchmove', cancelLongPress);
-
         // Clicking on the Job Title/ID copies it to the clipboard.
         // Holding a modifier key down while clicking will copy both (e.g., "12345 - Awesome Job").
 
+        const jobHeader = document.querySelector('.job-header');
         const jobTitleElement = jobHeader.querySelector('h1');
         const jobIdElement = jobHeader.querySelector('span');
         if (jobTitleElement && jobIdElement) {
@@ -337,7 +315,7 @@ UPCOMING FEATURE IDEAS:
             const jobIdMatch = jobIdElement.innerText.match(jobIdPattern);
 
             if (jobIdMatch) {
-                const jobId = jobIdMatch[1];
+                jobId = jobIdMatch[1];
                 const jobIdAndTitle = `${jobId} - ${jobTitle}`;
 
                 function onClickJobTitle(event) {
@@ -354,6 +332,46 @@ UPCOMING FEATURE IDEAS:
                 jobIdElement.addEventListener('click', onClickJobId);
             }
         }
+
+        // Allow editing Sample Scripts by clicking on them.
+
+        sampleScriptField = document.querySelector('p.readmore-content');
+        if (sampleScriptField) {
+            originalSampleScriptText = sampleScriptField.innerText;
+
+            sampleScriptTextarea = document.createElement('textarea');
+            sampleScriptTextarea.style.display = 'none';
+            sampleScriptTextarea.style.width = sampleScriptField.offsetWidth + 'px';
+            sampleScriptTextarea.style.height = sampleScriptField.offsetHeight + 'px';
+            sampleScriptTextarea.style.font = window.getComputedStyle(sampleScriptField).font;
+            sampleScriptField.parentNode.appendChild(sampleScriptTextarea);
+
+            sampleScriptTextarea.addEventListener('blur', finishEditingSampleScript);
+            sampleScriptTextarea.addEventListener('keydown', onSampleScriptKeyDown);
+            sampleScriptTextarea.addEventListener('input', onSampleScriptUpdated);
+
+            resetSampleScriptButton = document.createElement('button');
+            resetSampleScriptButton.id = 'reset-sample-script';
+            resetSampleScriptButton.textContent = 'Reset';
+            resetSampleScriptButton.style.marginTop = '10px';
+            resetSampleScriptButton.style.display = 'none';
+            sampleScriptField.parentNode.appendChild(resetSampleScriptButton);
+
+            resetSampleScriptButton.addEventListener('click', resetSampleScript);
+
+            const savedScript = GM_getValue(`script-${jobId}`);
+            if (savedScript) {
+                sampleScriptField.innerText = savedScript;
+                sampleScriptTextarea.value = savedScript;
+                onSampleScriptUpdated();
+            }
+        }
+
+        document.addEventListener('click', documentClick);
+        document.addEventListener('touchstart', startLongPress);
+        document.addEventListener('touchend', cancelLongPress);
+        document.addEventListener('touchcancel', cancelLongPress);
+        document.addEventListener('touchmove', cancelLongPress);
 
         // Highlight in-perp ads in red and other ads in green.
 
