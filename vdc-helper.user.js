@@ -46,7 +46,7 @@ FEATURES
   things like that, so it's helpful to be able to click them instead of having to copy-paste
   them into the address bar of a new tab.  Note that these links will open in a new tab.
 
-* In Licensing Details, highlight in-perp ads in red.
+* In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
 
 --- Job Response Editor ---
 
@@ -355,12 +355,16 @@ UPCOMING FEATURE IDEAS:
             }
         }
 
-        // Highlight in-perp ads in red.
+        // Highlight in-perp ads in red and other ads in green.
 
         Array.from(document.querySelectorAll('span.tag'))
-            .filter(el => el.innerText.indexOf(' Ad ') > 0 && el.innerText.indexOf('In Perpetuity') > 0)
+            .filter(el => el.innerText.indexOf(' Ad ') > 0)
             .forEach(function (el) {
-                el.style.backgroundColor = '#ffc4b8';
+                if (el.innerText.indexOf('In Perpetuity') > 0) {
+                    el.style.backgroundColor = '#ffc4b8';
+                } else {
+                    el.style.backgroundColor = 'lightgreen';
+                }
             });
 
         // Hide Performance Details sections that just say "N/A" anyway.
