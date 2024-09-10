@@ -230,7 +230,7 @@ UPCOMING FEATURE IDEAS:
     }
 
     function replaceLinks(el) {
-        const urlPattern = /((?:https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{1,256}\.[a-zA-Z0-9]{2,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*[a-zA-Z0-9_#])?)/gi;
+        const urlPattern = /((?:https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{1,256}\.[a-zA-Z][a-zA-Z0-9]{1,5}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*[a-zA-Z0-9_#])?)/gi;
         el.innerHTML = el.innerHTML.replace(urlPattern, function (match, url) {
             const href = url.indexOf("://") > 0 ? url : 'https://' + url;
             return `<a href="${href}" target="_blank">${url}</a>`;
