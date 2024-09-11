@@ -60,6 +60,8 @@ any website you visit.
 * In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
   Also, make ad licensing durations more concise and readable.
   (e.g., "0 Years: 0 Months: 5 Weeks" => "5 Weeks")
+  Add a GVAA Rate Guide link next to each ad, linking directly to the appropriate section for
+  some types of ads (currently Online, Radio, and TV).
 
 #### Job Response Editor
 
@@ -85,8 +87,7 @@ any website you visit.
 
 * When responding to a job, automatically pick the first response template.
 * For VoiceMatch <100%, I'd like to figure out a way to help you determine why it was <100%.
-* Link to appropriate section of GVAA Rate Guide from Job Highlights panel,
-  or maybe even calculate recommended GVAA rate range based on licensing details.
+* If possible, calculate the recommended GVAA rate range based on licensing details.
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.
 * Show number of business days until Project Deadlines.
 * On Statistics page, allow sorting the Demo History table by each different column.

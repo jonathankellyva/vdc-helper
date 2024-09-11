@@ -28,6 +28,15 @@
             border-color: darkred;
             background-color: pink;
         }
+        
+        a.gvaa-link {
+            padding-left: 3px;
+        }
+        
+        img.gvaa-icon {
+            width: 16px;
+            height: 16px;
+        }
     `;
     document.head.appendChild(style);
 
@@ -324,19 +333,51 @@
                 // Make the ad licensing more concise (e.g., "0 Years: 0 Months: 5 Weeks" to "5 Weeks")
 
                 const licensingParts = el.innerText.split(" • ");
-                const duration = licensingParts.pop();
-                const durationParts = duration.split(": ");
-                const newDurationParts = durationParts.filter(part => !part.trim().startsWith("0"))
-                    // e.g., "1 Years" => "1 Year"
-                    .map(part => {
-                        if (part.startsWith("1 ") && part.endsWith("s")) {
-                            return part.slice(0, -1);
-                        } else {
-                            return part;
-                        }
-                    });
+                if (licensingParts.length === 3) {
+                    const gvaaBaseLink = 'https://globalvoiceacademy.com/gvaa-rate-guide-2/';
+                    let gvaaLinkUrl = null;
 
-                el.innerText = licensingParts.join(" • ") + " • " + newDurationParts.join(": ");
+                    const adType = licensingParts[0];
+                    const adScope = licensingParts[1];
+                    const duration = licensingParts.pop();
+                    const durationParts = duration.split(": ");
+                    const newDurationParts = durationParts.filter(part => !part.trim().startsWith("0"))
+                        // e.g., "1 Years" => "1 Year"
+                        .map(part => {
+                            if (part.startsWith("1 ") && part.endsWith("s")) {
+                                return part.slice(0, -1);
+                            } else {
+                                return part;
+                            }
+                        });
+
+                    el.innerText = licensingParts.join(" • ") + " • " + newDurationParts.join(": ");
+
+                    // Link to GVAA Rate Guide (and to the corresponding section, if applicable)
+
+                    if (adType === 'Online Ad') {
+                        gvaaLinkUrl = gvaaBaseLink + '#webusage';
+                    } else if (adType === 'Radio Ad') {
+                        gvaaLinkUrl = gvaaBaseLink + '#radio';
+                    } else if (adType === 'Television Ad') {
+                        gvaaLinkUrl = gvaaBaseLink + '#tv';
+                    } else {
+                        gvaaLinkUrl = gvaaBaseLink;
+                    }
+
+                    if (gvaaLinkUrl) {
+                        const gvaaIconUrl = 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/img/gvaa-icon.png';
+                        const gvaaLink = document.createElement('a');
+                        const gvaaIcon = document.createElement('img');
+                        gvaaLink.href = gvaaLinkUrl;
+                        gvaaLink.className = 'gvaa-link';
+                        gvaaLink.target = '_blank';
+                        gvaaIcon.src = gvaaIconUrl;
+                        gvaaIcon.className = 'gvaa-icon';
+                        gvaaLink.appendChild(gvaaIcon);
+                        el.appendChild(gvaaLink);
+                    }
+                }
             });
 
         // Hide Performance Details sections that just say "N/A" anyway.
