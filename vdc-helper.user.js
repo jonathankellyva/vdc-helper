@@ -6,8 +6,8 @@
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voices.com
-// @downloadURL  https://jskva.com/scripts/vdc-helper.user.js
-// @updateURL    https://jskva.com/scripts/vdc-helper.user.js
+// @downloadURL  https://github.com/jonathankellyva/vdc-helper/raw/main/vdc-helper.user.js
+// @updateURL    https://github.com/jonathankellyva/vdc-helper/raw/main/vdc-helper.user.js
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -39,7 +39,8 @@ HOW TO INSTALL
 2. Some browsers might require additional configuration for Tampermonkey to run Userscripts.
    For example, Google Chrome and Microsoft Edge require Developer Mode to be enabled.
    (See https://www.tampermonkey.net/faq.php?locale=en#Q209)
-3. Visit https://jskva.com/scripts/vdc-helper.user.js to install this Userscript.
+3. To install this Userscript, visit
+   https://github.com/jonathankellyva/vdc-helper/raw/main/vdc-helper.user.js
 
 FEATURES
 
