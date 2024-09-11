@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-09
+// @version      2024-09-11
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -14,6 +14,32 @@
 // ==/UserScript==
 
 /*
+
+WHAT IS THIS?
+
+This is a Userscript that improves some of the user experience for the Voices.com website.
+It is intended to be used with a browser plugin called Tampermonkey.
+
+From the Tampermonkey website:
+
+Tampermonkey is one of the most popular browser extension with over 10 million users. It's available
+for Chrome, Microsoft Edge, Safari, Opera Next, and Firefox.
+
+It allows its users to customize and enhance the functionality of your favorite web pages.
+Userscripts are small JavaScript programs that can be used to add new features or modify existing
+ones on web pages. With Tampermonkey, you can easily create, manage, and run these userscripts on
+any website you visit.
+
+HOW TO INSTALL
+
+1. Install the Tampermonkey browser plugin from https://tampermonkey.net
+   It works for Chrome, Microsoft Edge, Firefox, Safari, and Opera Next.
+   On mobile, you can also use it with Firefox for Android by installing the plugin from
+   https://addons.mozilla.org/en-US/android/addon/tampermonkey/
+2. Some browsers might require additional configuration for Tampermonkey to run Userscripts.
+   For example, Google Chrome and Microsoft Edge require Developer Mode to be enabled.
+   (See https://www.tampermonkey.net/faq.php?locale=en#Q209)
+3. Visit https://jskva.com/scripts/vdc-helper.user.js to install this Userscript.
 
 FEATURES
 
@@ -72,6 +98,7 @@ FEATURES
 UPCOMING FEATURE IDEAS:
 
 * When responding to a job, automatically pick the first response template.
+* For VoiceMatch <100%, I'd like to figure out a way to help you determine why it was <100%.
 * Link to appropriate section of GVAA Rate Guide from Job Highlights panel,
   or maybe even calculate recommended GVAA rate range based on licensing details.
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.
