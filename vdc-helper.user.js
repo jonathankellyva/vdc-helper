@@ -313,11 +313,30 @@
         Array.from(document.querySelectorAll('span.tag'))
             .filter(el => el.innerText.indexOf(' Ad ') > 0)
             .forEach(function (el) {
+                // Highlight in-perp ads in red and other ads in green.
+
                 if (el.innerText.indexOf('In Perpetuity') > 0) {
                     el.style.backgroundColor = '#ffc4b8';
                 } else {
                     el.style.backgroundColor = 'lightgreen';
                 }
+
+                // Make the ad licensing more concise (e.g., "0 Years: 0 Months: 5 Weeks" to "5 Weeks")
+
+                const licensingParts = el.innerText.split(" • ");
+                const duration = licensingParts.pop();
+                const durationParts = duration.split(": ");
+                const newDurationParts = durationParts.filter(part => !part.trim().startsWith("0"))
+                    // e.g., "1 Years" => "1 Year"
+                    .map(part => {
+                        if (part.startsWith("1 ") && part.endsWith("s")) {
+                            return part.slice(0, -1);
+                        } else {
+                            return part;
+                        }
+                    });
+
+                el.innerText = licensingParts.join(" • ") + " • " + newDurationParts.join(": ");
             });
 
         // Hide Performance Details sections that just say "N/A" anyway.

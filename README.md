@@ -58,6 +58,8 @@ any website you visit.
   them into the address bar of a new tab.  Note that these links will open in a new tab.
 
 * In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
+  Also, make ad licensing durations more concise and readable.
+  (e.g., "0 Years: 0 Months: 5 Weeks" => "5 Weeks")
 
 #### Job Response Editor
 
