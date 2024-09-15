@@ -50,6 +50,9 @@ any website you visit.
   On mobile, long press on the script.
   Edits are saved across page loads, but you can restore the original text with the Reset button.
 
+* Show the total number of words in the Sample Script.
+  When selecting any words in the script, also show the number of selected words.
+
 * Automatically expand Sample Script rather than requiring you to click Read More.
 
 * In the Performance Details sections, turn URLs into actual links so that you can click them.

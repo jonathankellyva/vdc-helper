@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-11
+// @version      2024-09-15
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -79,6 +79,38 @@
     let resetSampleScriptButton = null;
     let editingSampleScript = false;
 
+    const sampleScriptContainer = document.getElementById('readmore-script-content');
+
+    function countWords(text) {
+        const words = text.match(/\b[-a-zA-Z0-9'’]+\b/g);
+        return words ? words.length : 0;
+    }
+
+    function updateSampleScriptWordCounts() {
+        if (sampleScriptField) {
+            const additionalDetails = document.getElementById('additionalDetails');
+            Array.from(additionalDetails.querySelectorAll('h5'))
+                .filter(el => el.innerText.startsWith('Sample Script')).forEach(el => {
+                const text = editingSampleScript ? sampleScriptTextarea.value : sampleScriptField.innerText;
+                const totalWords = countWords(text);
+                if (totalWords > 1) {
+                    const selection = window.getSelection();
+                    const isSelectingSampleScript = sampleScriptContainer
+                        && sampleScriptContainer.contains(selection.anchorNode)
+                        && sampleScriptContainer.contains(selection.focusNode);
+                    const selectedWords = isSelectingSampleScript ? countWords(selection.toString()) : 0;
+                    if (selectedWords > 0) {
+                        el.innerText = `Sample Script (selected ${selectedWords} of ${totalWords} total words)`;
+                    } else {
+                        el.innerText = `Sample Script (${totalWords} words)`;
+                    }
+                } else {
+                    el.innerText = 'Sample Script';
+                }
+            });
+        }
+    }
+
     function closeEditor(newText) {
         sampleScriptField.innerText = newText;
         sampleScriptTextarea.value = newText;
@@ -104,6 +136,8 @@
         editingSampleScript = false;
 
         resetSampleScriptButton.style.display = 'none';
+
+        updateSampleScriptWordCounts();
     }
 
     function cancelEditingSampleScript() {
@@ -133,6 +167,7 @@
         sampleScriptTextarea.style.height = sampleScriptTextarea.scrollHeight + 'px';
         resetSampleScriptButton.style.display =
             originalSampleScriptText === sampleScriptTextarea.value ? 'none' : 'block';
+        updateSampleScriptWordCounts();
     }
 
     function saveSampleScript() {
@@ -316,6 +351,10 @@
         document.addEventListener('touchend', cancelLongPress);
         document.addEventListener('touchcancel', cancelLongPress);
         document.addEventListener('touchmove', cancelLongPress);
+        document.addEventListener('selectionchange', updateSampleScriptWordCounts);
+        document.addEventListener('mouseup', updateSampleScriptWordCounts);
+
+        updateSampleScriptWordCounts();
 
         // Highlight in-perp ads in red and other ads in green.
 
@@ -409,7 +448,6 @@
 
         // Automatically expand Sample Script rather than requiring you to click Read More.
 
-        const sampleScriptContainer = document.getElementById('readmore-script-content');
         if (sampleScriptContainer) {
             sampleScriptContainer.setAttribute('aria-expanded', 'true');
         }
