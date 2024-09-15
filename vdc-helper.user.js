@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-30
+// @version      2024-10-07
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -56,6 +56,22 @@
             padding-left: 24px;
             border-radius: 4px;
         }
+        
+        .unread-alerts {
+            color: #D1462A;
+        }
+        
+        #alerts-dropdown {
+            display: block;
+            position: absolute !important;
+            right: 0px;
+            background-color: white;
+        }
+        
+        #alerts-dropdown-list {
+            opacity: 1;
+            transform: none;
+        }
     `;
     document.head.appendChild(style);
 
@@ -84,6 +100,489 @@
     let jobId = null;
 
     let pressTimeout;
+    
+    function loadNotifications() {
+        return JSON.parse(GM_getValue('notifications', '[]'));
+    }
+    
+    function saveNotifications(notifications) {
+        GM_setValue('notifications', JSON.stringify(notifications));
+    }
+    
+    function createNotification(type, job) {
+        return {
+            type: type,
+            jobId: job.id,
+            jobTitle: job.title,
+            time: Date.now(),
+        }
+    }
+
+    function getPopupNotificationTitle(data) {
+        return `${data.jobId}: ${data.jobTitle}`;
+    }
+
+    function getPopupNotificationBody(data) {
+        switch (data.type) {
+            case 'newjob':
+                return 'You have received a new job invitation';
+            case 'listen':
+                return 'The client listened to your audition!';
+            case 'shortlist':
+                return 'Your audition was shortlisted!';
+        }
+        return null;
+    }
+    
+    function getNotificationTarget(data) {
+        switch (data.type) {
+            case 'newjob':
+                return `https://www.voices.com/talent/jobs/posting/${data.jobId}`;
+            case 'listen':
+            case 'shortlist':
+                return `https://www.voices.com/talent/jobs/preview_response/${data.jobId}`;
+        }
+        return null;
+    }
+
+    function getNotificationIcon(data) {
+        switch (data.type) {
+            case 'newjob':
+                return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/img/briefcase.png';
+            case 'listen':
+                return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/img/headphones.png';
+            case 'shortlist':
+                return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/img/thumbs-up.png';
+        }
+        return null;
+    }
+
+    function getNotificationHistoryTitle(data) {
+        switch (data.type) {
+            case 'newjob':
+                return 'New Job Invitation';
+            case 'listen':
+                return 'New Listen!';
+            case 'shortlist':
+                return 'New Shortlist!';
+        }
+        return null;
+    }
+
+    function getNotificationHistoryBody(data) {
+        return `${data.jobId}: ${data.jobTitle}`;
+    }
+    
+    function createPopupNotification(data) {
+        const title = getPopupNotificationTitle(data);
+        const body = getPopupNotificationBody(data);
+        const icon = getNotificationIcon(data);
+        const target = getNotificationTarget(data);
+        
+        if (title && body) {
+            const notification = new Notification(title, {
+                body: body,
+                icon: icon,
+            });
+
+            notification.onclick = function () {
+                window.focus();
+                if (target) {
+                    window.open(target, '_blank');
+                }
+            };
+        }
+    }
+
+    function postNotification(data) {
+        const notifications = loadNotifications();
+        notifications.push(data);
+        saveNotifications(notifications);
+        ringBell();
+    }
+    
+    function popUpNotification(data) {
+        if ('Notification' in window && Notification.permission !== 'granted') {
+            Notification.requestPermission().then(function (permission) {
+                if (permission !== 'granted') {
+                    console.log('Notification permission denied.');
+                }
+            });
+        }
+
+        createPopupNotification(data);
+        data.shown = true;
+    }
+    
+    function ringBell() {
+        const alertsMenuIcon = document.getElementById('alerts-menu-icon');
+        if (alertsMenuIcon) {
+            if (!alertsMenuIcon.classList.contains('fas')) {
+                alertsMenuIcon.classList.add('fas');
+            }
+            if (!alertsMenuIcon.classList.contains('unread-alerts')) {
+                alertsMenuIcon.classList.add('unread-alerts');
+            }
+        }
+    }
+
+    function popUpNewNotifications() {
+        const notifications = loadNotifications();
+        const toShow = notifications.filter(notification => !notification.shown);
+
+        if (toShow.length > 0) {
+            acquireLock('showNotifications', doPopUpNewNotifications);
+        }
+
+        if (notifications.find(notification => !notification.read)) {
+            ringBell();
+        }
+    }
+    
+    function doPopUpNewNotifications() {
+        const notifications = loadNotifications();
+        const toShow = notifications.filter(notification => !notification.shown);
+
+        if (toShow.length > 0) {
+            toShow.forEach(popUpNotification);
+            saveNotifications(notifications);
+        }
+    }
+
+    const statusPattern = />([^<]+)</;
+
+    let savedJobData = {};
+
+    function loadSavedJobData() {
+        savedJobData = JSON.parse(GM_getValue('jobs', '{}'));
+        if (!savedJobData.jobs) {
+            savedJobData.jobs = {};
+        }
+    }
+    
+    function saveJobData() {
+        GM_setValue('jobs', JSON.stringify(savedJobData));
+    }
+
+    function getJobStatus(job) {
+        if (job && job.status_button) {
+            const match = job.status_button.match(statusPattern);
+            if (match) {
+                return match[1];
+            }
+        }
+        return '';
+    }
+
+    function listJobs(requestData = {}, offset = 0, limit = 100) {
+        requestData.custom = {};
+        if (!requestData.filter) {
+            requestData.filter = {
+                by: [
+                    'show:all',
+                ],
+            };
+        }
+        requestData.is_internal = 0;
+        if (!requestData.search) {
+            requestData.search = {
+                query: null,
+            };
+        }
+        if (!requestData.sort) {
+            requestData.sort = {
+                order: 'desc',
+                by: 'posted_date',
+            };
+        }
+
+        const filteringByListened = requestData.filter.by.includes('show:listened');
+
+        GM.xmlHttpRequest({
+            method: 'POST',
+            url: `https://www.voices.com/talent/jobs_pagination?offset=${offset}&limit=${limit}`,
+            data: JSON.stringify(requestData),
+            onload: function (response) {
+                const responseData = JSON.parse(response.responseText);
+                if (responseData.status === 'success' && responseData.data) {
+                    responseData.data.entities.forEach(job => {
+                        const oldData = savedJobData.jobs[job.id];
+
+                        let listened = filteringByListened;
+                        if (!listened && oldData && oldData.listened) {
+                            listened = true;
+                        }
+
+                        const jobData = {
+                            title: job.title,
+                            posted_at: job.posted_at,
+                            status: getJobStatus(job),
+                            answered: job.is_sent === 1,
+                            listened: listened,
+                            shortlisted: job.is_shortlisted === 1,
+                            closed: job.is_closed === 1,
+                        };
+
+                        if (oldData) {
+                            if (!oldData.listened && jobData.listened) {
+                                postNotification(createNotification('listen', job));
+                            }
+                            if (!oldData.shortlisted && jobData.shortlisted) {
+                                postNotification(createNotification('shortlist', job));
+                            }
+                        } else if (jobData.status === 'Hiring' && !jobData.answered) {
+                            postNotification(createNotification('newjob', job));
+                        }
+
+                        const keep = job.listened || job.shortlisted || job.answered || !job.closed;
+                        if (keep) {
+                            savedJobData.jobs[job.id] = jobData;
+                        } else {
+                            delete savedJobData.jobs[job.id];
+                        }
+                    });
+
+                    saveJobData();
+
+                    if (responseData.data.total > offset + limit) {
+                        listJobs(requestData, offset + limit, limit);
+                    }
+                }
+            }
+        });
+    }
+
+    function listHiringJobs() {
+        const requestData = {
+            filter: {
+                by: [
+                    'status:open',
+                    'show:all',
+                ],
+            }
+        }
+        listJobs(requestData);
+    }
+
+    function listAnsweredJobs(listened) {
+        const requestData = {
+            filter: {
+                by: [
+                    'status:answered',
+                    'show:' + (listened ? 'listened' : 'all'),
+                ],
+            }
+        }
+        listJobs(requestData);
+    }
+    
+    function acquireLock(name, callback) {
+        const lockValue = GM_getValue(`lock-${name}`, 0);
+        const now = Date.now();
+
+        if (lockValue < now - 5000) {
+            GM_setValue(`lock-${name}`, now);
+            window.setTimeout(checkLock, 2000 + Math.random() * 1000, name, callback, now);
+        }
+    }
+    
+    function checkLock(name, callback, expectedValue) {
+        const lockValue = GM_getValue(`lock-${name}`);
+
+        if (lockValue === expectedValue) {
+            callback();
+        }
+    }
+
+    function checkJobs() {
+        const now = Date.now();
+        const lastChecked = GM_getValue('last-checked-jobs', 0);
+
+        if (now - lastChecked >= 60000) {
+            acquireLock('checkJobs', doCheckJobs);
+        }
+    }
+    
+    function doCheckJobs() {
+        const now = Date.now();
+
+        loadSavedJobData();
+        GM_setValue('last-checked-jobs', now);
+        savedJobData.lastChecked = now;
+        saveJobData();
+        listAnsweredJobs(true);
+        listHiringJobs();
+        listAnsweredJobs();
+    }
+    
+    let pinAlertsMenu = false;
+    
+    const helpLink = document.getElementById('Help');
+    if (helpLink) {
+        const alertsMenuItem = document.createElement('li');
+        alertsMenuItem.className = 'nav-main-submenu-list-item has-dropdown';
+
+        const alertsMenuLink = document.createElement('a');
+        alertsMenuLink.className = 'nav-main-submenu-link-icon';
+        alertsMenuLink.setAttribute('aria-label', 'Notifications');
+        
+        const alertsMenuIcon = document.createElement('i');
+        alertsMenuIcon.id = 'alerts-menu-icon';
+        alertsMenuIcon.className = 'far fa-bell';
+        
+        const alertsMenuLabel = document.createElement('div');
+        alertsMenuLabel.className = 'nav-main-submenu-link-text';
+        alertsMenuLabel.innerText = ' Alerts ';
+
+        const alertsDropdown = document.createElement('div');
+        alertsDropdown.id = 'alerts-dropdown';
+        alertsDropdown.className = 'nav-main-dropdown';
+        
+        const alertsDropdownList = document.createElement('ul');
+        alertsDropdownList.id = 'alerts-dropdown-list'
+        alertsDropdownList.className = 'nav-main-dropdown-list';
+
+        alertsDropdown.appendChild(alertsDropdownList);
+
+        const clearNotificationsItem = document.createElement('li');
+        clearNotificationsItem.className = 'nav-main-dropdown-list-item';
+
+        const clearNotificationsLink = document.createElement('a');
+        clearNotificationsLink.className = 'nav-main-dropdown-link';
+        clearNotificationsLink.innerText = 'Clear Notifications';
+
+        clearNotificationsLink.addEventListener('click', function () {
+            saveNotifications([]);
+            clearBell();
+            hideNotificationsDropdown();
+        });
+
+        clearNotificationsItem.appendChild(clearNotificationsLink);
+        clearNotificationsItem.appendChild(document.createElement('hr'));
+
+        const noNotificationsItem = document.createElement('li');
+        noNotificationsItem.className = 'nav-main-dropdown-list-item';
+
+        const noNotificationsLink = document.createElement('a');
+        noNotificationsLink.className = 'nav-main-dropdown-link';
+        noNotificationsLink.innerText = 'You have no notifications';
+
+        noNotificationsItem.appendChild(noNotificationsLink);
+        
+        function clearBell() {
+            alertsMenuIcon.classList.remove('fas');
+            alertsMenuIcon.classList.remove('unread-alerts');
+        }
+
+        function hideNotificationsDropdown() {
+            pinAlertsMenu = false;
+            alertsDropdown.style.visibility = 'hidden';
+            alertsDropdown.style.opacity = '0';
+        }
+
+        function showNotificationsDropdown(markRead) {
+            alertsDropdownList.replaceChildren();
+
+            const notifications = loadNotifications();
+
+            if (notifications.length > 0) {
+                alertsDropdownList.appendChild(clearNotificationsItem);
+            }
+            else {
+                alertsDropdownList.appendChild(noNotificationsItem);
+            }
+
+            function createNotificationItem(data) {
+                const title = getNotificationHistoryTitle(data);
+                const body = getNotificationHistoryBody(data);
+                const icon = getNotificationIcon(data);
+                const target = getNotificationTarget(data);
+
+                const item = document.createElement('li');
+                item.className = 'nav-main-dropdown-list-item';
+
+                const link = document.createElement('a');
+                link.className = 'nav-main-dropdown-link';
+                link.href = target;
+                
+                const iconImg = document.createElement('img');
+                iconImg.src = icon;
+                iconImg.style.marginRight = '10px';
+                
+                const linkTitle = document.createElement('p');
+                linkTitle.style.display = 'inline';
+                linkTitle.innerText = title;
+
+                const linkBody = document.createElement('p');
+                linkBody.style.display = 'block';
+                linkBody.innerText = body;
+
+                if (!data.read) {
+                    link.style.fontWeight = 'bold';
+                }
+
+                link.addEventListener('click', function () {
+                    data.read = true;
+                    saveNotifications(notifications);
+                });
+
+                link.appendChild(iconImg);
+                link.appendChild(linkTitle);
+                link.appendChild(linkBody);
+                item.appendChild(link);
+                return item;
+            }
+
+            notifications.slice().reverse().forEach(data => {
+                alertsDropdownList.appendChild(createNotificationItem(data));
+                if (markRead) {
+                    data.read = true;
+                }
+            });
+
+            saveNotifications(notifications);
+
+            alertsDropdown.style.visibility = 'visible';
+            alertsDropdown.style.opacity = '1';
+        }
+
+        alertsMenuItem.addEventListener('mouseenter', function () {
+            showNotificationsDropdown(false);
+        });
+        alertsMenuItem.addEventListener('mouseleave', function () {
+            if (!pinAlertsMenu) {
+                hideNotificationsDropdown();
+            }
+        });
+
+        alertsMenuLink.addEventListener('click', function (event) {
+            clearBell();
+            if (!pinAlertsMenu) {
+                pinAlertsMenu = true;
+                showNotificationsDropdown(true);
+            } else {
+                hideNotificationsDropdown();
+            }
+        });
+
+        document.addEventListener('click', function (event) {
+            if (pinAlertsMenu && !alertsMenuItem.contains(event.target)) {
+                hideNotificationsDropdown();
+            }
+        });
+
+        alertsMenuLink.appendChild(alertsMenuIcon);
+        alertsMenuLink.appendChild(alertsMenuLabel);
+        alertsMenuItem.appendChild(alertsMenuLink);
+        alertsMenuItem.appendChild(alertsDropdown);
+        helpLink.parentNode.parentNode.insertBefore(alertsMenuItem, helpLink.parentNode);
+    }
+
+    window.setInterval(checkJobs, 10000);
+    checkJobs();
+
+    window.setInterval(popUpNewNotifications, 5000);
+    popUpNewNotifications();
 
     function documentClick(event) {
         if (event.metaKey) {
