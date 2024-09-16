@@ -46,6 +46,7 @@ any website you visit.
 
 * Display controls for playing reference audio and video along with the Download links so that you
   can play them directly in the page rather than having to download them and open them separately.
+  Similarly, if any YouTube links appear in the references, embed them directly into the page.
 
 * Display reference/script PNG images directly in the page rather than having to download them and
   open them separately.

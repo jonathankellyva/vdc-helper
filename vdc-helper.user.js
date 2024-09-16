@@ -500,6 +500,30 @@
             Array.from(div.querySelectorAll('p')).forEach(replaceLinks);
         });
 
+        // Embed YouTube videos directly into the page.
+
+        const youtubeLinkPattern = /https:\/\/(?:www\.)?youtube.com\/watch\?v=([-_a-zA-Z0-9]+)(&.*)?/;
+
+        Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
+            Array.from(div.querySelectorAll('a')).forEach(a => {
+                const match = a.href.match(youtubeLinkPattern);
+                if (match) {
+                    // <iframe width="560" height="315" src="https://www.youtube.com/embed/pwLergHG81c?si=kQ44lnrkn08pUv42" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+                    const videoId = match[1];
+                    const extraParams = match[2];
+                    const iframe = document.createElement('iframe');
+
+                    iframe.src = `https://www.youtube.com/embed/${videoId}?${extraParams}`;
+                    iframe.allowFullscreen = true;
+                    iframe.width = '100%';
+                    iframe.height = '384px';
+
+                    a.parentNode.appendChild(iframe);
+                }
+            });
+        });
+
         // Move Client Details to a single, compact line at the top of the page under the job title/ID.
 
         const clientDetailsContainer = document.querySelector('.client-details-container');
