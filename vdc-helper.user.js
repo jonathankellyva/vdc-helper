@@ -76,6 +76,7 @@
     let sampleScriptTextarea = null;
     let originalSampleScriptText = null;
     let prevSampleScriptText = null;
+    let saveSampleScriptButton = null;
     let resetSampleScriptButton = null;
     let editingSampleScript = false;
 
@@ -135,6 +136,7 @@
 
         editingSampleScript = false;
 
+        saveSampleScriptButton.style.display = 'none';
         resetSampleScriptButton.style.display = 'none';
 
         updateSampleScriptWordCounts();
@@ -165,8 +167,9 @@
     function onSampleScriptUpdated() {
         sampleScriptTextarea.style.height = 'auto';
         sampleScriptTextarea.style.height = sampleScriptTextarea.scrollHeight + 'px';
-        resetSampleScriptButton.style.display =
-            originalSampleScriptText === sampleScriptTextarea.value ? 'none' : 'block';
+        saveSampleScriptButton.style.display = editingSampleScript ? 'inline' : 'none';
+        saveSampleScriptButton.textContent = prevSampleScriptText === sampleScriptTextarea.value ? 'Close' : 'Save';
+        resetSampleScriptButton.style.display = originalSampleScriptText === sampleScriptTextarea.value ? 'none' : 'inline';
         updateSampleScriptWordCounts();
     }
 
@@ -325,9 +328,16 @@
             sampleScriptTextarea.style.font = window.getComputedStyle(sampleScriptField).font;
             sampleScriptField.parentNode.appendChild(sampleScriptTextarea);
 
-            sampleScriptTextarea.addEventListener('blur', finishEditingSampleScript);
             sampleScriptTextarea.addEventListener('keydown', onSampleScriptKeyDown);
             sampleScriptTextarea.addEventListener('input', onSampleScriptUpdated);
+
+            saveSampleScriptButton = document.createElement('button');
+            saveSampleScriptButton.id = 'save-sample-script';
+            saveSampleScriptButton.textContent = 'Save';
+            saveSampleScriptButton.style.marginTop = '10px';
+            saveSampleScriptButton.style.marginRight = '10px';
+            saveSampleScriptButton.style.display = 'none';
+            sampleScriptField.parentNode.appendChild(saveSampleScriptButton);
 
             resetSampleScriptButton = document.createElement('button');
             resetSampleScriptButton.id = 'reset-sample-script';
@@ -336,6 +346,7 @@
             resetSampleScriptButton.style.display = 'none';
             sampleScriptField.parentNode.appendChild(resetSampleScriptButton);
 
+            saveSampleScriptButton.addEventListener('click', finishEditingSampleScript);
             resetSampleScriptButton.addEventListener('click', resetSampleScript);
 
             const savedScript = GM_getValue(`script-${jobId}`);
