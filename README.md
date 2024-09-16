@@ -23,7 +23,7 @@ any website you visit.
    For example, Google Chrome and Microsoft Edge require Developer Mode to be enabled.
    (See https://www.tampermonkey.net/faq.php?locale=en#Q209)
 3. To install this Userscript, visit
-   https://github.com/jonathankellyva/vdc-helper/raw/main/vdc-helper.user.js
+   https://github.com/jonathankellyva/vdc-helper/raw/stable/vdc-helper.user.js
 
 ### Features
 
