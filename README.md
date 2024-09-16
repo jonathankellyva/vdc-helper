@@ -47,6 +47,9 @@ any website you visit.
 * Display controls for playing reference audio and video along with the Download links so that you
   can play them directly in the page rather than having to download them and open them separately.
 
+* Display reference/script PNG images directly in the page rather than having to download them and
+  open them separately.
+
 * Allow editing Sample Scripts by clicking on them.
   On Mac, hold Command and click on the script.
   On Windows, hold the Windows key and click on the script.

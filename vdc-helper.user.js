@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-15
+// @version      2024-09-16
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -575,6 +575,13 @@
                     player.style.display = 'block';
                     player.style.width = '100%';
                     file.appendChild(player);
+                }
+
+                if (filename.endsWith('.png')) {
+                    const img = document.createElement('img');
+                    img.src = downloadLink.href;
+                    img.style.marginTop = '10px';
+                    file.appendChild(img);
                 }
             }
         });
