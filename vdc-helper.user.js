@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-10-07
+// @version      2024-10-07.beta
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voices.com
-// @downloadURL  https://github.com/jonathankellyva/vdc-helper/raw/stable/vdc-helper.user.js
-// @updateURL    https://github.com/jonathankellyva/vdc-helper/raw/stable/vdc-helper.user.js
+// @downloadURL  https://github.com/jonathankellyva/vdc-helper/raw/beta/vdc-helper.user.js
+// @updateURL    https://github.com/jonathankellyva/vdc-helper/raw/beta/vdc-helper.user.js
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_listValues
