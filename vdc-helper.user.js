@@ -8,6 +8,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voices.com
 // @downloadURL  https://github.com/jonathankellyva/vdc-helper/raw/beta/vdc-helper.user.js
 // @updateURL    https://github.com/jonathankellyva/vdc-helper/raw/beta/vdc-helper.user.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -610,7 +611,7 @@
 
     function documentClick(event) {
         if (event.metaKey) {
-            makeScriptEditable(event.target);
+            openScriptEditor(event.target);
         }
     }
 
@@ -623,7 +624,7 @@
     }
 
     function handleLongPress(event) {
-        makeScriptEditable(event.target);
+        openScriptEditor(event.target);
     }
 
     function isSpecialKeyHeld(event) {
@@ -642,7 +643,8 @@
     let resetSampleScriptButton = null;
     let editingSampleScript = false;
 
-    const sampleScriptContainer = document.getElementById('readmore-script-content');
+    const additionalDetails = document.getElementById('additionalDetails');
+    let sampleScriptContainer = document.getElementById('readmore-script-content');
 
     function countWords(text) {
         const words = text.match(/\b[-a-zA-Z0-9'’]+\b/g);
@@ -738,9 +740,9 @@
         updateSampleScriptWordCounts();
     }
 
-    function saveSampleScript() {
+    function saveSampleScript(force) {
         const key = `script-${jobId}`;
-        if (originalSampleScriptText !== sampleScriptField.innerText) {
+        if (force || originalSampleScriptText !== sampleScriptField.innerText) {
             GM_setValue(key, sampleScriptTextarea.value);
         } else {
             GM_deleteValue(key);
@@ -772,7 +774,41 @@
 
     window.setTimeout(cleanUpOldSampleScripts, 30000);
 
-    function makeScriptEditable(target) {
+    function makeScriptEditable() {
+        if (sampleScriptField) {
+            if (!sampleScriptTextarea) {
+                sampleScriptTextarea = document.createElement('textarea');
+                sampleScriptTextarea.style.display = 'none';
+                sampleScriptTextarea.style.width = sampleScriptField.offsetWidth + 'px';
+                sampleScriptTextarea.style.height = sampleScriptField.offsetHeight + 'px';
+                sampleScriptTextarea.style.font = window.getComputedStyle(sampleScriptField).font;
+                sampleScriptField.parentNode.appendChild(sampleScriptTextarea);
+            }
+
+            sampleScriptTextarea.addEventListener('keydown', onSampleScriptKeyDown);
+            sampleScriptTextarea.addEventListener('input', onSampleScriptUpdated);
+
+            saveSampleScriptButton = document.createElement('button');
+            saveSampleScriptButton.id = 'save-sample-script';
+            saveSampleScriptButton.textContent = 'Save';
+            saveSampleScriptButton.style.marginTop = '10px';
+            saveSampleScriptButton.style.marginRight = '10px';
+            saveSampleScriptButton.style.display = 'none';
+            sampleScriptField.parentNode.appendChild(saveSampleScriptButton);
+
+            resetSampleScriptButton = document.createElement('button');
+            resetSampleScriptButton.id = 'reset-sample-script';
+            resetSampleScriptButton.textContent = 'Reset';
+            resetSampleScriptButton.style.marginTop = '10px';
+            resetSampleScriptButton.style.display = 'none';
+            sampleScriptField.parentNode.appendChild(resetSampleScriptButton);
+
+            saveSampleScriptButton.addEventListener('click', finishEditingSampleScript);
+            resetSampleScriptButton.addEventListener('click', resetSampleScript);
+        }
+    }
+
+    function openScriptEditor(target) {
         if (target === sampleScriptField) {
             prevSampleScriptText = sampleScriptField.innerText;
 
@@ -804,6 +840,60 @@
 
             // don't actually replace with a link if it wasn't a valid URL
             return match;
+        });
+    }
+
+    function addSampleScriptContainerIfNecessary() {
+        if (additionalDetails && !sampleScriptContainer) {
+            sampleScriptContainer = document.createElement('div');
+            sampleScriptContainer.id = 'readmore-script-content';
+            sampleScriptContainer.className = 'readmore-container readmore-container-wrapped';
+            sampleScriptContainer.setAttribute('aria-expanded', 'true');
+
+            sampleScriptField = document.createElement('p');
+            sampleScriptField.className = 'text-grey1 text-sm readmore-content';
+
+            sampleScriptContainer.appendChild(sampleScriptField);
+            additionalDetails.appendChild(sampleScriptContainer);
+        }
+
+        makeScriptEditable();
+    }
+
+    function loadDocxTextIntoSampleScript(arrayBuffer) {
+        mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+            .then(function(result) {
+                const textContent = result.value.trim()
+                    .replaceAll(/\n\n/g, "\n")
+                    .replaceAll(/\n{3,}/g, "\n\n");
+
+                addSampleScriptContainerIfNecessary();
+                sampleScriptField.innerText = textContent;
+                sampleScriptTextarea.value = textContent;
+                originalSampleScriptText = textContent;
+                saveSampleScript(true);
+                onSampleScriptUpdated();
+            })
+            .catch(function(err) {
+                console.error("Error extracting raw text from DOCX:", err);
+            });
+    }
+
+    function fetchDocxFile(url) {
+        GM.xmlHttpRequest({
+            method: "GET",
+            url: url,
+            responseType: "arraybuffer",
+            onload: function(response) {
+                if (response.status === 200) {
+                    loadDocxTextIntoSampleScript(response.response);
+                } else {
+                    console.error("Error fetching DOCX file:", response.statusText);
+                }
+            },
+            onerror: function(err) {
+                console.error("Failed to fetch DOCX file:", err);
+            }
         });
     }
 
@@ -943,38 +1033,16 @@
         // Allow editing Sample Scripts by clicking on them.
 
         sampleScriptField = document.querySelector('p.readmore-content');
-        if (sampleScriptField) {
-            originalSampleScriptText = sampleScriptField.innerText;
+        addSampleScriptContainerIfNecessary();
 
-            sampleScriptTextarea = document.createElement('textarea');
-            sampleScriptTextarea.style.display = 'none';
-            sampleScriptTextarea.style.width = sampleScriptField.offsetWidth + 'px';
-            sampleScriptTextarea.style.height = sampleScriptField.offsetHeight + 'px';
-            sampleScriptTextarea.style.font = window.getComputedStyle(sampleScriptField).font;
-            sampleScriptField.parentNode.appendChild(sampleScriptTextarea);
+        const savedScript = GM_getValue(`script-${jobId}`);
+        if (savedScript) {
+            if (sampleScriptField.innerText) {
+                originalSampleScriptText = sampleScriptField.innerText;
+            } else {
+                originalSampleScriptText = savedScript;
+            }
 
-            sampleScriptTextarea.addEventListener('keydown', onSampleScriptKeyDown);
-            sampleScriptTextarea.addEventListener('input', onSampleScriptUpdated);
-
-            saveSampleScriptButton = document.createElement('button');
-            saveSampleScriptButton.id = 'save-sample-script';
-            saveSampleScriptButton.textContent = 'Save';
-            saveSampleScriptButton.style.marginTop = '10px';
-            saveSampleScriptButton.style.marginRight = '10px';
-            saveSampleScriptButton.style.display = 'none';
-            sampleScriptField.parentNode.appendChild(saveSampleScriptButton);
-
-            resetSampleScriptButton = document.createElement('button');
-            resetSampleScriptButton.id = 'reset-sample-script';
-            resetSampleScriptButton.textContent = 'Reset';
-            resetSampleScriptButton.style.marginTop = '10px';
-            resetSampleScriptButton.style.display = 'none';
-            sampleScriptField.parentNode.appendChild(resetSampleScriptButton);
-
-            saveSampleScriptButton.addEventListener('click', finishEditingSampleScript);
-            resetSampleScriptButton.addEventListener('click', resetSampleScript);
-
-            const savedScript = GM_getValue(`script-${jobId}`);
             if (savedScript) {
                 sampleScriptField.innerText = savedScript;
                 sampleScriptTextarea.value = savedScript;
@@ -1185,6 +1253,27 @@
                     img.src = downloadLink.href;
                     img.style.marginTop = '10px';
                     file.appendChild(img);
+                }
+
+                // For DOCX files, add a "Load" link that will try to load the raw text of the doc
+                // into the Sample Script field.
+
+                if (filename.endsWith('.docx')) {
+                    const fileLinks = file.querySelector('.file-details-box-links');
+                    const loadLink = document.createElement('a');
+                    const separator = document.createTextNode(' | ');
+
+                    loadLink.href = 'about:blank';
+                    loadLink.target = '_blank';
+                    loadLink.innerText = 'Load';
+                    loadLink.addEventListener('click', function (event) {
+                        fetchDocxFile(downloadLink.href);
+                        event.preventDefault();
+                        return false;
+                    });
+
+                    fileLinks.insertBefore(separator, downloadLink);
+                    fileLinks.insertBefore(loadLink, separator);
                 }
             }
         });
