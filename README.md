@@ -14,7 +14,7 @@ For a list of new changes made in each version, see
    For example, Google Chrome and Microsoft Edge require Developer Mode to be enabled.
    (See https://www.tampermonkey.net/faq.php?locale=en#Q209)
 3. To install this Userscript, visit
-   https://github.com/jonathankellyva/vdc-helper/raw/stable/vdc-helper.user.js
+   https://github.com/jonathankellyva/vdc-helper/raw/beta/vdc-helper.user.js
 
 ### Contributing
 
