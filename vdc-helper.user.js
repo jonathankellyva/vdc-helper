@@ -558,6 +558,26 @@
                 }
             }
         }
+
+        // Display controls for playing reference audio and video along with the Download links.
+
+        Array.from(document.querySelectorAll('.file-details-box')).forEach(file => {
+            const filenameField = file.querySelector('.file-details-box-filename');
+            const downloadLink = file.querySelector('a');
+            if (filenameField && downloadLink && downloadLink.innerText === 'Download') {
+                const filename = filenameField.innerText;
+                const isAudio = filename.endsWith('.mp3') || filename.endsWith('.wav');
+                const isVideo = filename.endsWith('.mp4');
+                if (isAudio || isVideo) {
+                    const player = document.createElement(isAudio ? 'audio' : 'video');
+                    player.controls = true;
+                    player.src = downloadLink.href;
+                    player.style.display = 'block';
+                    player.style.width = '100%';
+                    file.appendChild(player);
+                }
+            }
+        });
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.

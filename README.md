@@ -44,6 +44,9 @@ any website you visit.
 
 * Hide Performance Details sections that just say "N/A" anyway.
 
+* Display controls for playing reference audio and video along with the Download links so that you
+  can play them directly in the page rather than having to download them and open them separately.
+
 * Allow editing Sample Scripts by clicking on them.
   On Mac, hold Command and click on the script.
   On Windows, hold the Windows key and click on the script.
