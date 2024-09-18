@@ -9,6 +9,7 @@
 // @downloadURL  https://github.com/jonathankellyva/vdc-helper/raw/beta/vdc-helper.user.js
 // @updateURL    https://github.com/jonathankellyva/vdc-helper/raw/beta/vdc-helper.user.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -21,6 +22,8 @@
 
 (function () {
     'use strict';
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
 
     const style = document.createElement('style');
     style.textContent = `
@@ -897,6 +900,42 @@
         });
     }
 
+    function loadRawTextIntoSampleScript(textContent) {
+        addSampleScriptContainerIfNecessary();
+        sampleScriptField.innerText = textContent;
+        sampleScriptTextarea.value = textContent;
+        originalSampleScriptText = textContent;
+        saveSampleScript(true);
+        onSampleScriptUpdated();
+    }
+
+    function extractRawTextFromPdf(url) {
+        pdfjsLib.getDocument(url).promise
+            .then(function(pdf) {
+                let textContent = '';
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    pdf.getPage(i).then(function(page) {
+                        page.getTextContent().then(function(text) {
+                            text.items.forEach(function(item) {
+                                textContent += item.str + ' ';
+                            });
+
+                            if (i === pdf.numPages) {
+                                textContent = textContent.trim()
+                                    .replaceAll(/\n\n/g, "\n")
+                                    .replaceAll(/\n{3,}/g, "\n\n");
+                                loadRawTextIntoSampleScript(textContent);
+                            }
+                        });
+                    });
+                }
+            })
+            .catch(function(err) {
+                console.error("Error extracting raw text from PDF:", err);
+            });
+    }
+
     function abbreviateLocation(location) {
         const abbreviations = {
             "Alabama": "AL",
@@ -1235,46 +1274,56 @@
 
         Array.from(document.querySelectorAll('.file-details-box')).forEach(file => {
             const filenameField = file.querySelector('.file-details-box-filename');
-            const downloadLink = file.querySelector('a');
-            if (filenameField && downloadLink && downloadLink.innerText === 'Download') {
-                const filename = filenameField.innerText;
-                const isAudio = filename.endsWith('.mp3') || filename.endsWith('.m4a') || filename.endsWith('.wav');
-                const isVideo = filename.endsWith('.mp4');
-                const isImage = filename.endsWith('.png') || filename.endsWith('.jpg') || filename.endsWith('.jpeg');
-                if (isAudio || isVideo) {
-                    const player = document.createElement(isAudio ? 'audio' : 'video');
-                    player.controls = true;
-                    player.src = downloadLink.href;
-                    player.style.display = 'block';
-                    player.style.width = '100%';
-                    file.appendChild(player);
-                } else if (isImage) {
-                    const img = document.createElement('img');
-                    img.src = downloadLink.href;
-                    img.style.marginTop = '10px';
-                    file.appendChild(img);
-                }
+            if (filenameField) {
+                Array.from(file.querySelectorAll('a'))
+                    .filter(a => a.innerText === 'Download').forEach(downloadLink => {
+                    const filename = filenameField.innerText;
+                    const isAudio = filename.endsWith('.mp3') || filename.endsWith('.m4a') || filename.endsWith('.wav');
+                    const isVideo = filename.endsWith('.mp4');
+                    const isImage = filename.endsWith('.png') || filename.endsWith('.jpg') || filename.endsWith('.jpeg');
+                    const isDocument = filename.endsWith('.docx') || filename.endsWith('.pdf');
 
-                // For DOCX files, add a "Load" link that will try to load the raw text of the doc
-                // into the Sample Script field.
+                    if (isAudio || isVideo) {
+                        const player = document.createElement(isAudio ? 'audio' : 'video');
+                        player.controls = true;
+                        player.src = downloadLink.href;
+                        player.style.display = 'block';
+                        player.style.width = '100%';
+                        file.appendChild(player);
+                    }
+                    
+                    if (isImage) {
+                        const img = document.createElement('img');
+                        img.src = downloadLink.href;
+                        img.style.marginTop = '10px';
+                        file.appendChild(img);
+                    }
 
-                if (filename.endsWith('.docx')) {
-                    const fileLinks = file.querySelector('.file-details-box-links');
-                    const loadLink = document.createElement('a');
-                    const separator = document.createTextNode(' | ');
+                    // For DOCX and PDF files, add a "Load" link that will try to load the raw text of
+                    // the doc into the Sample Script field.
 
-                    loadLink.href = 'about:blank';
-                    loadLink.target = '_blank';
-                    loadLink.innerText = 'Load';
-                    loadLink.addEventListener('click', function (event) {
-                        fetchDocxFile(downloadLink.href);
-                        event.preventDefault();
-                        return false;
-                    });
+                    if (isDocument) {
+                        const fileLinks = file.querySelector('.file-details-box-links');
+                        const loadLink = document.createElement('a');
+                        const separator = document.createTextNode(' | ');
 
-                    fileLinks.insertBefore(separator, downloadLink);
-                    fileLinks.insertBefore(loadLink, separator);
-                }
+                        loadLink.href = 'about:blank';
+                        loadLink.target = '_blank';
+                        loadLink.innerText = 'Load';
+                        loadLink.addEventListener('click', function (event) {
+                            if (filename.endsWith('.docx')) {
+                                fetchDocxFile(downloadLink.href);
+                            } else {
+                                extractRawTextFromPdf(downloadLink.href);
+                            }
+                            event.preventDefault();
+                            return false;
+                        });
+
+                        fileLinks.insertBefore(separator, downloadLink);
+                        fileLinks.insertBefore(loadLink, separator);
+                    }
+                });
             }
         });
 
