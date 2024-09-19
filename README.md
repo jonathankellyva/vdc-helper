@@ -5,13 +5,13 @@ It is intended to be used with a browser plugin called Tampermonkey.
 
 From the Tampermonkey website:
 
-Tampermonkey is one of the most popular browser extension with over 10 million users. It's available
-for Chrome, Microsoft Edge, Safari, Opera Next, and Firefox.
-
-It allows its users to customize and enhance the functionality of your favorite web pages.
-Userscripts are small JavaScript programs that can be used to add new features or modify existing
-ones on web pages. With Tampermonkey, you can easily create, manage, and run these userscripts on
-any website you visit.
+>Tampermonkey is one of the most popular browser extension with over 10 million users. It's
+>available for Chrome, Microsoft Edge, Safari, Opera Next, and Firefox.
+>
+>It allows its users to customize and enhance the functionality of your favorite web pages.
+>Userscripts are small JavaScript programs that can be used to add new features or modify existing
+>ones on web pages. With Tampermonkey, you can easily create, manage, and run these userscripts on
+>any website you visit.
 
 ### Installation
 
