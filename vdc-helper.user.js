@@ -11,6 +11,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_openInTab
 // ==/UserScript==
 
 // See https://github.com/jonathankellyva/vdc-helper for more information.
@@ -39,6 +40,19 @@
         }
     `;
     document.head.appendChild(style);
+
+    const prevVersion = GM_getValue('scriptVersion');
+    const currVersion = GM_info.script.version;
+
+    if (prevVersion !== currVersion) {
+        if (prevVersion) {
+            GM_openInTab('https://github.com/jonathankellyva/vdc-helper/wiki/What\'s-New', {active: false});
+            window.setTimeout(() => {
+                window.focus();
+            }, 500);
+        }
+        GM_setValue('scriptVersion', currVersion);
+    }
 
     const LONG_PRESS_DURATION = 500; // only for mobile
 
