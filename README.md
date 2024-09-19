@@ -25,6 +25,14 @@ any website you visit.
 3. To install this Userscript, visit
    https://github.com/jonathankellyva/vdc-helper/raw/stable/vdc-helper.user.js
 
+### Contributing
+
+This tool is completely free and open source, but if you would like to
+[send me a tip](https://tiptopjar.com/jskva), I would really appreciate it!
+
+Thank you,
+<br />Jonathan Kelly
+
 ### Features
 
 #### Job Details Page
