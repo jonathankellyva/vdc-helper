@@ -10,6 +10,7 @@
 // @updateURL    https://github.com/jonathankellyva/vdc-helper/raw/stable/vdc-helper.user.js
 // @grant        GM_deleteValue
 // @grant        GM_getValue
+// @grant        GM_listValues
 // @grant        GM_setValue
 // @grant        GM_openInTab
 // @grant        GM.xmlHttpRequest
@@ -246,6 +247,31 @@
             GM_deleteValue(key);
         }
     }
+
+    function cleanUpOldSampleScripts() {
+        loadSavedJobData();
+
+        if (savedJobData) {
+            const keys = GM_listValues();
+
+            keys.filter(key => key.startsWith('script-')).forEach(key => {
+                const jobIdPattern = /^script-([0-9]+)$/;
+                const match = key.match(jobIdPattern);
+
+                if (match) {
+                    const id = match[1];
+                    if (id !== jobId) {
+                        const job = savedJobData.jobs[id];
+                        if (!job || job.status === 'Completed' || job.status === 'Canceled') {
+                            GM_deleteValue(`script-${id}`);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    window.setTimeout(cleanUpOldSampleScripts, 30000);
 
     function makeScriptEditable(target) {
         if (target === sampleScriptField) {
