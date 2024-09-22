@@ -38,8 +38,27 @@
             width: 16px;
             height: 16px;
         }
+        
+        .clipboard-notification {
+            position: absolute;
+            background-color: #ffffe1;
+            color: black;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            padding: 4px 8px;
+            border: 1px solid #c0c0c0;
+            border-radius: 4px;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
     `;
     document.head.appendChild(style);
+
+    const isMac = navigator.platform.toLowerCase().indexOf('mac') >= 0;
+    const specialKey = isMac ? 'command' : 'control';
 
     const prevVersion = GM_getValue('scriptVersion');
     const currVersion = GM_info.script.version;
@@ -314,16 +333,39 @@
                 jobId = jobIdMatch[1];
                 const jobIdAndTitle = `${jobId} - ${jobTitle}`;
 
+                function copyToClipboardAndNotify(text, event) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        const notification = document.createElement('div');
+                        notification.textContent = 'Copied to clipboard: ' + text;
+                        notification.className = 'clipboard-notification';
+                        notification.style.left = event.pageX + 'px';
+                        notification.style.top = event.pageY + 'px';
+                        document.body.appendChild(notification);
+
+                        window.setTimeout(function() {
+                            notification.style.opacity = '0%';
+                        }, 1500);
+
+                        window.setTimeout(function() {
+                            notification.remove();
+                        }, 2000);
+                    });
+                }
+
                 function onClickJobTitle(event) {
-                    navigator.clipboard.writeText(isSpecialKeyHeld(event) ? jobIdAndTitle : jobTitle);
+                    copyToClipboardAndNotify(isSpecialKeyHeld(event) ? jobIdAndTitle : jobTitle, event);
                 }
 
                 function onClickJobId(event) {
-                    navigator.clipboard.writeText(isSpecialKeyHeld(event) ? jobIdAndTitle : jobId);
+                    copyToClipboardAndNotify(isSpecialKeyHeld(event) ? jobIdAndTitle : jobId, event);
                 }
 
+                const specialClickNote = `\n(or ${specialKey}-click to copy both,\nlike "12345 - Job Title")`;
+
+                jobTitleElement.title = 'Click to copy Job Title to clipboard' + specialClickNote;
                 jobTitleElement.style.cursor = 'pointer';
                 jobTitleElement.addEventListener('click', onClickJobTitle);
+                jobIdElement.title = 'Click to copy Job ID to clipboard' + specialClickNote;
                 jobIdElement.style.cursor = 'pointer';
                 jobIdElement.addEventListener('click', onClickJobId);
             }
