@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-16
+// @version      2024-09-26
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -12,6 +12,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_openInTab
+// @grant        GM.xmlHttpRequest
 // ==/UserScript==
 
 // See https://github.com/jonathankellyva/vdc-helper for more information.
@@ -105,7 +106,7 @@
         return isSpecialKeyHeld(event) || event.shiftKey;
     }
 
-    let sampleScriptField = null;
+    let sampleScriptField = document.querySelector('p.readmore-content');
     let sampleScriptTextarea = null;
     let originalSampleScriptText = null;
     let prevSampleScriptText = null;
@@ -120,28 +121,31 @@
         return words ? words.length : 0;
     }
 
+    function getSampleScriptHeader() {
+        const additionalDetails = document.getElementById('additionalDetails');
+        return Array.from(additionalDetails.querySelectorAll('h5'))
+            .find(el => el.innerText.startsWith('Sample Script'));
+    }
+
     function updateSampleScriptWordCounts() {
-        if (sampleScriptField) {
-            const additionalDetails = document.getElementById('additionalDetails');
-            Array.from(additionalDetails.querySelectorAll('h5'))
-                .filter(el => el.innerText.startsWith('Sample Script')).forEach(el => {
-                const text = editingSampleScript ? sampleScriptTextarea.value : sampleScriptField.innerText;
-                const totalWords = countWords(text);
-                if (totalWords > 1) {
-                    const selection = window.getSelection();
-                    const isSelectingSampleScript = sampleScriptContainer
-                        && sampleScriptContainer.contains(selection.anchorNode)
-                        && sampleScriptContainer.contains(selection.focusNode);
-                    const selectedWords = isSelectingSampleScript ? countWords(selection.toString()) : 0;
-                    if (selectedWords > 0) {
-                        el.innerText = `Sample Script (selected ${selectedWords} of ${totalWords} total words)`;
-                    } else {
-                        el.innerText = `Sample Script (${totalWords} words)`;
-                    }
+        const sampleScriptHeader = getSampleScriptHeader();
+        if (sampleScriptHeader && sampleScriptField) {
+            const text = editingSampleScript ? sampleScriptTextarea.value : sampleScriptField.innerText;
+            const totalWords = countWords(text);
+            if (totalWords > 1) {
+                const selection = window.getSelection();
+                const isSelectingSampleScript = sampleScriptContainer
+                    && sampleScriptContainer.contains(selection.anchorNode)
+                    && sampleScriptContainer.contains(selection.focusNode);
+                const selectedWords = isSelectingSampleScript ? countWords(selection.toString()) : 0;
+                if (selectedWords > 0) {
+                    sampleScriptHeader.innerText = `Sample Script (selected ${selectedWords} of ${totalWords} total words)`;
                 } else {
-                    el.innerText = 'Sample Script';
+                    sampleScriptHeader.innerText = `Sample Script (${totalWords} words)`;
                 }
-            });
+            } else {
+                sampleScriptHeader.innerText = 'Sample Script';
+            }
         }
     }
 
@@ -665,6 +669,35 @@
                 }
             }
         });
+
+        // For jobs that you've responded to, display the audition player above the sample script.
+
+        const sampleScriptHeader = getSampleScriptHeader();
+        if (sampleScriptHeader) {
+            GM.xmlHttpRequest({
+                method: 'GET',
+                url: `https://www.voices.com/talent/jobs/preview_response/${jobId}`,
+                onload: function (response) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(response.responseText, "text/html");
+                    const player = doc.getElementById('demo-player');
+
+                    if (player) {
+                        const header = document.createElement('h5');
+                        header.innerText = 'Your Audition';
+                        header.style.marginBottom = '5px';
+                        
+                        const source = player.querySelector('source');
+                        const audio = document.createElement('audio');
+                        audio.controls = true;
+                        audio.src = source.getAttribute('data-src');
+
+                        sampleScriptHeader.parentNode.insertBefore(audio, sampleScriptHeader);
+                        sampleScriptHeader.parentNode.insertBefore(header, audio);
+                    }
+                }
+            });
+        }
     }
 
     // When responding to a job, automatically fill in the max budget for the bid.

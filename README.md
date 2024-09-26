@@ -59,6 +59,10 @@ Thank you,
 * Display reference/script PNG images directly in the page rather than having to download them and
   open them separately.
 
+* For jobs you've responded to, add audio controls to play your audition right above the Sample
+  Script. This makes it much easier to play back your audition while reading the script without
+  having to open both the Job Details and My Response pages in separate tabs.
+
 * Allow editing Sample Scripts by clicking on them.
   On Mac, hold Command and click on the script.
   On Windows, hold the Windows key and click on the script.
