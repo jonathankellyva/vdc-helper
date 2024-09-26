@@ -238,7 +238,19 @@
         const urlPattern = /((?:https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{1,256}\.[a-zA-Z][a-zA-Z0-9]{1,5}\b([-a-zA-Z0-9()@:%_+.~#?&/=;]*[a-zA-Z0-9_#])?)/gi;
         el.innerHTML = el.innerHTML.replace(urlPattern, function (match, url) {
             const href = url.indexOf("://") > 0 ? url : 'https://' + url;
-            return `<a href="${href}" target="_blank">${url}</a>`;
+            try {
+                // Some things might look like a URL, according to the rudimentary regex above,
+                // but we confirm here that it is in fact a valid URL.
+                // One thing in particular that we don't want to match (but that still matches the
+                // above regex) is something like "foo...bar".
+                if (new URL(href).hostname.indexOf('..') < 0) {
+                    return `<a href="${href}" target="_blank">${url}</a>`;
+                }
+            } catch (_) {
+            }
+
+            // don't actually replace with a link if it wasn't a valid URL
+            return match;
         });
     }
 
