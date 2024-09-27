@@ -662,7 +662,7 @@
             const downloadLink = file.querySelector('a');
             if (filenameField && downloadLink && downloadLink.innerText === 'Download') {
                 const filename = filenameField.innerText;
-                const isAudio = filename.endsWith('.mp3') || filename.endsWith('.wav');
+                const isAudio = filename.endsWith('.mp3') || filename.endsWith('.m4a') || filename.endsWith('.wav');
                 const isVideo = filename.endsWith('.mp4');
                 if (isAudio || isVideo) {
                     const player = document.createElement(isAudio ? 'audio' : 'video');
