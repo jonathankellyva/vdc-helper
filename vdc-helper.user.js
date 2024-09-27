@@ -742,7 +742,7 @@
 
     function replacePreviewResponseLink(link) {
         const href = link.getAttribute('href');
-        const match = href && href.match(/\/talent\/jobs\/preview_response\/(\d+)/);
+        const match = href && href.match(/\/talent\/jobs\/preview_response\/(\d+)$/);
         if (match) {
             link.setAttribute('href', `/talent/jobs/posting/${match[1]}`);
         }
