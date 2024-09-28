@@ -87,6 +87,7 @@ Thank you,
 
 #### Job Response Editor
 
+* Allow selecting a response template that should be automatically filled in by default.
 * Automatically fill in the max budget for the bid.
 
 #### Statistics Page
@@ -107,7 +108,6 @@ Thank you,
 
 ### Upcoming Feature Ideas
 
-* When responding to a job, automatically pick the first response template.
 * For VoiceMatch <100%, I'd like to figure out a way to help you determine why it was <100%.
 * If possible, calculate the recommended GVAA rate range based on licensing details.
 * Popup notifications when you receive a new invitation/listen/shortlist/booking.

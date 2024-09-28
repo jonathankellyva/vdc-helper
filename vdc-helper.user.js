@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-26
+// @version      2024-09-29
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -54,6 +54,12 @@
             pointer-events: none;
             opacity: 1;
             transition: opacity 0.5s ease-out;
+        }
+        
+        .proposal-border-template-selected {
+            border-left: 8px solid rgb(240, 244, 247);
+            padding-left: 24px;
+            border-radius: 4px;
         }
     `;
     document.head.appendChild(style);
@@ -712,30 +718,143 @@
         }
     }
 
-    // When responding to a job, automatically fill in the max budget for the bid.
+    const defaultTemplateCheckbox = document.createElement('input');
+    const defaultTemplateCheckboxLabel = document.createElement('label');
+    const templateChoicesDropdown = document.querySelector('div.choices');
+    const templateSelector = document.querySelector('.choices__list--single');
+    const selectedTemplateItem = templateSelector ? templateSelector.querySelector('.choices__item') : null;
+    const proposalBorderWrap = document.querySelector('div.border-wrap');
+    const notes = document.getElementById('notes');
+    const liveSessionPolicy = document.getElementById('lds_policy');
+    const revisionPolicy = document.getElementById('revision_policy');
+
+    let selectedTemplateId = null;
 
     if (window.location.pathname.startsWith('/talent/jobs/response')) {
-        window.addEventListener('load', function () {
-            let maxBudget = 0;
-            const jobHighlights = document.querySelector('#job-highlights');
-            if (jobHighlights) {
-                let fields = jobHighlights.querySelectorAll('span');
-                let budgetPattern = /(?:\$\d+ - )?\$(\d+)/;
-                fields.forEach(function (field) {
-                    let text = field.textContent.trim();
-                    let match = text.match(budgetPattern);
-                    if (match) {
-                        maxBudget = match[1];
+        // Allow selecting a response template that should be automatically filled in by default.
+
+        const defaultTemplateId = GM_getValue('default-template-id');
+
+        if (templateChoicesDropdown && templateSelector && selectedTemplateItem) {
+            defaultTemplateCheckbox.id = 'default-template-checkbox';
+            defaultTemplateCheckbox.type = 'checkbox';
+            defaultTemplateCheckbox.checked = (defaultTemplateId || '') !== '';
+            defaultTemplateCheckbox.style.display = 'none';
+            defaultTemplateCheckboxLabel.style.display = 'none';
+            defaultTemplateCheckboxLabel.style.marginLeft = '5px';
+            defaultTemplateCheckboxLabel.setAttribute('for', defaultTemplateCheckbox.id);
+            defaultTemplateCheckboxLabel.innerText = 'Automatically use this template by default';
+
+            defaultTemplateCheckbox.addEventListener('change', event => {
+                if (event.target.checked) {
+                    GM_setValue('default-template-id', selectedTemplateId);
+                } else {
+                    GM_deleteValue('default-template-id');
+                }
+            });
+
+            templateChoicesDropdown.parentNode.appendChild(defaultTemplateCheckbox);
+            templateChoicesDropdown.parentNode.appendChild(defaultTemplateCheckboxLabel);
+
+            const onTemplateSelected = (mutationsList, observer) => {
+                mutationsList.forEach(mutation => {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(node => {
+                            selectedTemplateId = node.getAttribute('data-value');
+
+                            const templateSelected = (selectedTemplateId || '') !== '';
+                            const defaultTemplateId = GM_getValue('default-template-id');
+
+                            defaultTemplateCheckbox.checked = selectedTemplateId === defaultTemplateId;
+                            defaultTemplateCheckbox.style.display = templateSelected ? 'inline' : 'none';
+                            defaultTemplateCheckboxLabel.style.display = templateSelected ? 'inline' : 'none';
+
+                            if (!templateSelected) {
+                                notes.value = '';
+                                revisionPolicy.value = '';
+                                if (liveSessionPolicy) {
+                                    liveSessionPolicy.value = '';
+                                }
+                            }
+
+                            if (proposalBorderWrap) {
+                                if (templateSelected) {
+                                    proposalBorderWrap.classList.add('proposal-border-template-selected');
+                                } else {
+                                    proposalBorderWrap.classList.remove('proposal-border-template-selected');
+                                    proposalBorderWrap.style = '';
+                                }
+                            }
+                        });
+                    }
+                });
+            };
+
+            const templateObserver = new MutationObserver(onTemplateSelected);
+
+            templateObserver.observe(templateSelector, { childList: true });
+
+            if (defaultTemplateId && notes && revisionPolicy && notes.value === '') {
+                GM.xmlHttpRequest({
+                    method: 'GET',
+                    url: `https://www.voices.com/talent/jobs/member_template/${defaultTemplateId}`,
+                    onload: function (response) {
+                        if (response.responseText) {
+                            const responseData = JSON.parse(response.responseText);
+                            if (responseData.status === 'success' && responseData.data) {
+                                notes.value = responseData.data.template || '';
+                                revisionPolicy.value = responseData.data.revision_policy || '';
+                                if (liveSessionPolicy) {
+                                    liveSessionPolicy.value = responseData.data.lds_policy || '';
+                                }
+
+                                defaultTemplateCheckbox.checked = true;
+                                defaultTemplateCheckbox.style.display = 'inline';
+                                defaultTemplateCheckboxLabel.style.display = 'inline';
+
+                                selectedTemplateItem.classList.remove('choices__placeholder');
+                                selectedTemplateItem.innerText = responseData.data.title;
+
+                                if (proposalBorderWrap
+                                    && !proposalBorderWrap.classList.contains('proposal-border-template-selected')) {
+                                    proposalBorderWrap.classList.add('proposal-border-template-selected')
+                                }
+
+                                const deleteButton = document.createElement('button');
+                                deleteButton.className = 'choices__button';
+                                deleteButton.setAttribute('aria-label', `Remove item: ${defaultTemplateId}`);
+                                deleteButton.setAttribute('data-button', '');
+                                deleteButton.textContent = 'Remove item';
+
+                                selectedTemplateItem.appendChild(deleteButton);
+                            }
+                        }
                     }
                 });
             }
+        }
 
-            const quoteField = document.querySelector('input[name="quote"]');
-            if (quoteField && !quoteField.value) {
-                quoteField.value = maxBudget;
-                quoteField.dispatchEvent(new Event('keyup'));
-            }
-        });
+        // When responding to a job, automatically fill in the max budget for the bid.
+
+        let maxBudget = 0;
+        const jobHighlights = document.querySelector('#job-highlights');
+        if (jobHighlights) {
+            let fields = jobHighlights.querySelectorAll('span');
+            let budgetPattern = /(?:\$\d+ - )?\$(\d+)/;
+            fields.forEach(function (field) {
+                let text = field.textContent.trim();
+                let match = text.match(budgetPattern);
+                if (match) {
+                    maxBudget = match[1];
+                }
+            });
+        }
+
+        const quoteField = document.querySelector('input[name="quote"]');
+        if (quoteField && !quoteField.value) {
+            quoteField.value = maxBudget;
+            quoteField.dispatchEvent(new Event('keyup'));
+        }
     }
 
     // Link to the original job postings rather than to your response.
