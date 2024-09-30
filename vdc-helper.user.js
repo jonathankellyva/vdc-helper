@@ -580,7 +580,7 @@
 
         // Embed YouTube videos directly into the page.
 
-        const youtubeLinkPattern = /https:\/\/(?:www\.)?youtube.com\/watch\?v=([-_a-zA-Z0-9]+)(&.*)?/;
+        const youtubeLinkPattern = /https:\/\/(?:www\.)?(?:youtube.com\/watch\?v=|youtu\.be\/)([-_a-zA-Z0-9]+)(&.*)?/;
 
         Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
             Array.from(div.querySelectorAll('a')).forEach(a => {
