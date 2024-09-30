@@ -1,22 +1,13 @@
 ### Overview
 
-This is a Userscript that improves some of the user experience for the Voices.com website.
-It is intended to be used with a browser plugin called Tampermonkey.
-
-From the Tampermonkey website:
-
->Tampermonkey is one of the most popular browser extension with over 10 million users. It's
->available for Chrome, Microsoft Edge, Safari, Opera Next, and Firefox.
->
->It allows its users to customize and enhance the functionality of your favorite web pages.
->Userscripts are small JavaScript programs that can be used to add new features or modify existing
->ones on web pages. With Tampermonkey, you can easily create, manage, and run these userscripts on
->any website you visit.
+The Voices.com Helper is a script that improves the user interface of Voices.com in a number of ways.
+For a list of new changes made in each version, see
+[here](https://github.com/jonathankellyva/vdc-helper/wiki/What's-New).
 
 ### Installation
 
-1. Install the Tampermonkey browser plugin from https://tampermonkey.net
-   It works for Chrome, Microsoft Edge, Firefox, Safari, and Opera Next.
+1. Install the Tampermonkey browser plugin from https://tampermonkey.net  
+   It works for Chrome, Microsoft Edge, Firefox, Safari, and Opera Next.  
    On mobile, you can also use it with Firefox for Android by installing the plugin from
    https://addons.mozilla.org/en-US/android/addon/tampermonkey/
 2. Some browsers might require additional configuration for Tampermonkey to run Userscripts.
@@ -37,10 +28,10 @@ Thank you,
 
 #### Job Details Page
 
-* Clicking on the Job Title copies the Job Title to the clipboard.
-  Similarly, clicking the Job ID copies the Job ID to the clipboard.
+* Clicking on the Job Title copies the Job Title to the clipboard.  
+  Similarly, clicking the Job ID copies the Job ID to the clipboard.  
   Finally, holding down one of the shift/alt/option/windows/command/ctrl keys while clicking on
-  either the Job Title or Job ID will copy both the Job ID and Job Title to the clipboard.
+  either the Job Title or Job ID will copy both the Job ID and Job Title to the clipboard.  
   e.g., "12345 - Awesome Job". This can be useful when naming a project in your DAW.
 
 * Move Client Details to a single, compact line at the top of the page under the job title/ID.
@@ -63,10 +54,10 @@ Thank you,
   Script. This makes it much easier to play back your audition while reading the script without
   having to open both the Job Details and My Response pages in separate tabs.
 
-* Allow editing Sample Scripts by clicking on them.
-  On Mac, hold Command and click on the script.
-  On Windows, hold the Windows key and click on the script.
-  On mobile, long press on the script.
+* Allow editing Sample Scripts by clicking on them.  
+  On Mac, hold Command and click on the script.  
+  On Windows, hold the Windows key and click on the script.  
+  On mobile, long press on the script.  
   Edits are saved across page loads, but you can restore the original text with the Reset button.
 
 * Show the total number of words in the Sample Script.
@@ -82,10 +73,9 @@ Thank you,
 * In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
   Also, make ad licensing durations more concise and readable.
   (e.g., "0 Years: 0 Months: 5 Weeks" => "5 Weeks")
-  Add a GVAA Rate Guide link next to each ad, linking directly to the appropriate section for
-  some types of ads (currently Online, Radio, and TV).
+  Add a GVAA Rate Guide link next to each ad (currently supporting Online, Radio, and TV).
 
-* Highlight Live Directed Session tags (e.g., the little bubbles that say "Zoom", "Source Connect",
+* Highlight Live Directed Session tags (i.e., the little bubbles that say "Zoom", "Source Connect",
   etc.) in gold so that they stand out.
 
 #### Job Response Editor
