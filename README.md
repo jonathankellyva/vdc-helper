@@ -91,7 +91,11 @@ Thank you,
 #### Job Response Editor
 
 * Allow selecting a response template that should be automatically filled in by default.
+
 * Automatically fill in the max budget for the bid.
+
+* Highlight in-perp ads in red and other ads in green, and add GVAA links, just like is done on the
+  Job Details page.
 
 #### Statistics Page
 
