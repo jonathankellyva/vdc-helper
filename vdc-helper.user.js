@@ -670,6 +670,7 @@
                 const filename = filenameField.innerText;
                 const isAudio = filename.endsWith('.mp3') || filename.endsWith('.m4a') || filename.endsWith('.wav');
                 const isVideo = filename.endsWith('.mp4');
+                const isImage = filename.endsWith('.png') || filename.endsWith('.jpg') || filename.endsWith('.jpeg');
                 if (isAudio || isVideo) {
                     const player = document.createElement(isAudio ? 'audio' : 'video');
                     player.controls = true;
@@ -677,9 +678,7 @@
                     player.style.display = 'block';
                     player.style.width = '100%';
                     file.appendChild(player);
-                }
-
-                if (filename.endsWith('.png')) {
+                } else if (isImage) {
                     const img = document.createElement('img');
                     img.src = downloadLink.href;
                     img.style.marginTop = '10px';
