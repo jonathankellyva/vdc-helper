@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voices.com Helper
 // @namespace    http://jskva.com/
-// @version      2024-09-29
+// @version      2024-09-30
 // @description  Several improvements to the Voices.com website
 // @author       Jonathan Kelly <jskva@jskva.com>
 // @match        https://www.voices.com/*
@@ -444,6 +444,16 @@
         document.addEventListener('mouseup', updateSampleScriptWordCounts);
 
         updateSampleScriptWordCounts();
+        
+        // Highlight live directed session tags in gold.
+
+        Array.from(document.querySelectorAll('h5'))
+            .filter(el => el.innerText === 'Live Directed Session').forEach(ldsHeader => {
+                const ldsTag = ldsHeader.nextElementSibling;
+                if (ldsTag.nodeName === 'SPAN' && ldsTag.classList.contains('tag')) {
+                    ldsTag.style.backgroundColor = 'gold';
+                }
+            });
 
         // Highlight in-perp ads in red and other ads in green.
 
@@ -730,6 +740,13 @@
     let selectedTemplateId = null;
 
     if (window.location.pathname.startsWith('/talent/jobs/response')) {
+        // Highlight live directed session tags in gold on the response page.
+
+        Array.from(document.querySelectorAll('span.tag'))
+            .filter(el => el.innerText.startsWith('Live Directed Session')).forEach(ldsTag => {
+                ldsTag.style.backgroundColor = 'gold';
+            });
+    
         // Allow selecting a response template that should be automatically filled in by default.
 
         const defaultTemplateId = GM_getValue('default-template-id');

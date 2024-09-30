@@ -85,6 +85,9 @@ Thank you,
   Add a GVAA Rate Guide link next to each ad, linking directly to the appropriate section for
   some types of ads (currently Online, Radio, and TV).
 
+* Highlight Live Directed Session tags (e.g., the little bubbles that say "Zoom", "Source Connect",
+  etc.) in gold so that they stand out.
+
 #### Job Response Editor
 
 * Allow selecting a response template that should be automatically filled in by default.
