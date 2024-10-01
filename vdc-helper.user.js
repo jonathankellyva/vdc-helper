@@ -80,6 +80,10 @@
         GM_setValue('scriptVersion', currVersion);
     }
 
+    if (!GM_getValue('firstUseTimestamp')) {
+        GM_setValue('firstUseTimestamp', Date.now());
+    }
+
     const LONG_PRESS_DURATION = 500; // only for mobile
 
     let jobId = null;
