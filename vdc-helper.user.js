@@ -25,11 +25,6 @@
         .readmore-btn {
             display: none !important;
         }
-
-        #missing-info-alert {
-            border-color: darkred;
-            background-color: pink;
-        }
         
         a.gvaa-link {
             padding-left: 3px;
@@ -490,6 +485,14 @@
 
         if (sampleScriptContainer) {
             sampleScriptContainer.setAttribute('aria-expanded', 'true');
+        }
+        
+        // Make the "missing info" flagged job alert stand out more by making it red instead of blue.
+        
+        const missingInfoAlert = document.getElementById('missing-info-alert');
+        if (missingInfoAlert) {
+            missingInfoAlert.classList.remove('alert-info');
+            missingInfoAlert.classList.add('alert-danger');
         }
 
         // Hide Managed Services Payment Policy alert at the top of the page.
