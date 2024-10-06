@@ -56,6 +56,29 @@
             padding-left: 24px;
             border-radius: 4px;
         }
+        
+        .your-audition-container {
+            display: flex;
+            align-items: center;
+            line-height: 20px;
+        }
+        
+        .your-audition-player {
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 700px) {
+            .your-audition-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        
+            .your-audition-player {
+                width: 100%;
+                margin-right: 0px;
+                margin-bottom: 10px;
+            }
+        }
     `;
     document.head.appendChild(style);
 
@@ -657,14 +680,43 @@
                         const header = document.createElement('h5');
                         header.innerText = 'Your Audition';
                         header.style.marginBottom = '5px';
+
+                        const yourAuditionContainer = document.createElement('div');
+                        yourAuditionContainer.className = 'your-audition-container';
+                        
+                        const activityContainer = document.createElement('span');
+                        activityContainer.className = 'your-audition-activity';
                         
                         const source = player.querySelector('source');
                         const audio = document.createElement('audio');
                         audio.controls = true;
                         audio.src = source.getAttribute('data-src');
+                        audio.className = 'your-audition-player';
 
-                        sampleScriptHeader.parentNode.insertBefore(audio, sampleScriptHeader);
-                        sampleScriptHeader.parentNode.insertBefore(header, audio);
+                        yourAuditionContainer.appendChild(audio);
+                        yourAuditionContainer.appendChild(activityContainer);
+
+                        const listenedIcon = doc.querySelector('.fa-headphones-alt');
+                        if (listenedIcon) {
+                            const listenedActivity = listenedIcon.parentNode.parentNode.parentNode;
+                            listenedActivity.classList.remove('margin-top-medium');
+                            activityContainer.appendChild(listenedActivity);
+                        }
+
+                        const shortlistedIcon = doc.querySelector('.fa-thumbs-up');
+                        if (shortlistedIcon) {
+                            const shortlistedActivity = shortlistedIcon.parentNode.parentNode.parentNode;
+                            shortlistedActivity.classList.remove('margin-top-medium');
+                            activityContainer.appendChild(shortlistedActivity);
+
+                            Array.from(shortlistedActivity.querySelectorAll('div'))
+                                .filter(el => el.innerText.trim().startsWith('Added to a shortlist')).forEach(el => {
+                                    el.innerText = ' Shortlisted by the Client ';
+                                });
+                        }
+                        
+                        sampleScriptHeader.parentNode.insertBefore(yourAuditionContainer, sampleScriptHeader);
+                        sampleScriptHeader.parentNode.insertBefore(header, yourAuditionContainer);
                     }
                 }
             });

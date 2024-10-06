@@ -52,7 +52,8 @@ Thank you,
 
 * For jobs you've responded to, add audio controls to play your audition right above the Sample
   Script. This makes it much easier to play back your audition while reading the script without
-  having to open both the Job Details and My Response pages in separate tabs.
+  having to open both the Job Details and My Response pages in separate tabs. You can also see here
+  whether or not your audition was listened to and/or shortlisted by the client.
 
 * Allow editing Sample Scripts by clicking on them.  
   On Mac, hold Command and click on the script.  
