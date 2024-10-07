@@ -1,20 +1,43 @@
 ### Overview
 
-The Voices.com Helper is a script that improves the user interface of Voices.com in a number of ways.
-For a list of new changes made in each version, see
+The Voices.com Helper is an unofficial (i.e., not affiliated with or developed by Voices.com) browser extension that
+improves the user interface of Voices.com in a number of ways. For a list of new changes made in each version, see
 [here](https://github.com/jonathankellyva/vdc-helper/wiki/What's-New).
 
 ### Installation
 
-1. Install the Tampermonkey browser plugin from https://tampermonkey.net  
-   It works for Chrome, Microsoft Edge, Firefox, Safari, and Opera Next.  
-   On mobile, you can also use it with Firefox for Android by installing the plugin from
-   https://addons.mozilla.org/en-US/android/addon/tampermonkey/
-2. Some browsers might require additional configuration for Tampermonkey to run Userscripts.
-   For example, Google Chrome and Microsoft Edge require Developer Mode to be enabled.
-   (See https://www.tampermonkey.net/faq.php?locale=en#Q209)
-3. To install this Userscript, visit
-   https://github.com/jonathankellyva/vdc-helper/raw/stable/vdc-helper.user.js
+Each type of browser has their own repository for browser extensions. Please follow the instructions below
+for the browser you are using.
+
+#### Google Chrome
+
+Install the browser extension from the
+[Chrome Web Store](https://chromewebstore.google.com/detail/voicescom-helper/ehkgogjjjmhlibpmdnpabpocahhbfgni).
+
+#### Firefox
+
+Install the browser extension from the
+[Firefox Browser Add-ons site](https://addons.mozilla.org/en-US/firefox/addon/vdc-helper/).
+
+This extension also works on Firefox for Android, one of the only mobile browsers that supports
+browser extensions.
+
+#### Microsoft Edge
+
+(coming soon)
+
+#### Safari
+
+Unfortunately, the new browser extension is not yet available for Safari. Apple charges $99/year
+in order for me to have an Apple Developer account, which is required in order to publish a
+browser extension to the Safari Extensions Gallery. Since this is just a hobby for me, I cannot
+justify paying this annual fee only for the sake of making this plugin available.
+
+If there is enough demand for a browser plugin for Safari, and if I
+[receive enough tips](https://tiptopjar.com/jskva) to support the annual Apple Developer account
+fee, I can publish the extension to the Safari Extensions Gallery as well.
+
+In the meantime, please use one of the supported browsers above instead.
 
 ### Contributing
 
@@ -39,7 +62,6 @@ Thank you,
   client has, where they're from, etc.
 
 * Hide "Managed Services Payment Policy" block on the top of Job Details page.
-  Instead, add an icon next to job ID at top of the page.
 
 * Hide Performance Details sections that just say "N/A" anyway.
 
@@ -47,8 +69,8 @@ Thank you,
   can play them directly in the page rather than having to download them and open them separately.
   Similarly, if any YouTube links appear in the references, embed them directly into the page.
 
-* Display reference/script PNG images directly in the page rather than having to download them and
-  open them separately.
+* Similarly, display reference/script PNG/JPG images directly in the page rather than having to
+  download them and open them separately.
 
 * For jobs you've responded to, add audio controls to play your audition right above the Sample
   Script. This makes it much easier to play back your audition while reading the script without

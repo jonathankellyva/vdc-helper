@@ -1,0 +1,69 @@
+#proserve-policy-alert, .readmore-btn {
+    display: none !important;
+}
+
+span.non-perp-ad {
+    background-color: lightgreen;
+}
+
+span.in-perp-ad {
+    background-color: #ffc4b8;
+}
+
+span.live-directed-session {
+    background-color: gold;
+}
+
+a.gvaa-link {
+    padding-left: 3px;
+}
+
+img.gvaa-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.clipboard-notification {
+    position: absolute;
+    background-color: #ffffe1;
+    color: black;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.proposal-border-template-selected {
+    border-left: 8px solid rgb(240, 244, 247);
+    padding-left: 24px;
+    border-radius: 4px;
+}
+
+.your-audition-container {
+    display: flex;
+    align-items: center;
+    line-height: 20px;
+}
+
+.your-audition-player {
+    margin-right: 10px;
+}
+
+@media (max-width: 700px) {
+    .your-audition-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .your-audition-player {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
