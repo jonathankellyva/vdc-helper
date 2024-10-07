@@ -799,13 +799,13 @@
         let maxBudget = 0;
         const jobHighlights = document.querySelector('#job-highlights');
         if (jobHighlights) {
-            let fields = jobHighlights.querySelectorAll('span');
-            let budgetPattern = /(?:\$\d+ - )?\$(\d+)/;
+            const fields = jobHighlights.querySelectorAll('span');
+            const budgetPattern = /(?:\$[0-9,]+ - )?\$([0-9,]+)/;
             fields.forEach(function (field) {
-                let text = field.textContent.trim();
-                let match = text.match(budgetPattern);
+                const text = field.textContent.trim();
+                const match = text.match(budgetPattern);
                 if (match) {
-                    maxBudget = match[1];
+                    maxBudget = match[1].replaceAll(',', '');
                 }
             });
         }
