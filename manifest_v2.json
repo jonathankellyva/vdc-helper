@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Voices.com Helper",
-  "version": "0.0.0.1",
+  "version": "0.0.0.2",
   "description": "An unofficial browser extension that improves the user experience of Voices.com",
   "browser_specific_settings": {
     "gecko": {
@@ -9,7 +9,7 @@
       "strict_min_version": "109.0"
     }
   },
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "alarms", "notifications"],
   "browser_action": {
     "default_icon": {
       "16": "src/img/voices-icon-16x16.png",
@@ -80,6 +80,10 @@
       ],
       "js": [
         "src/shared/common.js",
+        "src/shared/storage.js",
+        "src/shared/notifications.js",
+        "src/shared/job-data.js",
+        "src/content/common/alerts-menu.js",
         "src/content/common/tags.js"
       ]
     }

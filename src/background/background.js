@@ -1,4 +1,8 @@
-importScripts('../shared/storage.js');
+importScripts(
+    '../shared/storage.js',
+    '../shared/notifications.js',
+    '../shared/job-data.js'
+);
 
 const currVersion = chrome.runtime.getManifest().version;
 
@@ -18,8 +22,20 @@ chrome.runtime.onInstalled.addListener(function() {
     });
 
     STORAGE_SYNC.set('version', currVersion);
+    
+    chrome.alarms.create('alarm', { periodInMinutes: 1 });
+
+    checkJobs();
+    popUpNewNotifications();
 });
 
 (chrome.action || chrome.browserAction).onClicked.addListener(function() {
     chrome.tabs.create({ url: 'https://voices.com' });
 });
+
+chrome.alarms.onAlarm.addListener(function(alarm) {
+    checkJobs();
+    popUpNewNotifications();
+});
+
+setInterval(popUpNewNotifications, 5000);

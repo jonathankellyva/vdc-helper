@@ -67,3 +67,50 @@ img.gvaa-icon {
         margin-bottom: 10px;
     }
 }
+
+.unread-alerts {
+    color: #D1462A;
+}
+
+#alerts-dropdown {
+    display: block;
+    position: absolute !important;
+    right: 0;
+    background-color: white;
+}
+
+#alerts-dropdown-list {
+    opacity: 1;
+    transform: none;
+}
+
+.alerts-menu-separator {
+    margin: 5px 0;
+}
+
+.notification-item {
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+.notification-link {
+    margin: 0 !important;
+}
+
+.notification-icon {
+    margin-right: 10px;
+}
+
+.notification-title {
+    display: inline;
+}
+
+.notification-body {
+    display: block;
+    margin: 8px 0 !important;
+    font-size: smaller;
+}
+
+.notification-unread {
+    font-weight: bold;
+}

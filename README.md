@@ -122,14 +122,17 @@ Thank you,
 
 #### Other
 
+* Pop up notifications when you receive a new job invitation or when a client listens to or
+  shortlists one of your auditions.
+
 * On the Answered Jobs page and in the Audition History of the Statistics page, link to the job
   posting rather than your response. Personally, I usually want to view the job posting rather than
   my response anyway, so I figured I might as well link to that by default.
 
 ### Upcoming Feature Ideas
 
+* Pop up notifications when you receive a booking.
 * For VoiceMatch <100%, I'd like to figure out a way to help you determine why it was <100%.
 * If possible, calculate the recommended GVAA rate range based on licensing details.
-* Popup notifications when you receive a new invitation/listen/shortlist/booking.
 * Show number of business days until Project Deadlines.
 * On Statistics page, allow sorting the Demo History table by each different column.
