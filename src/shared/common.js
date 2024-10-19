@@ -143,3 +143,107 @@ function replacePreviewResponseLinks(mutationsList) {
         }
     });
 }
+
+function getJobHighlights() {
+    const jobHighlights = document.getElementById('job-highlights');
+    if (jobHighlights) {
+        return jobHighlights;
+    }
+    const jobHighlightsHeader = Array.from(document.querySelectorAll('h4'))
+        .find(el => el.innerText.trim() === 'Job Highlights')
+    if (jobHighlightsHeader) {
+        return jobHighlightsHeader.nextElementSibling;
+    }
+}
+
+function getCategory() {
+    const jobHighlights = getJobHighlights();
+    let category = null;
+
+    if (jobHighlights) {
+        Array.from(jobHighlights.querySelectorAll('p')).forEach(el => {
+            if (el.innerText === 'Category') {
+                const categorySpan = el.parentNode.querySelector('span.text-dark');
+                if (categorySpan) {
+                    category = categorySpan.innerText.trim();
+                }
+            }
+        });
+    }
+    
+    return category;
+}
+
+function getBudget() {
+    let budgetField = null;
+    let minBudget = 0;
+    let maxBudget = 0;
+    const jobHighlights = getJobHighlights();
+    
+    if (jobHighlights) {
+        const fields = jobHighlights.querySelectorAll('span');
+        const budgetPattern = /(?:\$([0-9,]+) - )?\$([0-9,]+)/;
+        fields.forEach(function (field) {
+            const text = field.textContent.trim();
+            const match = text.match(budgetPattern);
+            if (match) {
+                budgetField = field;
+                minBudget = (match[1] || match[2]).replaceAll(',', '');
+                maxBudget = match[2].replaceAll(',', '');
+            }
+        });
+        
+        return {
+            field: budgetField,
+            min: minBudget,
+            max: maxBudget,
+        };
+    }
+}
+
+function getEstimatedLength() {
+    const jobHighlights = getJobHighlights();
+    let totalSecs = 0;
+
+    if (jobHighlights) {
+        Array.from(document.querySelectorAll('p')).forEach(el => {
+            if (el.innerText === 'Estimated Length') {
+                const lengthSpan = el.parentNode.querySelector('span.text-dark');
+                if (lengthSpan) {
+                    const lengthPattern = /(\d+)h: (\d+)m: (\d+)s/;
+                    const match = lengthSpan.innerText.match(lengthPattern);
+                    if (match) {
+                        const hours = parseInt(match[1]);
+                        const mins = parseInt(match[2]);
+                        const secs = parseInt(match[3]);
+                        totalSecs = hours * 3600 + mins * 60 + secs;
+                    }
+                }
+            }
+        });
+    }
+    
+    return {
+        totalHours: totalSecs / 3600,
+        totalMins: totalSecs / 60,
+        totalSecs: totalSecs,
+    };
+}
+
+function addPFHToBudgetIfApplicable() {
+    const category = getCategory();
+    const budget = getBudget();
+    const estimatedLengthInHours = getEstimatedLength().totalHours;
+
+    if (category === 'Audiobooks' && budget && budget.field && budget.max && estimatedLengthInHours) {
+        const pfhMin = Math.round(budget.min / estimatedLengthInHours);
+        const pfhMax = Math.round(budget.max / estimatedLengthInHours);
+        
+        if (pfhMax) {
+            const pfhField = document.createElement('div');
+            pfhField.className = 'text-xxs';
+            pfhField.innerText = pfhMin ? `(\$${pfhMin} - \$${pfhMax} PFH)` : `(\$${pfhMax} PFH)`;
+            budget.field.parentNode.insertBefore(pfhField, budget.field.nextSibling);
+        }
+    }
+}

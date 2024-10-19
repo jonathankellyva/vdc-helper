@@ -1,3 +1,18 @@
+let category = getCategory();
+
+Array.from(document.querySelectorAll('p')).forEach(el => {
+    if (el.innerText === 'Category') {
+        const categorySpan = el.parentNode.querySelector('span.text-dark');
+        if (categorySpan) {
+            category = categorySpan.innerText.trim();
+        }
+    }
+});
+
+const earningsField = document.querySelector('input[name="earnings"]');
+const quoteField = document.querySelector('input[name="quote"]');
+const budget = getBudget();
+
 // Highlight live directed session tags in gold on the response page.
 
 Array.from(document.querySelectorAll('span.tag'))
@@ -5,25 +20,52 @@ Array.from(document.querySelectorAll('span.tag'))
     ldsTag.classList.add('live-directed-session');
 });
 
-// When responding to a job, automatically fill in the max budget for the bid.
+// For audiobooks, display PFH rates next to Job Budget, Your Earnings, and Your Quote fields.
 
-let maxBudget = 0;
-const jobHighlights = document.querySelector('#job-highlights');
-if (jobHighlights) {
-    const fields = jobHighlights.querySelectorAll('span');
-    const budgetPattern = /(?:\$[0-9,]+ - )?\$([0-9,]+)/;
-    fields.forEach(function (field) {
-        const text = field.textContent.trim();
-        const match = text.match(budgetPattern);
-        if (match) {
-            maxBudget = match[1].replaceAll(',', '');
-        }
-    });
+const estimatedLengthInHours = getEstimatedLength().totalHours;
+if (category === 'Audiobooks' && earningsField && quoteField && budget && budget.max && estimatedLengthInHours) {
+    function updateQuotePFH() {
+        Array('earnings', 'quote').forEach(prefix => {
+            const inputField = prefix === 'earnings' ? earningsField : quoteField;
+
+            let pfhField = document.getElementById(`${prefix}-pfh`);
+            if (!pfhField) {
+                const inputGroup = document.getElementById(`${prefix}-input-group`);
+                if (inputGroup) {
+                    pfhField = document.createElement('div');
+                    pfhField.id = `${prefix}-pfh`;
+                    pfhField.className = 'text-grey2 text-sm margin-top-small margin-left-smallest';
+                    inputGroup.parentNode.appendChild(pfhField);
+                }
+            }
+
+            let pfhValue = 0;
+            if (inputField.value) {
+                pfhValue = Math.round(inputField.value / estimatedLengthInHours);
+            }
+            
+            if (pfhField) {
+                if (pfhValue) {
+                    pfhField.innerText = `(\$${pfhValue} PFH)`;
+                    pfhField.style.display = 'block';
+                } else {
+                    pfhField.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    earningsField.addEventListener('input', updateQuotePFH);
+    quoteField.addEventListener('input', updateQuotePFH);
+    window.setInterval(updateQuotePFH, 250);
 }
 
-const quoteField = document.querySelector('input[name="quote"]');
-if (quoteField && !quoteField.value) {
-    quoteField.value = maxBudget;
+addPFHToBudgetIfApplicable();
+
+// When responding to a job, automatically fill in the max budget for the bid.
+
+if (earningsField && !earningsField.value && quoteField && !quoteField.value && budget) {
+    quoteField.value = budget.max;
     quoteField.dispatchEvent(new Event('keyup'));
 }
 

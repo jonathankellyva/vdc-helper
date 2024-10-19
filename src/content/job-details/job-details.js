@@ -90,3 +90,7 @@ if (missingInfoAlert) {
 Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
     Array.from(div.querySelectorAll('p')).forEach(replaceLinks);
 });
+
+// For audiobooks, display PFH rates under Budget.
+
+addPFHToBudgetIfApplicable();

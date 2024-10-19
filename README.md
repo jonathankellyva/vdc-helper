@@ -93,6 +93,8 @@ Thank you,
   things like that, so it's helpful to be able to click them instead of having to copy-paste
   them into the address bar of a new tab.  Note that these links will open in a new tab.
 
+* For audiobooks, display PFH rates under the Budget in the Job Highlights.
+
 * In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
   Also, make ad licensing durations more concise and readable.
   (e.g., "0 Years: 0 Months: 5 Weeks" => "5 Weeks")
@@ -109,6 +111,9 @@ Thank you,
 
 * Highlight in-perp ads in red and other ads in green, and add GVAA links, just like is done on the
   Job Details page.
+
+* For audiobooks, display PFH rates under the Job Budget in the Job Highlights and under the
+  Your Earnings and Your Quote fields.
 
 #### Statistics Page
 
