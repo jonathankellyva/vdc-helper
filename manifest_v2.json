@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Voices.com Helper",
-  "version": "0.0.0.3",
+  "version": "0.0.1.0",
   "description": "An unofficial browser extension that improves the user experience of Voices.com",
   "browser_specific_settings": {
     "gecko": {
