@@ -45,11 +45,11 @@ function getNotificationTarget(data) {
 function getNotificationIcon(data) {
     switch (data.type) {
         case 'newjob':
-            return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/img/briefcase.png';
+            return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/src/img/briefcase.png';
         case 'listen':
-            return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/img/headphones.png';
+            return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/src/img/headphones.png';
         case 'shortlist':
-            return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/img/thumbs-up.png';
+            return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/src/img/thumbs-up.png';
     }
     return null;
 }
