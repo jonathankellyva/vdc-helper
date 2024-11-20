@@ -24,7 +24,8 @@ browser extensions.
 
 #### Microsoft Edge
 
-(coming soon)
+Install the browser extension from the
+[Microsoft Edge Add-Ons site](https://microsoftedge.microsoft.com/addons/detail/voicescom-helper/bekfnbcgjdeapfmnececgjkbhfdenaco).
 
 #### Safari
 
