@@ -43,50 +43,54 @@ function listJobs(jobs, requestData = {}, offset = 0, limit = 100) {
     })
         .then(response => response.text())
         .then(responseText => {
-            const responseData = JSON.parse(responseText);
-            if (responseData.status === 'success' && responseData.data) {
-                responseData.data.entities.forEach(job => {
-                    const oldData = jobs[job.id];
+            try {
+                const responseData = JSON.parse(responseText);
+                if (responseData.status === 'success' && responseData.data) {
+                    responseData.data.entities.forEach(job => {
+                        const oldData = jobs[job.id];
 
-                    let listened = filteringByListened;
-                    if (!listened && oldData && oldData.listened) {
-                        listened = true;
-                    }
-
-                    const jobData = {
-                        title: job.title,
-                        posted_at: job.posted_at,
-                        status: getJobStatus(job),
-                        answered: job.is_sent === 1,
-                        listened: listened,
-                        shortlisted: job.is_shortlisted === 1,
-                        closed: job.is_closed === 1,
-                    };
-
-                    if (oldData) {
-                        if (!oldData.listened && jobData.listened) {
-                            postNotification(createNotification('listen', job));
+                        let listened = filteringByListened;
+                        if (!listened && oldData && oldData.listened) {
+                            listened = true;
                         }
-                        if (!oldData.shortlisted && jobData.shortlisted) {
-                            postNotification(createNotification('shortlist', job));
+
+                        const jobData = {
+                            title: job.title,
+                            posted_at: job.posted_at,
+                            status: getJobStatus(job),
+                            answered: job.is_sent === 1,
+                            listened: listened,
+                            shortlisted: job.is_shortlisted === 1,
+                            closed: job.is_closed === 1,
+                        };
+
+                        if (oldData) {
+                            if (!oldData.listened && jobData.listened) {
+                                postNotification(createNotification('listen', job));
+                            }
+                            if (!oldData.shortlisted && jobData.shortlisted) {
+                                postNotification(createNotification('shortlist', job));
+                            }
+                        } else if (jobData.status === 'Hiring' && !jobData.answered) {
+                            postNotification(createNotification('newjob', job));
                         }
-                    } else if (jobData.status === 'Hiring' && !jobData.answered) {
-                        postNotification(createNotification('newjob', job));
+
+                        const keep = job.listened || job.shortlisted || job.answered || !job.closed;
+                        if (keep) {
+                            jobs[job.id] = jobData;
+                        } else {
+                            delete jobs[job.id];
+                        }
+                    });
+
+                    STORAGE_LOCAL.set('jobs', jobs)
+
+                    if (responseData.data.total > offset + limit) {
+                        listJobs(jobs, requestData, offset + limit, limit);
                     }
-
-                    const keep = job.listened || job.shortlisted || job.answered || !job.closed;
-                    if (keep) {
-                        jobs[job.id] = jobData;
-                    } else {
-                        delete jobs[job.id];
-                    }
-                });
-
-                STORAGE_LOCAL.set('jobs', jobs)
-
-                if (responseData.data.total > offset + limit) {
-                    listJobs(jobs, requestData, offset + limit, limit);
                 }
+            } catch (error) {
+                console.error(error);
             }
         });
 }
@@ -115,10 +119,30 @@ function listAnsweredJobs(savedJobData, listened) {
     listJobs(savedJobData, requestData);
 }
 
+const MEMBER_ID_PATTERN = /(?:'currentMemberId': |member_id&quot;:)(\d+)/;
+
+function getMemberId() {
+    return fetch('https://www.voices.com/talent/account', {
+        method: 'GET',
+    })
+        .then(response => response.text())
+        .then(responseText => {
+            const match = responseText.match(MEMBER_ID_PATTERN);
+            return match ? match[1] : null;
+        });
+}
+
 function checkJobs() {
-    STORAGE_LOCAL.get('jobs', {}).then(savedJobData => {
-        listAnsweredJobs(savedJobData, true);
-        listHiringJobs(savedJobData);
-        listAnsweredJobs(savedJobData);
+    getMemberId().then(memberId => {
+        if (memberId) {
+            console.log(`Logged in as ${memberId}; checking for jobs`);
+            STORAGE_LOCAL.get('jobs', {}).then(savedJobData => {
+                listAnsweredJobs(savedJobData, true);
+                listHiringJobs(savedJobData);
+                listAnsweredJobs(savedJobData);
+            });
+        } else {
+            console.log('Not logged in');
+        }
     });
 }
