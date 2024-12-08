@@ -1,22 +1,44 @@
 // Embed YouTube videos directly into the page.
 
-const YOUTUBE_LINK_REGEX = /https:\/\/(?:www\.)?(?:youtube.com\/watch\?v=|youtu\.be\/)([-_a-zA-Z0-9]+)(&.*)?/;
+function parseTimeToSeconds(time) {
+    if (!time) return null;
+    const match = time.match(/(\d+)([hms])/g); // Match segments like "1h", "30m", "45s"
+    if (!match) {
+        // Assume it's already in seconds
+        return parseInt(time, 10);
+    }
+
+    let seconds = 0;
+    match.forEach(part => {
+        const unit = part.slice(-1); // Last character (h, m, or s)
+        const value = parseInt(part.slice(0, -1), 10); // Number before the unit
+        if (unit === "h") seconds += value * 3600;
+        if (unit === "m") seconds += value * 60;
+        if (unit === "s") seconds += value;
+    });
+    return seconds;
+}
 
 Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
     Array.from(div.querySelectorAll('a')).forEach(a => {
-        const match = a.href.match(YOUTUBE_LINK_REGEX);
-        if (match) {
-            const videoId = match[1];
-            const extraParams = match[2];
-            const iframe = document.createElement('iframe');
+        try {
+            const url = new URL(a.href);
+            const params = new URLSearchParams(url.search);
 
-            iframe.src = `https://www.youtube.com/embed/${videoId}?${extraParams}`;
-            iframe.allowFullscreen = true;
-            iframe.width = '100%';
-            iframe.height = '384px';
+            if (url.host.endsWith('youtube.com') || url.host.endsWith('youtu.be')) {
+                const videoId = params.get('v') || url.pathname.split("/").pop();
+                const startSecs = parseTimeToSeconds(params.get('t'));
+                const videoEmbedURL = `https://www.youtube.com/embed/${videoId}` + (startSecs ? `?start=${startSecs}` : '');
+                const iframe = document.createElement('iframe');
 
-            a.parentNode.appendChild(iframe);
-        }
+                iframe.src = videoEmbedURL;
+                iframe.allowFullscreen = true;
+                iframe.width = '100%';
+                iframe.height = '384px';
+
+                a.parentNode.appendChild(iframe);
+            }
+        } catch (e) {}
     });
 });
 
