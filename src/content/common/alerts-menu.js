@@ -54,12 +54,6 @@ if (helpLink) {
 
     noNotificationsItem.appendChild(noNotificationsLink);
 
-    function clearBell() {
-        alertsMenuIcon.classList.remove('fas');
-        alertsMenuIcon.classList.remove('unread-alerts');
-        showNotificationsDropdown(true);
-    }
-
     function hideNotificationsDropdown() {
         pinAlertsMenu = false;
         alertsDropdown.style.visibility = 'hidden';
@@ -159,15 +153,19 @@ if (helpLink) {
     helpLink.parentNode.parentNode.insertBefore(alertsMenuItem, helpLink.parentNode);
 }
 
+function clearBell() {
+    const alertsMenuIcon = document.getElementById('alerts-menu-icon');
+    if (alertsMenuIcon) {
+        alertsMenuIcon.classList.remove('fas');
+        alertsMenuIcon.classList.remove('unread-alerts');
+    }
+}
+
 function ringBell() {
     const alertsMenuIcon = document.getElementById('alerts-menu-icon');
     if (alertsMenuIcon) {
-        if (!alertsMenuIcon.classList.contains('fas')) {
-            alertsMenuIcon.classList.add('fas');
-        }
-        if (!alertsMenuIcon.classList.contains('unread-alerts')) {
-            alertsMenuIcon.classList.add('unread-alerts');
-        }
+        alertsMenuIcon.classList.add('fas');
+        alertsMenuIcon.classList.add('unread-alerts');
     }
 }
 
@@ -175,6 +173,8 @@ function checkUnreadNotifications() {
     loadNotifications().nonnull().then(notifications => {
         if (notifications.find(notification => !notification.read)) {
             ringBell();
+        } else {
+            clearBell();
         }
     });
 }
