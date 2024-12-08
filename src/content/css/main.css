@@ -23,6 +23,10 @@ img.gvaa-icon {
     height: 16px;
 }
 
+.low-budget {
+    color: red !important;
+}
+
 .clipboard-notification {
     position: absolute;
     background-color: #ffffe1;

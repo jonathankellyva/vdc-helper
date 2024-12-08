@@ -91,6 +91,10 @@ Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
     Array.from(div.querySelectorAll('p')).forEach(replaceLinks);
 });
 
+// Highlight jobs with a low budget (<$100, but someday a configurable amount) in red.
+
+highlightLowBudgets(getBudgetFromJobHighlights());
+
 // For audiobooks, display PFH rates under Budget.
 
 addPFHToBudgetIfApplicable();

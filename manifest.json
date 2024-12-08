@@ -47,13 +47,13 @@
       ]
     },
     {
-      "matches": ["https://www.voices.com/talent/jobs/answered"],
+      "matches": ["https://www.voices.com/talent/jobs/*"],
       "css": [
         "src/content/css/main.css"
       ],
       "js": [
         "src/shared/common.js",
-        "src/content/answered-jobs/answered-jobs.js"
+        "src/content/jobs-list/jobs-list.js"
       ]
     },
     {

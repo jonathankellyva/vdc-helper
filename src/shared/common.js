@@ -132,18 +132,6 @@ function replacePreviewResponseLink(link) {
     }
 }
 
-function replacePreviewResponseLinks(mutationsList) {
-    mutationsList.forEach(mutation => {
-        if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach(node => {
-                if (node.tagName === 'DIV' && node.classList.contains('jobs-list-item')) {
-                    node.querySelectorAll('a').forEach(replacePreviewResponseLink);
-                }
-            });
-        }
-    });
-}
-
 function getJobHighlights() {
     const jobHighlights = document.getElementById('job-highlights');
     if (jobHighlights) {
@@ -176,7 +164,7 @@ function getCategory() {
 
 const BUDGET_REGEX = /(?:\$([0-9,.]+) - )?\$([0-9,.]+)/;
 
-function getBudget() {
+function getBudgetFromJobHighlights() {
     let budgetField = null;
     let minBudget = 0;
     let maxBudget = 0;
@@ -229,6 +217,13 @@ function getEstimatedLength() {
         totalMins: totalSecs / 60,
         totalSecs: totalSecs,
     };
+}
+
+function highlightLowBudgets(budget) {
+    if (budget && budget.max < 100) {
+        budget.field.classList.add('low-budget');
+        budget.field.classList.remove('text-dark');
+    }
 }
 
 function addPFHToBudgetIfApplicable() {

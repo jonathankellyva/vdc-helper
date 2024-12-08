@@ -11,7 +11,7 @@ Array.from(document.querySelectorAll('p')).forEach(el => {
 
 const earningsField = document.querySelector('input[name="earnings"]');
 const quoteField = document.querySelector('input[name="quote"]');
-const budget = getBudget();
+const budget = getBudgetFromJobHighlights();
 
 // Highlight live directed session tags in gold on the response page.
 
@@ -19,6 +19,10 @@ Array.from(document.querySelectorAll('span.tag'))
     .filter(el => el.innerText.startsWith('Live Directed Session')).forEach(ldsTag => {
     ldsTag.classList.add('live-directed-session');
 });
+
+// Highlight jobs with a low budget (<$100, but someday a configurable amount) in red.
+
+highlightLowBudgets(budget);
 
 // For audiobooks, display PFH rates next to Job Budget, Your Earnings, and Your Quote fields.
 

@@ -99,6 +99,8 @@ Thank you,
   things like that, so it's helpful to be able to click them instead of having to copy-paste
   them into the address bar of a new tab.  Note that these links will open in a new tab.
 
+* In the Job Highlights, highlight the budget in red if it is below $100.
+
 * For audiobooks, display PFH rates under the Budget in the Job Highlights.
 
 * In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
@@ -122,6 +124,8 @@ Thank you,
   Your Earnings and Your Quote fields.
 
 #### Jobs List Pages
+
+* Highlight a job's budget in red if it is below $100.
 
 * On the Answered Jobs page, link to the Job Details page rather than to your response. Personally, I usually want to
   view the job posting rather than my response anyway, so I figured I might as well link to that by default.
