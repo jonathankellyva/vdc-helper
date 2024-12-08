@@ -174,6 +174,8 @@ function getCategory() {
     return category;
 }
 
+const BUDGET_REGEX = /(?:\$([0-9,.]+) - )?\$([0-9,.]+)/;
+
 function getBudget() {
     let budgetField = null;
     let minBudget = 0;
@@ -182,10 +184,9 @@ function getBudget() {
     
     if (jobHighlights) {
         const fields = jobHighlights.querySelectorAll('span');
-        const budgetPattern = /(?:\$([0-9,]+) - )?\$([0-9,]+)/;
         fields.forEach(function (field) {
             const text = field.textContent.trim();
-            const match = text.match(budgetPattern);
+            const match = text.match(BUDGET_REGEX);
             if (match) {
                 budgetField = field;
                 minBudget = (match[1] || match[2]).replaceAll(',', '');
