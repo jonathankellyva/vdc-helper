@@ -60,7 +60,11 @@ if (jobHeader && clientDetailsContainer) {
 
         if (newClientDetailsContainer.children) {
             jobHeader.appendChild(newClientDetailsContainer);
-            clientDetailsContainer.style.display = 'none';
+            Array.from(document.querySelectorAll('.client-details-container')).forEach(el => {
+                if (el !== newClientDetailsContainer) {
+                    el.style.display = 'none';
+                }
+            });
         }
     }
 }
