@@ -27,6 +27,64 @@ img.gvaa-icon {
     color: red !important;
 }
 
+.imperfect-voicematch {
+    color: red !important;
+    cursor: pointer;
+}
+
+.category-with-missing-demo {
+    color: red !important;
+    cursor: pointer;
+}
+
+.category-mismatches-closest-demo {
+    color: red !important;
+    cursor: pointer;
+}
+
+.tag-with-missing-demo {
+    background-color: #ffc4b8 !important;
+    cursor: pointer;
+}
+
+.tag-mismatches-closest-demo {
+    background-color: #ffc4b8 !important;
+    cursor: pointer;
+}
+
+#voice-match-modal {
+    --bs-modal-width: 90%;
+}
+
+#voice-match-modal .modal-content {
+    overflow: auto;
+}
+
+#voice-match-modal.no-demos {
+    --bs-modal-width: 650px;
+}
+
+table.voice-match-analysis-demos-table {
+    width: 100%;
+    margin-top: 5px;
+}
+
+table.voice-match-analysis-demos-table th {
+    padding: 5px;
+}
+
+table.voice-match-analysis-demos-table .title-cell {
+    padding-left: 5px;
+}
+
+table.voice-match-analysis-demos-table tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+span.matching-tag {
+    background-color: lightgreen;
+}
+
 .clipboard-notification {
     position: absolute;
     background-color: #ffffe1;

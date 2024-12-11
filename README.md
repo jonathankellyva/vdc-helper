@@ -71,6 +71,11 @@ Thank you,
 
 * Hide "Managed Services Payment Policy" block on the top of Job Details page.
 
+* For job invitations with VoiceMatch <100%, the VoiceMatch % and any non-matching tags
+  (category, language, voice age, accent, role, style) will be highlighted in red. Clicking on them
+  will pop up a dialog box that displays all of your demos sorted by how well they match the
+  current job.
+
 * Hide Performance Details sections that just say "N/A" anyway.
 
 * Display controls for playing reference audio and video along with the Download links so that you
@@ -151,7 +156,6 @@ Thank you,
 ### Upcoming Feature Ideas
 
 * Pop up notifications when you receive a booking.
-* For VoiceMatch <100%, I'd like to figure out a way to help you determine why it was <100%.
 * If possible, calculate the recommended GVAA rate range based on licensing details.
 * Show number of business days until Project Deadlines.
 * On Statistics page, allow sorting the Demo History table by each different column.

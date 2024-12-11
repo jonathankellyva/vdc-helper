@@ -157,22 +157,43 @@ function getJobHighlights() {
     }
 }
 
-function getCategory() {
+function getVoiceMatch() {
     const jobHighlights = getJobHighlights();
-    let category = null;
+    let voiceMatch = null;
 
     if (jobHighlights) {
         Array.from(jobHighlights.querySelectorAll('p')).forEach(el => {
-            if (el.innerText === 'Category') {
-                const categorySpan = el.parentNode.querySelector('span.text-dark');
-                if (categorySpan) {
-                    category = categorySpan.innerText.trim();
+            if (el.innerText === 'VoiceMatch™') {
+                const voiceMatchSpan = el.parentNode.querySelector('span.text-dark');
+                if (voiceMatchSpan) {
+                    voiceMatch = {
+                        field: voiceMatchSpan,
+                        value: parseInt(voiceMatchSpan.innerText)
+                    };
                 }
             }
         });
     }
-    
-    return category;
+
+    return voiceMatch;
+}
+
+function getCategoryTag() {
+    const jobHighlights = getJobHighlights();
+
+    if (jobHighlights) {
+        const categoryHeading = Array.from(jobHighlights.querySelectorAll('p')).find(el => el.innerText === 'Category');
+        if (categoryHeading) {
+            return categoryHeading.parentNode.querySelector('span.text-dark');
+        }
+    }
+
+    return undefined;
+}
+
+function getCategory() {
+    const tag = getCategoryTag();
+    return tag ? tag.innerText.trim() : undefined;
 }
 
 const BUDGET_REGEX = /(?:\$([0-9,.]+) - )?\$([0-9,.]+)/;

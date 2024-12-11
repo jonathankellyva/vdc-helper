@@ -21,6 +21,24 @@
   },
   "content_scripts": [
     {
+      "matches": ["https://www.voices.com/talent/demos/add/*"],
+      "js": [
+        "src/shared/common.js",
+        "src/shared/storage.js",
+        "src/content/common/demos.js",
+        "src/content/demos/add-demo.js"
+      ]
+    },
+    {
+      "matches": ["https://www.voices.com/talent/demos/edit/*"],
+      "js": [
+        "src/shared/common.js",
+        "src/shared/storage.js",
+        "src/content/common/demos.js",
+        "src/content/demos/edit-demo.js"
+      ]
+    },
+    {
       "matches": ["https://www.voices.com/talent/jobs/posting/*"],
       "css": [
         "src/content/css/main.css"
@@ -28,11 +46,13 @@
       "js": [
         "src/shared/common.js",
         "src/shared/storage.js",
+        "src/content/common/demos.js",
         "src/content/job-details/common.js",
         "src/content/job-details/job-details.js",
         "src/content/job-details/client-details.js",
         "src/content/job-details/embedded-elements.js",
-        "src/content/job-details/sample-script.js"
+        "src/content/job-details/sample-script.js",
+        "src/content/job-details/voice-match.js"
       ]
     },
     {
