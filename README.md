@@ -50,6 +50,11 @@ Thank you,
 
 ### Features
 
+#### Notifications
+
+* Pop up notifications when you receive a new job invitation or when a client listens to or
+  shortlists one of your auditions.
+
 #### Job Details Page
 
 * Clicking on the Job Title copies the Job Title to the clipboard.  
@@ -116,6 +121,11 @@ Thank you,
 * For audiobooks, display PFH rates under the Job Budget in the Job Highlights and under the
   Your Earnings and Your Quote fields.
 
+#### Jobs List Pages
+
+* On the Answered Jobs page, link to the Job Details page rather than to your response. Personally, I usually want to
+  view the job posting rather than my response anyway, so I figured I might as well link to that by default.
+
 #### Statistics Page
 
 * Automatically show listen % and shortlist %s.
@@ -126,14 +136,7 @@ Thank you,
 
 * Allow filtering Audition History by Listened/Shortlisted.
 
-#### Other
-
-* Pop up notifications when you receive a new job invitation or when a client listens to or
-  shortlists one of your auditions.
-
-* On the Answered Jobs page and in the Audition History of the Statistics page, link to the job
-  posting rather than your response. Personally, I usually want to view the job posting rather than
-  my response anyway, so I figured I might as well link to that by default.
+* In the Audition History, link to the Job Details page for each job rather than to the Job Response page.
 
 ### Upcoming Feature Ideas
 
