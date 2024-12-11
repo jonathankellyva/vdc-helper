@@ -228,7 +228,7 @@ function highlightLowBudgets(budget) {
 
 function addPFHToBudgetIfApplicable() {
     const category = getCategory();
-    const budget = getBudget();
+    const budget = getBudgetFromJobHighlights();
     const estimatedLengthInHours = getEstimatedLength().totalHours;
 
     if (category === 'Audiobooks' && budget && budget.field && budget.max && estimatedLengthInHours) {
