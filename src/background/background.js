@@ -39,3 +39,10 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 });
 
 setInterval(popUpNewNotifications, 5000);
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "openTab" && message.url) {
+        chrome.tabs.create({ url: message.url });
+        sendResponse({ status: "success" });
+    }
+});

@@ -10,6 +10,10 @@ function safeCall(func, ...args) {
     }
 }
 
+function openNewTab(url) {
+    chrome.runtime.sendMessage({ action: "openTab", url });
+}
+
 function isSpecialKeyHeld(event) {
     return event.altKey || event.ctrlKey || event.metaKey;
 }

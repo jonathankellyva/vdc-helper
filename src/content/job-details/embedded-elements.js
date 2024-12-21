@@ -97,6 +97,50 @@ function embedReferenceFiles() {
 
 safeCall(embedReferenceFiles);
 
+// Add View links to supported reference files so that you don't have to download them.
+
+function addViewLink(file, filename, linksContainer, downloadLink) {
+    const isDocx = filename.endsWith('.docx');
+    
+    if (isDocx) {
+        const viewLink = document.createElement('a');
+        const separator = document.createTextNode(' | ');
+
+        viewLink.href = 'about:blank';
+        viewLink.target = '_blank';
+        viewLink.innerText = 'View';
+        viewLink.addEventListener('click', function (event) {
+            fetch(downloadLink.href).then(response => {
+                const s3DownloadUrl = response.url;
+                openNewTab(`https://docs.google.com/viewer?url=${encodeURIComponent(s3DownloadUrl)}`);
+            }).catch(e => {
+                console.error(e);
+                window.alert("Sorry, but we weren't able to open the document in a new tab. Please try the Download link instead.");
+            });
+            event.preventDefault();
+        });
+
+        linksContainer.insertBefore(separator, downloadLink);
+        linksContainer.insertBefore(viewLink, separator);
+    }
+}
+
+function addViewLinkForReferenceFiles() {
+    Array.from(document.querySelectorAll('.file-details-box')).forEach(file => {
+        const filenameField = file.querySelector('.file-details-box-filename');
+        const linksContainer = file.querySelector('.file-details-box-links');
+        if (filenameField && linksContainer) {
+            Array.from(file.querySelectorAll('a'))
+                .filter(a => a.innerText === 'Download').forEach(downloadLink => {
+                const filename = filenameField.innerText;
+                safeCall(addViewLink, file, filename, linksContainer, downloadLink);
+            });
+        }
+    });
+}
+
+safeCall(addViewLinkForReferenceFiles);
+
 // For jobs that you've responded to, display the audition player above the sample script.
 
 function displayAuditionPlayer() {
