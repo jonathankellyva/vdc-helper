@@ -63,6 +63,10 @@ if (helpLink) {
     function showNotificationsDropdown(markRead) {
         loadNotifications().then(notifications => {
             alertsDropdownList.replaceChildren();
+            
+            if (!notifications) {
+                notifications = [];
+            }
 
             if (notifications.length) {
                 alertsDropdownList.appendChild(clearNotificationsItem);

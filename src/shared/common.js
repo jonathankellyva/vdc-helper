@@ -1,6 +1,15 @@
 const IS_MAC = navigator.platform.toLowerCase().indexOf('mac') >= 0;
 const SPECIAL_KEY = IS_MAC ? 'command' : 'control';
 
+function safeCall(func, ...args) {
+    try {
+        return func(...args);
+    } catch (e) {
+        console.error(e);
+        return undefined;
+    }
+}
+
 function isSpecialKeyHeld(event) {
     return event.altKey || event.ctrlKey || event.metaKey;
 }
@@ -10,7 +19,7 @@ function isSpecialKeyOrShiftHeld(event) {
 }
 
 const jobHeader = document.querySelector('.job-header');
-
+const jobIdElement = jobHeader ? jobHeader.querySelector('span') : null;
 const jobTitleElement = jobHeader ? jobHeader.querySelector('h1') : null;
 const JOB_TITLE = jobTitleElement ? jobTitleElement.innerText : null;
 

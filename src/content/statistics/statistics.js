@@ -32,7 +32,7 @@ function onStatsUpdated(mutationsList) {
                 hideDollarAmount(el)
             }
         }
-        
+
         // Show audition listen/shortlist %s.
 
         const dataStatFigure = mutation.target.getAttribute('data-stat-figure');
@@ -91,52 +91,6 @@ function onStatsUpdated(mutationsList) {
     }
 }
 
-// Allow filtering Audition History by Listened/Shortlisted.
-
-let auditionHistory = null;
-let filterAuditionsBy = 'none';
-
-function changeAuditionFilter(mode) {
-    if (filterAuditionsBy === mode) {
-        filterAuditionsBy = 'none';
-    } else {
-        filterAuditionsBy = mode;
-    }
-    if (auditionHistory) {
-        Array.from(auditionHistory.querySelectorAll('div.table-row')).forEach(function (row) {
-            if (filterAuditionsBy === 'none') {
-                row.style.display = 'block';
-            } else {
-                const label = filterAuditionsBy === 'Listened' ? 'Listened To' : 'Shortlisted';
-                const filter = '[aria-label="' + label + '"]'
-                const matches = row.querySelector(filter) != null;
-                row.style.display = matches ? 'block' : 'none';
-            }
-        });
-    }
-}
-
-Array.from(document.querySelectorAll('.stat-figure'))
-    .filter(el => el.innerText.startsWith('$'))
-    .forEach(hideDollarAmount);
-
-Array.from(document.querySelectorAll('h2'))
-    .filter(h2 => h2.innerHTML === 'Audition History')
-    .forEach(function (auditionHistoryHeader) {
-        auditionHistory = auditionHistoryHeader.closest('.stats-container');
-    });
-
-if (auditionHistory) {
-    Array.from(auditionHistory.querySelectorAll('div'))
-        .filter(div => div.innerHTML === 'Listened' || div.innerHTML === 'Shortlisted')
-        .forEach(function (div) {
-            div.addEventListener('click', () => {
-                changeAuditionFilter(div.innerHTML);
-            });
-            div.style.cursor = 'pointer';
-        });
-}
-
 const observer = new MutationObserver(onStatsUpdated);
 const config = {
     childList: true,
@@ -144,7 +98,61 @@ const config = {
 };
 observer.observe(document.body, config);
 
+// Allow filtering Audition History by Listened/Shortlisted.
+
+function allowFilteringAuditionHistory() {
+    let auditionHistory = null;
+    let filterAuditionsBy = 'none';
+
+    function changeAuditionFilter(mode) {
+        if (filterAuditionsBy === mode) {
+            filterAuditionsBy = 'none';
+        } else {
+            filterAuditionsBy = mode;
+        }
+        if (auditionHistory) {
+            Array.from(auditionHistory.querySelectorAll('div.table-row')).forEach(function (row) {
+                if (filterAuditionsBy === 'none') {
+                    row.style.display = 'block';
+                } else {
+                    const label = filterAuditionsBy === 'Listened' ? 'Listened To' : 'Shortlisted';
+                    const filter = '[aria-label="' + label + '"]'
+                    const matches = row.querySelector(filter) != null;
+                    row.style.display = matches ? 'block' : 'none';
+                }
+            });
+        }
+    }
+
+    Array.from(document.querySelectorAll('.stat-figure'))
+        .filter(el => el.innerText.startsWith('$'))
+        .forEach(hideDollarAmount);
+
+    Array.from(document.querySelectorAll('h2'))
+        .filter(h2 => h2.innerHTML === 'Audition History')
+        .forEach(function (auditionHistoryHeader) {
+            auditionHistory = auditionHistoryHeader.closest('.stats-container');
+        });
+
+    if (auditionHistory) {
+        Array.from(auditionHistory.querySelectorAll('div'))
+            .filter(div => div.innerHTML === 'Listened' || div.innerHTML === 'Shortlisted')
+            .forEach(function (div) {
+                div.addEventListener('click', () => {
+                    changeAuditionFilter(div.innerHTML);
+                });
+                div.style.cursor = 'pointer';
+            });
+    }
+}
+
+safeCall(allowFilteringAuditionHistory);
+
 // In Audition History, link to the original job postings rather than to your response.
 
-Array.from(document.querySelectorAll('a'))
-    .forEach(replacePreviewResponseLink);
+function linkToJobPostingsFromStatsPage() {
+    Array.from(document.querySelectorAll('a'))
+        .forEach(replacePreviewResponseLink);
+}
+
+safeCall(linkToJobPostingsFromStatsPage);

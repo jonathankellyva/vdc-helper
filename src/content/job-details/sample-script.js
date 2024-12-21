@@ -196,30 +196,36 @@ function addSampleScriptContainerIfNecessary() {
     makeScriptEditable();
 }
 
-sampleScriptField = document.querySelector('p.readmore-content');
-addSampleScriptContainerIfNecessary();
+function initSampleScriptEditor() {
+    sampleScriptField = document.querySelector('p.readmore-content');
+    addSampleScriptContainerIfNecessary();
 
-STORAGE_LOCAL.get(`script-${JOB_ID}`).nonnull().then(savedScript => {
-    if (sampleScriptField.innerText) {
-        originalSampleScriptText = sampleScriptField.innerText;
-    } else {
-        originalSampleScriptText = savedScript;
-    }
+    STORAGE_LOCAL.get(`script-${JOB_ID}`).nonnull().then(savedScript => {
+        if (sampleScriptField.innerText) {
+            originalSampleScriptText = sampleScriptField.innerText;
+        } else {
+            originalSampleScriptText = savedScript;
+        }
 
-    sampleScriptField.innerText = savedScript;
-    sampleScriptTextarea.value = savedScript;
-    onSampleScriptUpdated();
-});
+        sampleScriptField.innerText = savedScript;
+        sampleScriptTextarea.value = savedScript;
+        onSampleScriptUpdated();
+    });
 
-document.addEventListener('click', documentClick);
-document.addEventListener('touchstart', startLongPress);
-document.addEventListener('touchend', cancelLongPress);
-document.addEventListener('touchcancel', cancelLongPress);
-document.addEventListener('touchmove', cancelLongPress);
-document.addEventListener('selectionchange', updateSampleScriptWordCounts);
-document.addEventListener('mouseup', updateSampleScriptWordCounts);
+    originalSampleScriptText = sampleScriptField.innerText;
 
-updateSampleScriptWordCounts();
+    document.addEventListener('click', documentClick);
+    document.addEventListener('touchstart', startLongPress);
+    document.addEventListener('touchend', cancelLongPress);
+    document.addEventListener('touchcancel', cancelLongPress);
+    document.addEventListener('touchmove', cancelLongPress);
+    document.addEventListener('selectionchange', updateSampleScriptWordCounts);
+    document.addEventListener('mouseup', updateSampleScriptWordCounts);
+
+    updateSampleScriptWordCounts();
+}
+
+safeCall(initSampleScriptEditor);
 
 // Automatically expand Sample Script rather than requiring you to click Read More.
 

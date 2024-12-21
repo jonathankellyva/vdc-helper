@@ -28,7 +28,7 @@ function handleJobAddedToList(mutationsList) {
                     node.querySelectorAll('a').forEach(replacePreviewResponseLink);
 
                     // Highlight jobs with a low budget (<$100, but someday a configurable amount) in red.
-                    highlightLowBudgets(getBudgetForJob(node));
+                    safeCall(highlightLowBudgets, safeCall(getBudgetForJob, node));
                 }
             });
         }
