@@ -1,8 +1,10 @@
 ### Overview
 
 The Voices.com Helper is an unofficial (i.e., not affiliated with or developed by Voices.com) browser extension that
-improves the user interface of Voices.com in a number of ways. For a list of new changes made in each version, see
-[here](https://github.com/jonathankellyva/vdc-helper/wiki/What's-New).
+improves the user interface of Voices.com in a number of ways.
+
+For a list of new changes made in each version, including screenshots of each feature in action, see the
+[What's New](https://github.com/jonathankellyva/vdc-helper/wiki/What's-New) page.
 
 ### Installation
 
