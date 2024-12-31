@@ -1,5 +1,10 @@
+import * as Browser from './browser';
+import * as Budgets from './budgets';
+import * as Job from './job';
+import * as Storage from './storage';
+
 function getCategoryFromResponsePage() {
-    let category = getCategory();
+    let category = Job.getCategory();
 
     Array.from(document.querySelectorAll('p')).forEach(el => {
         if (el.innerText === 'Category') {
@@ -13,11 +18,11 @@ function getCategoryFromResponsePage() {
     return category;
 }
 
-const category = safeCall(getCategoryFromResponsePage);
+const category = Browser.safeCall(getCategoryFromResponsePage);
 
 const earningsField = document.querySelector('input[name="earnings"]');
 const quoteField = document.querySelector('input[name="quote"]');
-const budget = safeCall(getBudgetFromJobHighlights);
+const budget = Browser.safeCall(Budgets.getBudgetFromJobHighlights);
 
 // Highlight live directed session tags in gold on the response page.
 
@@ -28,16 +33,16 @@ function highlightLiveDirectedSessionOnResponsePage() {
     });
 }
 
-safeCall(highlightLiveDirectedSessionOnResponsePage);
+Browser.safeCall(highlightLiveDirectedSessionOnResponsePage);
 
 // Highlight jobs with a low budget (<$100, but someday a configurable amount) in red.
 
-safeCall(highlightLowBudgets, budget);
+Browser.safeCall(Budgets.highlightLowBudgets, budget);
 
 // For audiobooks, display PFH rates next to Job Budget, Your Earnings, and Your Quote fields.
 
-function displayAudiobookRatesOnResponsePage() {
-    const estimatedLengthInHours = getEstimatedLength().totalHours;
+function displayAudiobookRates() {
+    const estimatedLengthInHours = Job.getEstimatedLength().totalHours;
     if (category === 'Audiobooks' && earningsField && quoteField && budget && budget.max && estimatedLengthInHours) {
         function updateQuotePFH() {
             Array('earnings', 'quote').forEach(prefix => {
@@ -75,10 +80,10 @@ function displayAudiobookRatesOnResponsePage() {
         window.setInterval(updateQuotePFH, 250);
     }
 
-    safeCall(addPFHToBudgetIfApplicable);
+    Browser.safeCall(Budgets.addPFHToBudgetIfApplicable);
 }
 
-safeCall(displayAudiobookRatesOnResponsePage);
+Browser.safeCall(displayAudiobookRates);
 
 // When responding to a job, automatically fill in the max budget for the bid.
 
@@ -89,7 +94,7 @@ function fillInMaxBudget() {
     }
 }
 
-safeCall(fillInMaxBudget);
+Browser.safeCall(fillInMaxBudget);
 
 // Allow selecting a response template that should be automatically filled in by default.
 
@@ -106,7 +111,7 @@ const revisionPolicy = document.getElementById('revision_policy');
 let selectedTemplateId = null;
 
 function selectDefaultResponseTemplate() {
-    STORAGE_SYNC.get('default-template-id')
+    Storage.SYNC.get('default-template-id')
         .then(defaultTemplateId => {
             if (templateChoicesDropdown && templateSelector && selectedTemplateItem) {
                 defaultTemplateCheckbox.id = 'default-template-checkbox';
@@ -119,7 +124,7 @@ function selectDefaultResponseTemplate() {
                 defaultTemplateCheckboxLabel.innerText = 'Automatically use this template by default';
 
                 defaultTemplateCheckbox.addEventListener('change', event => {
-                    STORAGE_SYNC.set('default-template-id', event.target.checked ? selectedTemplateId : null);
+                    Storage.SYNC.set('default-template-id', event.target.checked ? selectedTemplateId : null);
                 });
 
                 templateChoicesDropdown.parentNode.appendChild(defaultTemplateCheckbox);
@@ -133,7 +138,7 @@ function selectDefaultResponseTemplate() {
 
                                 const templateSelected = (selectedTemplateId || '') !== '';
 
-                                STORAGE_SYNC.get('default-template-id').then(defaultTemplateId => {
+                                Storage.SYNC.get('default-template-id').then(defaultTemplateId => {
                                     defaultTemplateCheckbox.checked = selectedTemplateId === defaultTemplateId;
                                 });
 
@@ -205,4 +210,4 @@ function selectDefaultResponseTemplate() {
         });
 }
 
-safeCall(selectDefaultResponseTemplate);
+Browser.safeCall(selectDefaultResponseTemplate);

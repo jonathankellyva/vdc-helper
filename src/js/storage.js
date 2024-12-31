@@ -31,5 +31,5 @@ const createStorage = (storage) => {
     };
 };
 
-const STORAGE_SYNC = createStorage(chrome.storage.sync);
-const STORAGE_LOCAL = createStorage(chrome.storage.local);
+export const SYNC = createStorage(chrome.storage.sync);
+export const LOCAL = createStorage(chrome.storage.local);

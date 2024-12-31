@@ -1,4 +1,5 @@
-// Help determine cause of <100% VoiceMatch
+import * as Demos from './demos';
+import * as Job from './job';
 
 function getOrCreateVoiceMatchAnalysisModal() {
     let voiceMatchModal = document.getElementById('voice-match-modal');
@@ -39,15 +40,15 @@ function getPerformanceDetailsTagValues(fieldName) {
     return getPerformanceDetailsTags(fieldName).map(tag => tag.innerText.trim());
 }
 
-async function analyzeVoiceMatch() {
-    const voiceMatch = getVoiceMatch();
+export async function analyze() {
+    const voiceMatch = Job.getVoiceMatch();
     if (voiceMatch && voiceMatch.value < 100) {
         const voiceMatchModal = getOrCreateVoiceMatchAnalysisModal();
 
         const tags = {
             category: {
-                elements: [ getCategoryTag() ],
-                values: [ getCategory() ],
+                elements: [ Job.getCategoryTag() ],
+                values: [ Job.getCategory() ],
                 demoFieldName: 'category',
                 description: 'category',
             },
@@ -92,8 +93,7 @@ async function analyzeVoiceMatch() {
             styles: tags.style.values,
         };
 
-        const demos = await getDemos();
-        sortDemosByMatch(demos, criteria);
+        const demos = await Demos.getAll(criteria);
         
         const hideLanguage = demos.every(demo => demo.language === tags.language.values?.[0]);
 
@@ -155,7 +155,7 @@ async function analyzeVoiceMatch() {
                 const thisJobRow = document.createElement('tr');
                 const thisJobCell = document.createElement('td');
                 const thisJobSpan = document.createElement('span');
-                thisJobSpan.innerText = JOB_TITLE + ' (This Job)';
+                thisJobSpan.innerText = Job.JOB_TITLE + ' (This Job)';
                 thisJobCell.className = 'title-cell';
                 thisJobCell.appendChild(thisJobSpan);
                 thisJobRow.appendChild(thisJobCell);
@@ -205,7 +205,7 @@ async function analyzeVoiceMatch() {
                     addTag(ageCell, demo.age, tags.age.values.includes(demo.age));
 
                     demo.accents.forEach(accent => {
-                        addTag(accentsCell, accent, accentsMatch(accent, tags.accent.values?.[0]));
+                        addTag(accentsCell, accent, Demos.accentsMatch(accent, tags.accent.values?.[0]));
                     });
 
                     demo.roles.forEach(role => {
@@ -256,7 +256,7 @@ async function analyzeVoiceMatch() {
                     const matchingDemo = demos.find(demo => {
                         const demoTagValues = demo[tag.demoFieldName];
                         if (tag.description === 'accent') {
-                            return demoMatchesAccent(demo, tagValue);
+                            return Demos.demoMatchesAccent(demo, tagValue);
                         }
                         return demoTagValues && demoTagValues.includes(tagValue);
                     });
@@ -268,7 +268,7 @@ async function analyzeVoiceMatch() {
                         makeClickable(el);
                     } else {
                         const demoTagValues = closestMatchingDemo[tag.demoFieldName];
-                        if (!demoTagValues.includes(tagValue) && (tag.description !== 'accent' || !demoMatchesAccent(closestMatchingDemo, tagValue))) {
+                        if (!demoTagValues.includes(tagValue) && (tag.description !== 'accent' || !Demos.demoMatchesAccent(closestMatchingDemo, tagValue))) {
                             const className = (tag.description === 'category' ? 'category' : 'tag') + '-mismatches-closest-demo';
                             el.classList.add(className);
                             el.classList.remove('text-dark');
@@ -285,5 +285,3 @@ async function analyzeVoiceMatch() {
         }
     }
 }
-
-safeCall(analyzeVoiceMatch);

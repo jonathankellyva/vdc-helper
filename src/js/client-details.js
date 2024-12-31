@@ -1,8 +1,8 @@
-// Move Client Details to a single, compact line at the top of the page under the job title/ID.
+import * as Job from './job';
 
-function moveClientDetails() {
+export function moveClientDetails() {
     const clientDetailsContainer = document.querySelector('.client-details-container');
-    if (jobHeader && clientDetailsContainer) {
+    if (Job.jobHeader && clientDetailsContainer) {
         const clientDetails = clientDetailsContainer.querySelector('.d-flex');
         if (clientDetails) {
             const newClientDetailsContainer = document.createElement('a');
@@ -53,14 +53,14 @@ function moveClientDetails() {
                     newClientDetailsContainer.appendChild(clientLocationIcon);
                 }
                 if (clientLocationText) {
-                    clientLocationText.innerText = abbreviateLocation(clientLocationText.innerText);
+                    clientLocationText.innerText = Job.abbreviateLocation(clientLocationText.innerText);
                     clientLocationText.style.marginLeft = '5px';
                     newClientDetailsContainer.appendChild(clientLocationText);
                 }
             }
 
             if (newClientDetailsContainer.children) {
-                jobHeader.appendChild(newClientDetailsContainer);
+                Job.jobHeader.appendChild(newClientDetailsContainer);
                 Array.from(document.querySelectorAll('.client-details-container')).forEach(el => {
                     if (el !== newClientDetailsContainer) {
                         el.style.display = 'none';
@@ -70,5 +70,3 @@ function moveClientDetails() {
         }
     }
 }
-
-safeCall(moveClientDetails);

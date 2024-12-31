@@ -1,6 +1,4 @@
-// Highlight in-perp ads in red and other ads in green.
-
-function highlightInPerpAds(el) {
+export function highlightInPerpAds(el) {
     if (el.innerText.indexOf('In Perpetuity') > 0) {
         el.classList.add('in-perp-ad');
     } else {
@@ -8,9 +6,7 @@ function highlightInPerpAds(el) {
     }
 }
 
-// Make the ad licensing more concise (e.g., "0 Years: 0 Months: 5 Weeks" to "5 Weeks")
-
-function simplifyLicensingParts(el) {
+export function simplifyLicensingParts(el) {
     const licensingParts = el.innerText.split(" • ");
 
     if (licensingParts.length === 3) {
@@ -30,12 +26,10 @@ function simplifyLicensingParts(el) {
     }
 }
 
-// Link to GVAA Rate Guide
-
 const GVAA_RATE_GUIDE_LINK = 'https://globalvoiceacademy.com/gvaa-rate-guide-2/';
 
-function addLinkToRateGuide(el) {
-    const gvaaIconUrl = chrome.runtime.getURL('src/img/gvaa-icon.png');
+export function addLinkToRateGuide(el) {
+    const gvaaIconUrl = chrome.runtime.getURL('img/gvaa-icon.png');
     const gvaaLink = document.createElement('a');
     const gvaaIcon = document.createElement('img');
     gvaaLink.href = GVAA_RATE_GUIDE_LINK;
@@ -46,11 +40,3 @@ function addLinkToRateGuide(el) {
     gvaaLink.appendChild(gvaaIcon);
     el.appendChild(gvaaLink);
 }
-
-Array.from(document.querySelectorAll('span.tag'))
-    .filter(el => el.innerText.indexOf(' Ad ') > 0)
-    .forEach(function (el) {
-        safeCall(highlightInPerpAds, el);
-        safeCall(simplifyLicensingParts, el);
-        safeCall(addLinkToRateGuide, el);
-    });

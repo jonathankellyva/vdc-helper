@@ -1,4 +1,13 @@
-// Allow editing Sample Scripts by clicking on them.
+import * as Browser from './browser';
+import * as Job from './job';
+import * as Links from './links';
+import * as Storage from './storage';
+
+export function getHeader() {
+    const additionalDetails = document.getElementById('additionalDetails');
+    return Array.from(additionalDetails.querySelectorAll('h5'))
+        .find(el => el.innerText.startsWith('Sample Script'));
+}
 
 const LONG_PRESS_DURATION = 500; // only for mobile
 
@@ -39,7 +48,7 @@ function countWords(text) {
 }
 
 function updateSampleScriptWordCounts() {
-    const sampleScriptHeader = getSampleScriptHeader();
+    const sampleScriptHeader = getHeader();
     if (sampleScriptHeader && sampleScriptField) {
         const text = editingSampleScript ? sampleScriptTextarea.value : sampleScriptField.innerText;
         const totalWords = countWords(text);
@@ -66,7 +75,7 @@ function closeEditor(newText) {
     sampleScriptField.style.display = 'block';
     sampleScriptTextarea.style.display = 'none';
     editingSampleScript = false;
-    replaceLinks(sampleScriptField);
+    Links.replaceLinks(sampleScriptField);
     saveSampleScript();
     onSampleScriptUpdated();
 }
@@ -79,7 +88,7 @@ function resetSampleScript() {
     sampleScriptField.innerText = originalSampleScriptText;
     sampleScriptField.style.display = 'block';
     sampleScriptTextarea.style.display = 'none';
-    replaceLinks(sampleScriptField);
+    Links.replaceLinks(sampleScriptField);
     saveSampleScript();
 
     editingSampleScript = false;
@@ -104,7 +113,7 @@ function finishEditingSampleScript() {
 
 function onSampleScriptKeyDown(event) {
     if (editingSampleScript) {
-        if (event.key === 'Enter' && isSpecialKeyOrShiftHeld(event)) {
+        if (event.key === 'Enter' && Browser.isSpecialKeyOrShiftHeld(event)) {
             finishEditingSampleScript();
         } else if (event.key === 'Escape') {
             cancelEditingSampleScript();
@@ -122,11 +131,11 @@ function onSampleScriptUpdated() {
 }
 
 function saveSampleScript(force) {
-    const key = `script-${JOB_ID}`;
+    const key = `script-${Job.JOB_ID}`;
     if (force || originalSampleScriptText !== sampleScriptField.innerText) {
-        STORAGE_LOCAL.set(key, sampleScriptTextarea.value);
+        Storage.LOCAL.set(key, sampleScriptTextarea.value);
     } else {
-        STORAGE_LOCAL.remove(key);
+        Storage.LOCAL.remove(key);
     }
 }
 
@@ -196,11 +205,11 @@ function addSampleScriptContainerIfNecessary() {
     makeScriptEditable();
 }
 
-function initSampleScriptEditor() {
+export function initEditor() {
     sampleScriptField = document.querySelector('p.readmore-content');
     addSampleScriptContainerIfNecessary();
 
-    STORAGE_LOCAL.get(`script-${JOB_ID}`).nonnull().then(savedScript => {
+    Storage.LOCAL.get(`script-${Job.JOB_ID}`).nonnull().then(savedScript => {
         if (sampleScriptField.innerText) {
             originalSampleScriptText = sampleScriptField.innerText;
         } else {
@@ -225,10 +234,8 @@ function initSampleScriptEditor() {
     updateSampleScriptWordCounts();
 }
 
-safeCall(initSampleScriptEditor);
-
-// Automatically expand Sample Script rather than requiring you to click Read More.
-
-if (sampleScriptContainer) {
-    sampleScriptContainer.setAttribute('aria-expanded', 'true');
+export function expandByDefault() {
+    if (sampleScriptContainer) {
+        sampleScriptContainer.setAttribute('aria-expanded', 'true');
+    }
 }
