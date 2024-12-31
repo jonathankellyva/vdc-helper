@@ -1,3 +1,5 @@
+import * as Notifications from './notifications';
+
 let pinAlertsMenu = false;
 
 const helpLink = document.getElementById('Help');
@@ -35,7 +37,7 @@ if (helpLink) {
     clearNotificationsLink.innerText = 'Clear Notifications';
 
     clearNotificationsLink.addEventListener('click', function () {
-        saveNotifications([]);
+        Notifications.save([]);
         clearBell();
         hideNotificationsDropdown();
     });
@@ -61,7 +63,7 @@ if (helpLink) {
     }
 
     function showNotificationsDropdown(markRead) {
-        loadNotifications().then(notifications => {
+        Notifications.load().then(notifications => {
             alertsDropdownList.replaceChildren();
             
             if (!notifications) {
@@ -81,19 +83,19 @@ if (helpLink) {
 
                 const link = document.createElement('a');
                 link.className = 'nav-main-dropdown-link notification-link';
-                link.href = getNotificationTarget(data);
+                link.href = Notifications.getTarget(data);
 
                 const iconImg = document.createElement('img');
-                iconImg.src = getNotificationIcon(data);
+                iconImg.src = Notifications.getIcon(data);
                 iconImg.className = 'notification-icon';
 
                 const title = document.createElement('p');
                 title.className = 'notification-title';
-                title.innerText = getNotificationHistoryTitle(data);
+                title.innerText = Notifications.getHistoryTitle(data);
 
                 const body = document.createElement('p');
                 body.className = 'notification-body';
-                body.innerText = getNotificationHistoryBody(data);
+                body.innerText = Notifications.getHistoryBody(data);
 
                 if (!data.read) {
                     link.classList.add('notification-unread');
@@ -101,7 +103,7 @@ if (helpLink) {
 
                 link.addEventListener('click', function () {
                     data.read = true;
-                    saveNotifications(notifications);
+                    Notifications.save(notifications);
                 });
 
                 link.appendChild(iconImg);
@@ -118,7 +120,7 @@ if (helpLink) {
                 }
             });
 
-            saveNotifications(notifications);
+            Notifications.save(notifications);
 
             alertsDropdown.style.visibility = 'visible';
             alertsDropdown.style.opacity = '1';
@@ -174,7 +176,7 @@ function ringBell() {
 }
 
 function checkUnreadNotifications() {
-    loadNotifications().nonnull().then(notifications => {
+    Notifications.load().nonnull().then(notifications => {
         if (notifications.find(notification => !notification.read)) {
             ringBell();
         } else {

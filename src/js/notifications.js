@@ -1,12 +1,14 @@
-function loadNotifications() {
-    return STORAGE_LOCAL.get('notifications', []);
+import * as Storage from './storage';
+
+export function load() {
+    return Storage.LOCAL.get('notifications', []);
 }
 
-function saveNotifications(notifications) {
-    STORAGE_LOCAL.set('notifications', notifications);
+export function save(notifications) {
+    Storage.LOCAL.set('notifications', notifications);
 }
 
-function createNotification(type, job) {
+export function create(type, job) {
     return {
         type: type,
         jobId: job.id,
@@ -15,11 +17,11 @@ function createNotification(type, job) {
     }
 }
 
-function getPopupNotificationTitle(data) {
+function getPopupTitle(data) {
     return `${data.jobId}: ${data.jobTitle}`;
 }
 
-function getPopupNotificationBody(data) {
+function getPopupBody(data) {
     switch (data.type) {
         case 'newjob':
             return 'You have received a new job invitation';
@@ -31,7 +33,7 @@ function getPopupNotificationBody(data) {
     return null;
 }
 
-function getNotificationTarget(data) {
+export function getTarget(data) {
     switch (data.type) {
         case 'newjob':
             return `https://www.voices.com/talent/jobs/posting/${data.jobId}`;
@@ -42,7 +44,7 @@ function getNotificationTarget(data) {
     return null;
 }
 
-function getNotificationIcon(data) {
+export function getIcon(data) {
     switch (data.type) {
         case 'newjob':
             return 'https://raw.githubusercontent.com/jonathankellyva/vdc-helper/main/src/img/briefcase.png';
@@ -54,7 +56,7 @@ function getNotificationIcon(data) {
     return null;
 }
 
-function getNotificationHistoryTitle(data) {
+export function getHistoryTitle(data) {
     switch (data.type) {
         case 'newjob':
             return 'New Job Invitation';
@@ -66,22 +68,22 @@ function getNotificationHistoryTitle(data) {
     return null;
 }
 
-function getNotificationHistoryBody(data) {
+export function getHistoryBody(data) {
     return `${data.jobId}: ${data.jobTitle}`;
 }
 
-function postNotification(data) {
-    loadNotifications().then(notifications => {
+export function post(data) {
+    load().then(notifications => {
         notifications.push(data);
-        saveNotifications(notifications);
+        save(notifications);
     })
 }
 
-function popUpNotification(data) {
-    const title = getPopupNotificationTitle(data);
-    const body = getPopupNotificationBody(data);
-    const icon = getNotificationIcon(data);
-    const target = getNotificationTarget(data);
+function popUp(data) {
+    const title = getPopupTitle(data);
+    const body = getPopupBody(data);
+    const icon = getIcon(data);
+    const target = getTarget(data);
 
     if (title && body) {
         chrome.notifications.create({
@@ -95,13 +97,13 @@ function popUpNotification(data) {
     data.shown = true;
 }
 
-function popUpNewNotifications() {
-    loadNotifications().then(notifications => {
+export function showNew() {
+    load().then(notifications => {
         const toShow = notifications.filter(notification => !notification.shown);
 
         if (toShow.length > 0) {
-            toShow.forEach(popUpNotification);
-            saveNotifications(notifications);
+            toShow.forEach(popUp);
+            save(notifications);
         }
     });
 }

@@ -1,3 +1,6 @@
+import * as Browser from './browser';
+import * as Links from './links';
+
 // Hide dollar amounts by default.
 
 const REDACTED_TEXT = '(click to show)';
@@ -146,13 +149,13 @@ function allowFilteringAuditionHistory() {
     }
 }
 
-safeCall(allowFilteringAuditionHistory);
+Browser.safeCall(allowFilteringAuditionHistory);
 
 // In Audition History, link to the original job postings rather than to your response.
 
 function linkToJobPostingsFromStatsPage() {
     Array.from(document.querySelectorAll('a'))
-        .forEach(replacePreviewResponseLink);
+        .forEach(Links.replacePreviewResponseLink);
 }
 
-safeCall(linkToJobPostingsFromStatsPage);
+Browser.safeCall(linkToJobPostingsFromStatsPage);

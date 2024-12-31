@@ -1,6 +1,8 @@
+import * as Storage from './storage';
+
 const ONE_HOUR_IN_MILLIS = 60 * 60 * 1000;
 
-function getDemoFromDocument(doc) {
+export function fromDocument(doc) {
     const demo = {};
     
     const title = doc.getElementById('title');
@@ -55,16 +57,16 @@ function getDemoFromDocument(doc) {
     return demo;
 }
 
-async function getDemoFromStorage(demoId) {
-    return STORAGE_LOCAL.get(`demo-${demoId}`);
+export async function fromStorage(demoId) {
+    return Storage.LOCAL.get(`demo-${demoId}`);
 }
 
-async function storeDemo(demo) {
-    STORAGE_LOCAL.set(`demo-${demo.id}`, demo);
+export async function store(demo) {
+    Storage.LOCAL.set(`demo-${demo.id}`, demo);
 }
 
 async function getDemo(demoId) {
-    const demo = await getDemoFromStorage(demoId);
+    const demo = await fromStorage(demoId);
     if (demo && Date.now() - demo.lastChecked < ONE_HOUR_IN_MILLIS) {
         return demo;
     }
@@ -76,26 +78,29 @@ async function getDemo(demoId) {
             .then(responseText => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(responseText, "text/html");
-                const demo = getDemoFromDocument(doc);
-                storeDemo(demo);
+                const demo = fromDocument(doc);
+                store(demo);
                 return demo;
             });
 }
 
-async function getDemos() {
+export async function getAll(criteria) {
     const responseText = await fetch('https://www.voices.com/talent/demos').then(response => response.text());
     const parser = new DOMParser();
     const doc = parser.parseFromString(responseText, "text/html");
     const demoIds = Array.from(doc.querySelectorAll('a'))
         .filter(a => a.href.includes('/talent/demos/edit/')).map(a => a.href.split('/').pop());
-    return await Promise.all(demoIds.map(getDemo));
+    const demos = await Promise.all(demoIds.map(getDemo));
+
+    sortByMatch(demos, criteria);
+    return demos;
 }
 
 function getAccentGroup(accent) {
     return accent.replace(/ \(.+/, '');
 }
 
-function accentsMatch(a, b) {
+export function accentsMatch(a, b) {
     if (!a || !b || a === b || a === 'No Preference' || b === 'No Preference') {
         return true;
     }
@@ -108,7 +113,7 @@ function accentsMatch(a, b) {
     return false;
 }
 
-function demoMatchesAccent(demo, accent) {
+export function demoMatchesAccent(demo, accent) {
     return demo.accents.find(demoAccent => accentsMatch(demoAccent, accent));
 }
 
@@ -128,7 +133,7 @@ function calculatePotentialVoiceMatchScore(demo, criteria) {
     return score < 0 ? 0 : score;
 }
 
-function sortDemosByMatch(demos, criteria) {
+function sortByMatch(demos, criteria) {
     demos.forEach(demo => demo.score = calculatePotentialVoiceMatchScore(demo, criteria));
     return demos.sort((a, b) => {
         const diff = b.score - a.score;

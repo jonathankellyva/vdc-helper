@@ -1,0 +1,14 @@
+{
+  "name": "vdc-helper",
+  "version": "1.0.0",
+  "description": "The Voices.com Helper is an unofficial (i.e., not affiliated with or developed by Voices.com) browser extension that improves the user interface of Voices.com in a number of ways.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.13.3"
+  }
+}

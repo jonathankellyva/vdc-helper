@@ -1,62 +1,18 @@
-const IS_MAC = navigator.platform.toLowerCase().indexOf('mac') >= 0;
-const SPECIAL_KEY = IS_MAC ? 'command' : 'control';
+export const jobHeader = document.querySelector('.job-header');
+export const jobIdElement = jobHeader ? jobHeader.querySelector('span') : null;
+export const jobTitleElement = jobHeader ? jobHeader.querySelector('h1') : null;
+export const JOB_TITLE = jobTitleElement ? jobTitleElement.innerText : null;
 
-function safeCall(func, ...args) {
-    try {
-        return func(...args);
-    } catch (e) {
-        console.error(e);
-        return undefined;
-    }
-}
+export const JOB_ID_URL_REGEX = /\/talent\/jobs\/(?:posting|(?:preview_)?response)\/(\d+)$/;
 
-function openNewTab(url) {
-    chrome.runtime.sendMessage({ action: "openTab", url });
-}
-
-function isSpecialKeyHeld(event) {
-    return event.altKey || event.ctrlKey || event.metaKey;
-}
-
-function isSpecialKeyOrShiftHeld(event) {
-    return isSpecialKeyHeld(event) || event.shiftKey;
-}
-
-const jobHeader = document.querySelector('.job-header');
-const jobIdElement = jobHeader ? jobHeader.querySelector('span') : null;
-const jobTitleElement = jobHeader ? jobHeader.querySelector('h1') : null;
-const JOB_TITLE = jobTitleElement ? jobTitleElement.innerText : null;
-
-const JOB_ID_URL_REGEX = /\/talent\/jobs\/(?:posting|(?:preview_)?response)\/(\d+)$/;
-
-function getJobId() {
+export function getJobId() {
     const match = window.location.pathname.match(JOB_ID_URL_REGEX);
     return match ? match[1] : null;
 }
 
-const JOB_ID = getJobId();
+export const JOB_ID = getJobId();
 
-function replaceLinks(el) {
-    const urlPattern = /((?:https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{1,256}\.[a-zA-Z][a-zA-Z0-9]{1,5}\b([-a-zA-Z0-9()@:%_+.~#?&/=;]*[a-zA-Z0-9_#])?)/gi;
-    el.innerHTML = el.innerHTML.replace(urlPattern, function (match, url) {
-        const href = url.indexOf("://") > 0 ? url : 'https://' + url;
-        try {
-            // Some things might look like a URL, according to the rudimentary regex above,
-            // but we confirm here that it is in fact a valid URL.
-            // One thing in particular that we don't want to match (but that still matches the
-            // above regex) is something like "foo...bar".
-            if (!new URL(href).hostname.includes('..')) {
-                return `<a href="${href}" target="_blank">${url}</a>`;
-            }
-        } catch (_) {
-        }
-
-        // don't actually replace with a link if it wasn't a valid URL
-        return match;
-    });
-}
-
-function abbreviateLocation(location) {
+export function abbreviateLocation(location) {
     const abbreviations = {
         "Alabama": "AL",
         "Alaska": "AK",
@@ -135,17 +91,7 @@ function abbreviateLocation(location) {
     return location;
 }
 
-const PREVIEW_RESPONSE_URL_REGEX = /\/talent\/jobs\/preview_response\/(\d+)$/;
-
-function replacePreviewResponseLink(link) {
-    const href = link.getAttribute('href');
-    const match = href && href.match(PREVIEW_RESPONSE_URL_REGEX);
-    if (match) {
-        link.setAttribute('href', `/talent/jobs/posting/${match[1]}`);
-    }
-}
-
-function getJobHighlights() {
+export function getJobHighlights() {
     const jobHighlights = document.getElementById('job-highlights');
     if (jobHighlights) {
         return jobHighlights;
@@ -157,7 +103,7 @@ function getJobHighlights() {
     }
 }
 
-function getVoiceMatch() {
+export function getVoiceMatch() {
     const jobHighlights = getJobHighlights();
     let voiceMatch = null;
 
@@ -178,7 +124,7 @@ function getVoiceMatch() {
     return voiceMatch;
 }
 
-function getCategoryTag() {
+export function getCategoryTag() {
     const jobHighlights = getJobHighlights();
 
     if (jobHighlights) {
@@ -191,40 +137,12 @@ function getCategoryTag() {
     return undefined;
 }
 
-function getCategory() {
+export function getCategory() {
     const tag = getCategoryTag();
     return tag ? tag.innerText.trim() : undefined;
 }
 
-const BUDGET_REGEX = /(?:\$([0-9,.]+) - )?\$([0-9,.]+)/;
-
-function getBudgetFromJobHighlights() {
-    let budgetField = null;
-    let minBudget = 0;
-    let maxBudget = 0;
-    const jobHighlights = getJobHighlights();
-    
-    if (jobHighlights) {
-        const fields = jobHighlights.querySelectorAll('span');
-        fields.forEach(function (field) {
-            const text = field.textContent.trim();
-            const match = text.match(BUDGET_REGEX);
-            if (match) {
-                budgetField = field;
-                minBudget = (match[1] || match[2]).replaceAll(',', '');
-                maxBudget = match[2].replaceAll(',', '');
-            }
-        });
-        
-        return {
-            field: budgetField,
-            min: minBudget,
-            max: maxBudget,
-        };
-    }
-}
-
-function getEstimatedLength() {
+export function getEstimatedLength() {
     const jobHighlights = getJobHighlights();
     let totalSecs = 0;
 
@@ -245,35 +163,10 @@ function getEstimatedLength() {
             }
         });
     }
-    
+
     return {
         totalHours: totalSecs / 3600,
         totalMins: totalSecs / 60,
         totalSecs: totalSecs,
     };
-}
-
-function highlightLowBudgets(budget) {
-    if (budget && budget.max < 100) {
-        budget.field.classList.add('low-budget');
-        budget.field.classList.remove('text-dark');
-    }
-}
-
-function addPFHToBudgetIfApplicable() {
-    const category = getCategory();
-    const budget = getBudgetFromJobHighlights();
-    const estimatedLengthInHours = getEstimatedLength().totalHours;
-
-    if (category === 'Audiobooks' && budget && budget.field && budget.max && estimatedLengthInHours) {
-        const pfhMin = Math.round(budget.min / estimatedLengthInHours);
-        const pfhMax = Math.round(budget.max / estimatedLengthInHours);
-        
-        if (pfhMax) {
-            const pfhField = document.createElement('div');
-            pfhField.className = 'text-xxs';
-            pfhField.innerText = pfhMin ? `(\$${pfhMin} - \$${pfhMax} PFH)` : `(\$${pfhMax} PFH)`;
-            budget.field.parentNode.insertBefore(pfhField, budget.field.nextSibling);
-        }
-    }
 }

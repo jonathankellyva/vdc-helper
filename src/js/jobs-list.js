@@ -1,3 +1,7 @@
+import * as Browser from './browser';
+import * as Budgets from './budgets';
+import * as Common from './links';
+
 function getBudgetForJob(jobsListItem) {
     const budgetField = jobsListItem.querySelector('div.jobs-list-price');
     let minBudget = 0;
@@ -5,7 +9,7 @@ function getBudgetForJob(jobsListItem) {
 
     if (budgetField) {
         const text = budgetField.textContent.trim();
-        const match = text.match(BUDGET_REGEX);
+        const match = text.match(Budgets.BUDGET_REGEX);
         if (match) {
             minBudget = (match[1] || match[2]).replaceAll(',', '');
             maxBudget = match[2].replaceAll(',', '');
@@ -25,10 +29,10 @@ function handleJobAddedToList(mutationsList) {
             mutation.addedNodes.forEach(node => {
                 if (node.tagName === 'DIV' && node.classList.contains('jobs-list-item')) {
                     // Link to the original job postings rather than to your response.
-                    node.querySelectorAll('a').forEach(replacePreviewResponseLink);
+                    node.querySelectorAll('a').forEach(Common.replacePreviewResponseLink);
 
                     // Highlight jobs with a low budget (<$100, but someday a configurable amount) in red.
-                    safeCall(highlightLowBudgets, safeCall(getBudgetForJob, node));
+                    Browser.safeCall(Budgets.highlightLowBudgets, Browser.safeCall(getBudgetForJob, node));
                 }
             });
         }

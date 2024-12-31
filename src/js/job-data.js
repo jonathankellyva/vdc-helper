@@ -1,3 +1,6 @@
+import * as Notifications from './notifications';
+import * as Storage from './storage';
+
 const STATUS_REGEX = />([^<]+)</;
 
 function getJobStatus(job) {
@@ -66,13 +69,13 @@ function listJobs(jobs, requestData = {}, offset = 0, limit = 100) {
 
                         if (oldData) {
                             if (!oldData.listened && jobData.listened) {
-                                postNotification(createNotification('listen', job));
+                                Notifications.post(Notifications.create('listen', job));
                             }
                             if (!oldData.shortlisted && jobData.shortlisted) {
-                                postNotification(createNotification('shortlist', job));
+                                Notifications.post(Notifications.create('shortlist', job));
                             }
                         } else if (jobData.status === 'Hiring' && !jobData.answered) {
-                            postNotification(createNotification('newjob', job));
+                            Notifications.post(Notifications.create('newjob', job));
                         }
 
                         const keep = job.listened || job.shortlisted || job.answered || !job.closed;
@@ -83,7 +86,7 @@ function listJobs(jobs, requestData = {}, offset = 0, limit = 100) {
                         }
                     });
 
-                    STORAGE_LOCAL.set('jobs', jobs)
+                    Storage.LOCAL.set('jobs', jobs)
 
                     if (responseData.data.total > offset + limit) {
                         listJobs(jobs, requestData, offset + limit, limit);
@@ -132,11 +135,11 @@ function getMemberId() {
         });
 }
 
-function checkJobs() {
+export function check() {
     getMemberId().then(memberId => {
         if (memberId) {
             console.log(`Logged in as ${memberId}; checking for jobs`);
-            STORAGE_LOCAL.get('jobs', {}).then(savedJobData => {
+            Storage.LOCAL.get('jobs', {}).then(savedJobData => {
                 listAnsweredJobs(savedJobData, true);
                 listHiringJobs(savedJobData);
                 listAnsweredJobs(savedJobData);

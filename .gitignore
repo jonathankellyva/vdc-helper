@@ -1,2 +1,4 @@
-build
 *.iml
+.parcel-cache/*
+dist/*
+node_modules/*

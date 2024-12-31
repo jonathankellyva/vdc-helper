@@ -1,4 +1,6 @@
-// Embed YouTube videos directly into the page.
+import * as Browser from './browser';
+import * as Job from './job';
+import * as SampleScript from './sample-script';
 
 function parseTimeToSeconds(time) {
     if (!time) return null;
@@ -35,7 +37,7 @@ function parseYouTubeLink(a) {
     return undefined;
 }
 
-function embedYouTubeVideos() {
+export function embedYouTubeVideos() {
     Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
         Array.from(div.querySelectorAll('a')).forEach(a => {
             const ytLink = parseYouTubeLink(a);
@@ -55,10 +57,6 @@ function embedYouTubeVideos() {
         });
     });
 }
-
-safeCall(embedYouTubeVideos);
-
-// Embed supported reference files directly in the page so that you don't have to download them.
 
 function embedReferenceFile(file, filename, downloadLink) {
     const isAudio = filename.endsWith('.mp3') || filename.endsWith('.m4a') || filename.endsWith('.wav');
@@ -82,22 +80,18 @@ function embedReferenceFile(file, filename, downloadLink) {
     }
 }
 
-function embedReferenceFiles() {
+export function embedReferenceFiles() {
     Array.from(document.querySelectorAll('.file-details-box')).forEach(file => {
         const filenameField = file.querySelector('.file-details-box-filename');
         if (filenameField) {
             Array.from(file.querySelectorAll('a'))
                 .filter(a => a.innerText === 'Download').forEach(downloadLink => {
                     const filename = filenameField.innerText;
-                    safeCall(embedReferenceFile, file, filename, downloadLink);
+                    Browser.safeCall(embedReferenceFile, file, filename, downloadLink);
             });
         }
     });
 }
-
-safeCall(embedReferenceFiles);
-
-// Add View links to supported reference files so that you don't have to download them.
 
 function addViewLink(file, filename, linksContainer, downloadLink) {
     const isDocx = filename.endsWith('.docx');
@@ -112,7 +106,7 @@ function addViewLink(file, filename, linksContainer, downloadLink) {
         viewLink.addEventListener('click', function (event) {
             fetch(downloadLink.href).then(response => {
                 const s3DownloadUrl = response.url;
-                openNewTab(`https://docs.google.com/viewer?url=${encodeURIComponent(s3DownloadUrl)}`);
+                Browser.openNewTab(`https://docs.google.com/viewer?url=${encodeURIComponent(s3DownloadUrl)}`);
             }).catch(e => {
                 console.error(e);
                 window.alert("Sorry, but we weren't able to open the document in a new tab. Please try the Download link instead.");
@@ -125,7 +119,7 @@ function addViewLink(file, filename, linksContainer, downloadLink) {
     }
 }
 
-function addViewLinkForReferenceFiles() {
+export function addViewLinkForReferenceFiles() {
     Array.from(document.querySelectorAll('.file-details-box')).forEach(file => {
         const filenameField = file.querySelector('.file-details-box-filename');
         const linksContainer = file.querySelector('.file-details-box-links');
@@ -133,20 +127,16 @@ function addViewLinkForReferenceFiles() {
             Array.from(file.querySelectorAll('a'))
                 .filter(a => a.innerText === 'Download').forEach(downloadLink => {
                 const filename = filenameField.innerText;
-                safeCall(addViewLink, file, filename, linksContainer, downloadLink);
+                Browser.safeCall(addViewLink, file, filename, linksContainer, downloadLink);
             });
         }
     });
 }
 
-safeCall(addViewLinkForReferenceFiles);
-
-// For jobs that you've responded to, display the audition player above the sample script.
-
-function displayAuditionPlayer() {
-    const sampleScriptHeader = getSampleScriptHeader();
+export function displayAuditionPlayer() {
+    const sampleScriptHeader = SampleScript.getHeader();
     if (sampleScriptHeader) {
-        fetch(`https://www.voices.com/talent/jobs/preview_response/${JOB_ID}`, {
+        fetch(`https://www.voices.com/talent/jobs/preview_response/${Job.JOB_ID}`, {
             method: 'GET',
         })
             .then(response => response.text())
@@ -200,5 +190,3 @@ function displayAuditionPlayer() {
             });
     }
 }
-
-safeCall(displayAuditionPlayer);

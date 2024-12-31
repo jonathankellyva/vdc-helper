@@ -1,18 +1,16 @@
-importScripts(
-    '../shared/storage.js',
-    '../shared/notifications.js',
-    '../shared/job-data.js'
-);
+import * as Jobs from './job-data';
+import * as Notifications from './notifications';
+import * as Storage from './storage';
 
 const currVersion = chrome.runtime.getManifest().version;
 
 chrome.runtime.onInstalled.addListener(function() {
-    STORAGE_SYNC.get('first-use').then(firstUse => {
+    Storage.SYNC.get('first-use').then(firstUse => {
         if (!firstUse) {
-            STORAGE_SYNC.set('first-use', Date.now());
+            Storage.SYNC.set('first-use', Date.now());
         }
     });
-    STORAGE_SYNC.get('version').then(prevVersion => {
+    Storage.LOCAL.get('version').then(prevVersion => {
         if (prevVersion !== currVersion) {
             chrome.tabs.create({
                 url: "https://github.com/jonathankellyva/vdc-helper/wiki/What's-New",
@@ -21,12 +19,12 @@ chrome.runtime.onInstalled.addListener(function() {
         }
     });
 
-    STORAGE_SYNC.set('version', currVersion);
+    Storage.LOCAL.set('version', currVersion);
     
     chrome.alarms.create('alarm', { periodInMinutes: 1 });
 
-    checkJobs();
-    popUpNewNotifications();
+    Jobs.check();
+    Notifications.showNew();
 });
 
 (chrome.action || chrome.browserAction).onClicked.addListener(function() {
@@ -34,11 +32,11 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 chrome.alarms.onAlarm.addListener(function(alarm) {
-    checkJobs();
-    popUpNewNotifications();
+    Jobs.check();
+    Notifications.showNew();
 });
 
-setInterval(popUpNewNotifications, 5000);
+setInterval(Notifications.showNew, 5000);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "openTab" && message.url) {
