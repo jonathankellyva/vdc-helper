@@ -10,7 +10,8 @@ build_js: src/js
 	    src/js/job-response.js \
 	    src/js/jobs-list.js \
 	    src/js/statistics.js \
-	    --dist-dir dist/js
+	    --dist-dir dist/js \
+            --no-optimize
 
 build_firefox: manifest-v2.json build_js
 	rsync -arv dist/js src/css src/img dist/firefox/
