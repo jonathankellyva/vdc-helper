@@ -10,6 +10,7 @@ export function save(notifications) {
 
 export function create(type, job) {
     return {
+        uuid: crypto.randomUUID(),
         type: type,
         jobId: job.id,
         jobTitle: job.title,
@@ -83,10 +84,9 @@ function popUp(data) {
     const title = getPopupTitle(data);
     const body = getPopupBody(data);
     const icon = getIcon(data);
-    const target = getTarget(data);
 
     if (title && body) {
-        chrome.notifications.create({
+        chrome.notifications.create(data.uuid, {
             type: 'basic',
             iconUrl: icon,
             title: title,
@@ -106,4 +106,19 @@ export function showNew() {
             save(notifications);
         }
     });
+}
+
+export async function clicked(uuid, newTab) {
+    const notifications = await load();
+    const data = notifications.find(notification => notification.uuid === uuid);
+
+    if (data) {
+        const target = getTarget(data);
+        if (target) {
+            chrome.tabs.create({ url: target });
+        }
+        data.read = true;
+        save(notifications);
+        chrome.notifications.clear(uuid);
+    }
 }

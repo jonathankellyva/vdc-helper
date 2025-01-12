@@ -44,3 +44,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ status: "success" });
     }
 });
+
+chrome.notifications.onClicked.addListener(async (uuid) => {
+    Notifications.clicked(uuid);
+});
