@@ -19,6 +19,15 @@ Array.from(document.querySelectorAll('span.tag'))
         Browser.safeCall(Tags.addLinkToRateGuide, el);
     });
 
+function addRateGuideLinkToCategory() {
+    const categoryHeading = Job.getCategoryHeading();
+    if (categoryHeading) {
+        Tags.addLinkToRateGuide(categoryHeading);
+    }
+}
+
+Browser.safeCall(addRateGuideLinkToCategory);
+
 // Clicking on the Job Title/ID copies it to the clipboard.
 // Holding a modifier key down while clicking will copy both (e.g., "12345 - Awesome Job").
 

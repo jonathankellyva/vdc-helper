@@ -113,12 +113,15 @@ Thank you,
 
 * In the Job Highlights, highlight the budget in red if it is below $100.
 
+* Add a [GVAA Rate Guide](https://globalvoiceacademy.com/gvaa-rate-guide-2/) link next to the category.
+
 * For audiobooks, display PFH rates under the Budget in the Job Highlights.
 
 * In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
   Also, make ad licensing durations more concise and readable.
   (e.g., "0 Years: 0 Months: 5 Weeks" => "5 Weeks")
-  Add a GVAA Rate Guide link next to each ad (currently supporting Online, Radio, and TV).
+  Add a [GVAA Rate Guide](https://globalvoiceacademy.com/gvaa-rate-guide-2/) link next to each ad
+  (currently supporting Online, Radio, and TV).
 
 * Highlight Live Directed Session tags (i.e., the little bubbles that say "Zoom", "Source Connect",
   etc.) in gold so that they stand out.

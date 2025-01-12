@@ -124,14 +124,22 @@ export function getVoiceMatch() {
     return voiceMatch;
 }
 
-export function getCategoryTag() {
+export function getCategoryHeading() {
     const jobHighlights = getJobHighlights();
 
     if (jobHighlights) {
-        const categoryHeading = Array.from(jobHighlights.querySelectorAll('p')).find(el => el.innerText === 'Category');
-        if (categoryHeading) {
-            return categoryHeading.parentNode.querySelector('span.text-dark');
-        }
+        return Array.from(jobHighlights.querySelectorAll('p'))
+            .find(el => el.innerText === 'Category');
+    }
+
+    return undefined;
+}
+
+export function getCategoryTag() {
+    const categoryHeading = getCategoryHeading();
+
+    if (categoryHeading) {
+        return categoryHeading.parentNode.querySelector('span.text-dark');
     }
 
     return undefined;
