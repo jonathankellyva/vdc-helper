@@ -1,3 +1,4 @@
+import * as Browser from './browser';
 import * as Jobs from './job-data';
 import * as Notifications from './notifications';
 import * as Storage from './storage';
@@ -12,10 +13,7 @@ chrome.runtime.onInstalled.addListener(function() {
     });
     Storage.LOCAL.get('version').then(prevVersion => {
         if (prevVersion !== currVersion) {
-            chrome.tabs.create({
-                url: "https://github.com/jonathankellyva/vdc-helper/wiki/What's-New",
-                active: false
-            });
+            Browser.openNewTab("https://github.com/jonathankellyva/vdc-helper/wiki/What's-New", false);
         }
     });
 
@@ -28,7 +26,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 (chrome.action || chrome.browserAction).onClicked.addListener(function() {
-    chrome.tabs.create({ url: 'https://voices.com' });
+    Browser.openNewTab('https://voices.com' );
 });
 
 chrome.alarms.onAlarm.addListener(function(alarm) {
@@ -39,9 +37,9 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 setInterval(Notifications.showNew, 5000);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "openTab" && message.url) {
-        chrome.tabs.create({ url: message.url });
-        sendResponse({ status: "success" });
+    if (message.action === 'openNewTab' && message.url) {
+        Browser.openNewTab(message.url, message.active);
+        sendResponse({ status: 'success' });
     }
 });
 
