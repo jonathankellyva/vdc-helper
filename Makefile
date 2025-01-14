@@ -13,13 +13,14 @@ build_js: src/js
 	    --dist-dir dist/js \
             --no-optimize
 
-build_firefox: manifest-v2.json build_js
+build_firefox: manifest-base.json manifest-v2.json build_js
 	rsync -arv dist/js src/css src/img dist/firefox/
-	cp manifest-v2.json dist/firefox/manifest.json
+	bin/merge-manifests.sh manifest-base.json manifest-v2.json > dist/firefox/manifest.json
 
-build_chrome: manifest-v3.json build_js
+
+build_chrome: manifest-base.json manifest-v3.json build_js
 	rsync -arv dist/js src/css src/img dist/chrome/
-	cp manifest-v3.json dist/chrome/manifest.json
+	bin/merge-manifests.sh manifest-base.json manifest-v3.json > dist/chrome/manifest.json
 
 package_firefox: build_firefox
 	@cd dist/firefox && zip -r ../firefox.zip *

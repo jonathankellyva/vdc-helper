@@ -1,14 +1,5 @@
 {
   "manifest_version": 3,
-  "name": "Voices.com Helper",
-  "version": "0.1.1.0",
-  "description": "An unofficial browser extension that improves the user experience of Voices.com",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "alarms",
-    "notifications"
-  ],
   "action": {
     "default_icon": {
       "16": "img/voices-icon-16x16.png",
@@ -16,73 +7,9 @@
       "128": "img/voices-icon-128x128.png"
     }
   },
-  "icons": {
-    "16": "img/voices-icon-16x16.png",
-    "48": "img/voices-icon-48x48.png",
-    "128": "img/voices-icon-128x128.png"
-  },
   "background": {
     "service_worker": "js/background.js"
   },
-  "content_scripts": [
-    {
-      "matches": ["https://www.voices.com/talent/demos/add/*"],
-      "js": [
-        "js/add-demo.js"
-      ]
-    },
-    {
-      "matches": ["https://www.voices.com/talent/demos/edit/*"],
-      "js": [
-        "js/edit-demo.js"
-      ]
-    },
-    {
-      "matches": ["https://www.voices.com/talent/jobs/posting/*"],
-      "css": [
-        "css/main.css"
-      ],
-      "js": [
-        "js/job-details.js"
-      ]
-    },
-    {
-      "matches": ["https://www.voices.com/talent/jobs/response/*"],
-      "css": [
-        "css/main.css"
-      ],
-      "js": [
-        "js/job-response.js"
-      ]
-    },
-    {
-      "matches": ["https://www.voices.com/talent/jobs/*"],
-      "css": [
-        "css/main.css"
-      ],
-      "js": [
-        "js/jobs-list.js"
-      ]
-    },
-    {
-      "matches": ["https://www.voices.com/talent/statistics"],
-      "css": [
-        "css/main.css"
-      ],
-      "js": [
-        "js/statistics.js"
-      ]
-    },
-    {
-      "matches": ["https://www.voices.com/talent/*"],
-      "css": [
-        "css/main.css"
-      ],
-      "js": [
-        "js/alerts-menu.js"
-      ]
-    }
-  ],
   "web_accessible_resources": [
     {
       "resources": ["img/gvaa-icon.png"],
