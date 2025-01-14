@@ -141,6 +141,23 @@ function saveSampleScript(force) {
 
 function makeScriptEditable() {
     if (sampleScriptField) {
+        const sampleScriptHeader = getHeader();
+        if (sampleScriptHeader) {
+            const sampleScriptEditLink = document.createElement('a');
+            sampleScriptEditLink.href = 'about:blank';
+            sampleScriptEditLink.innerText = 'Edit';
+            sampleScriptEditLink.className = 'text-sm';
+            sampleScriptEditLink.addEventListener('click', function (event) {
+                if (!editingSampleScript) {
+                    openScriptEditor(sampleScriptField);
+                }
+                event.preventDefault();
+                return false;
+            });
+            sampleScriptHeader.parentNode.insertBefore(sampleScriptEditLink, sampleScriptHeader.nextElementSibling);
+            sampleScriptHeader.style.display = 'inline-block';
+        }
+        
         if (!sampleScriptTextarea) {
             sampleScriptTextarea = document.createElement('textarea');
             sampleScriptTextarea.style.display = 'none';
