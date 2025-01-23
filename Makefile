@@ -11,7 +11,8 @@ build_js: src/js
 	    src/js/jobs-list.js \
 	    src/js/statistics.js \
 	    --dist-dir dist/js \
-            --no-optimize
+            --no-optimize \
+            --no-scope-hoist
 
 build_firefox: manifest-base.json manifest-v2.json build_js
 	rsync -arv dist/js src/css src/img dist/firefox/
