@@ -102,7 +102,10 @@ Unfortunately, this feature is at least temporarily disabled because Voices.com 
   On Mac, hold Command and click on the script.  
   On Windows, hold the Windows key and click on the script.  
   On mobile, long press on the script.  
+  There is also an Edit link next to the Sample Script header.  
   Edits are saved across page loads, but you can restore the original text with the Reset button.
+
+* You can click the Copy link next to the Sample Script to copy it to the clipboard.
 
 * Show the total number of words in the Sample Script.
   When selecting any words in the script, also show the number of selected words.

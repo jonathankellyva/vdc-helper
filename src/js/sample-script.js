@@ -143,18 +143,43 @@ function makeScriptEditable() {
     if (sampleScriptField) {
         const sampleScriptHeader = getHeader();
         if (sampleScriptHeader) {
+            const sampleScriptLinks = document.createElement('span');
+
             const sampleScriptEditLink = document.createElement('a');
             sampleScriptEditLink.href = 'about:blank';
             sampleScriptEditLink.innerText = 'Edit';
-            sampleScriptEditLink.className = 'text-sm';
+            sampleScriptEditLink.title = 'Open sample script editor';
+            sampleScriptEditLink.className = 'text-xs';
             sampleScriptEditLink.addEventListener('click', function (event) {
                 if (!editingSampleScript) {
                     openScriptEditor(sampleScriptField);
+                } else {
+                    finishEditingSampleScript();
                 }
                 event.preventDefault();
                 return false;
             });
-            sampleScriptHeader.parentNode.insertBefore(sampleScriptEditLink, sampleScriptHeader.nextElementSibling);
+
+            const separator = document.createElement('span');
+            separator.innerText = ' | ';
+
+            const sampleScriptCopyLink = document.createElement('a');
+            sampleScriptCopyLink.href = 'about:blank';
+            sampleScriptCopyLink.innerText = 'Copy';
+            sampleScriptCopyLink.title = 'Copy sample script to clipboard';
+            sampleScriptCopyLink.className = 'text-xs';
+            sampleScriptCopyLink.addEventListener('click', function (event) {
+                finishEditingSampleScript();
+                copySampleScriptToClipboard(event);
+                event.preventDefault();
+                return false;
+            });
+
+            sampleScriptLinks.appendChild(sampleScriptEditLink);
+            sampleScriptLinks.appendChild(separator);
+            sampleScriptLinks.appendChild(sampleScriptCopyLink);
+
+            sampleScriptHeader.parentNode.insertBefore(sampleScriptLinks, sampleScriptHeader.nextElementSibling);
             sampleScriptHeader.style.display = 'inline-block';
         }
         
@@ -188,6 +213,10 @@ function makeScriptEditable() {
         saveSampleScriptButton.addEventListener('click', finishEditingSampleScript);
         resetSampleScriptButton.addEventListener('click', resetSampleScript);
     }
+}
+
+function copySampleScriptToClipboard(event) {
+    Browser.copyToClipboardAndNotify(sampleScriptField.innerText, 'Copied sample script to clipboard', event);
 }
 
 function openScriptEditor(target) {

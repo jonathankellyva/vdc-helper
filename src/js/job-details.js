@@ -33,22 +33,7 @@ Browser.safeCall(addRateGuideLinkToCategory);
 
 function addClickHandlersToJobTitleAndId() {
     function copyToClipboardAndNotify(text, event) {
-        navigator.clipboard.writeText(text).then(() => {
-            const notification = document.createElement('div');
-            notification.textContent = 'Copied to clipboard: ' + text;
-            notification.className = 'clipboard-notification';
-            notification.style.left = event.pageX + 'px';
-            notification.style.top = event.pageY + 'px';
-            document.body.appendChild(notification);
-
-            window.setTimeout(function () {
-                notification.style.opacity = '0%';
-            }, 1500);
-
-            window.setTimeout(function () {
-                notification.remove();
-            }, 2000);
-        });
+        Browser.copyToClipboardAndNotify(text, 'Copied to clipboard: ' + text, event);
     }
 
     const JOB_ID_AND_TITLE = `${Job.JOB_ID} - ${Job.JOB_TITLE}`;

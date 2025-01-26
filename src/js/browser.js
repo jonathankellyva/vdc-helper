@@ -35,3 +35,22 @@ export function isSpecialKeyHeld(event) {
 export function isSpecialKeyOrShiftHeld(event) {
     return isSpecialKeyHeld(event) || event.shiftKey;
 }
+
+export function copyToClipboardAndNotify(text, notificationText, event) {
+    navigator.clipboard.writeText(text).then(() => {
+        const notification = document.createElement('div');
+        notification.textContent = notificationText;
+        notification.className = 'clipboard-notification';
+        notification.style.left = event.pageX + 'px';
+        notification.style.top = event.pageY + 'px';
+        document.body.appendChild(notification);
+
+        window.setTimeout(function () {
+            notification.style.opacity = '0%';
+        }, 1500);
+
+        window.setTimeout(function () {
+            notification.remove();
+        }, 2000);
+    });
+}
