@@ -17,6 +17,10 @@ function hideDollarAmount(el) {
     }
 }
 
+function roundToTwoSigFigs(number) {
+    return number < 10 ? number.toFixed(1) : Math.round(number);
+}
+
 function onStatsUpdated(mutationsList) {
     let auditionsSubmitted = 0;
     let auditionListens = 0;
@@ -74,23 +78,32 @@ function onStatsUpdated(mutationsList) {
 
     if (updatePercents) {
         let auditionListenPercent = 0;
-        let submittedAuditionShortlistPercent = 0;
+        let auditionListenDenominator = 0;
         let listenedAuditionShortlistPercent = 0;
+        let listenedAuditionShortlistDenominator = 0;
+        let submittedAuditionShortlistPercent = 0;
+        let submittedAuditionShortlistDenominator = 0;
 
         if (auditionsSubmitted > 0) {
             if (auditionListens > 0) {
                 auditionListenPercent = (100 * auditionListens / auditionsSubmitted).toFixed(1);
+                auditionListenDenominator = roundToTwoSigFigs(auditionsSubmitted / auditionListens);
             }
 
             if (auditionsShortlisted > 0) {
-                submittedAuditionShortlistPercent = (100 * auditionsShortlisted / auditionsSubmitted).toFixed(1);
                 listenedAuditionShortlistPercent = (100 * auditionsShortlisted / auditionListens).toFixed(1);
+                listenedAuditionShortlistDenominator = roundToTwoSigFigs(auditionListens / auditionsShortlisted);
+                submittedAuditionShortlistPercent = (100 * auditionsShortlisted / auditionsSubmitted).toFixed(1);
+                submittedAuditionShortlistDenominator = roundToTwoSigFigs(auditionsSubmitted / auditionsShortlisted);
             }
         }
 
-        auditionListenPercentField.innerHTML = auditionListenPercent > 0 ? ' (' + auditionListenPercent + '% of submitted)' : '';
-        submittedAuditionShortlistPercentField.innerHTML = submittedAuditionShortlistPercent > 0 ? ' (' + submittedAuditionShortlistPercent + '% of submitted)' : '';
-        listenedAuditionShortlistPercentField.innerHTML = listenedAuditionShortlistPercent > 0 ? ' (' + listenedAuditionShortlistPercent + '% of listened)' : '';
+        auditionListenPercentField.innerText = auditionListenPercent > 0
+            ? ` (${auditionListenPercent}% of submitted, or 1:${auditionListenDenominator})` : '';
+        listenedAuditionShortlistPercentField.innerText = listenedAuditionShortlistPercent > 0
+            ? ` (${listenedAuditionShortlistPercent}% of listened, or 1:${listenedAuditionShortlistDenominator})` : '';
+        submittedAuditionShortlistPercentField.innerText = submittedAuditionShortlistPercent > 0
+            ? ` (${submittedAuditionShortlistPercent} % of submitted, or 1:${submittedAuditionShortlistDenominator})` : '';
     }
 }
 
