@@ -1,6 +1,6 @@
 {
   "name": "Voices.com Helper",
-  "version": "0.1.1.0",
+  "version": "0.1.1.1",
   "description": "An unofficial browser extension that improves the user experience of Voices.com",
   "permissions": [
     "activeTab",
