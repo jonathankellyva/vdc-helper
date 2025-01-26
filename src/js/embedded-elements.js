@@ -95,8 +95,9 @@ export function embedReferenceFiles() {
 
 function addViewLink(file, filename, linksContainer, downloadLink) {
     const isDocx = filename.endsWith('.docx');
+    const isPdf = filename.endsWith('.pdf');
     
-    if (isDocx) {
+    if (isDocx || isPdf) {
         const viewLink = document.createElement('a');
         const separator = document.createTextNode(' | ');
 
@@ -124,11 +125,14 @@ export function addViewLinkForReferenceFiles() {
         const filenameField = file.querySelector('.file-details-box-filename');
         const linksContainer = file.querySelector('.file-details-box-links');
         if (filenameField && linksContainer) {
-            Array.from(file.querySelectorAll('a'))
-                .filter(a => a.innerText === 'Download').forEach(downloadLink => {
-                const filename = filenameField.innerText;
-                Browser.safeCall(addViewLink, file, filename, linksContainer, downloadLink);
-            });
+            const existingViewLink = Array.from(file.querySelectorAll('a')).find(a => a.innerText === 'View');
+            if (!existingViewLink) {
+                Array.from(file.querySelectorAll('a'))
+                    .filter(a => a.innerText === 'Download').forEach(downloadLink => {
+                    const filename = filenameField.innerText;
+                    Browser.safeCall(addViewLink, file, filename, linksContainer, downloadLink);
+                });
+            }
         }
     });
 }

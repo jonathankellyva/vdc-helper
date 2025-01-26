@@ -86,9 +86,10 @@ Thank you,
 * Similarly, display reference/script PNG/JPG images directly in the page rather than having to
   download them and open them separately.
 
-* Add a View link next to the Download link for DOCX reference files and sample scripts. These will
-  pop up the document in a new tab in your browser so that you don't have to download them and open
-  them in a separate application.
+* Add a View link next to the Download link for DOCX reference files and sample scripts. Also add
+  one for PDF reference files. (For some reason, Voices.com adds a View link for PDF sample scripts
+  but not PDF reference files.) These will pop up the document in a new tab (using Google Docs
+  Viewer) so that you don't have to download them and open them in a separate application.
 
 * For jobs you've responded to, add audio controls to play your audition right above the Sample
   Script. This makes it much easier to play back your audition while reading the script without
