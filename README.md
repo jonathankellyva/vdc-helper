@@ -107,6 +107,8 @@ Unfortunately, this feature is at least temporarily disabled because Voices.com 
 
 * You can click the Copy link next to the Sample Script to copy it to the clipboard.
 
+* You can click the Pop Out link next to the Sample Script to pop it out to its own small window.
+
 * Show the total number of words in the Sample Script.
   When selecting any words in the script, also show the number of selected words.
 

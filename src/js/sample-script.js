@@ -33,6 +33,7 @@ function handleLongPress(event) {
 
 let sampleScriptField = document.querySelector('p.readmore-content');
 let sampleScriptTextarea = null;
+let sampleScriptPopOut = null;
 let originalSampleScriptText = null;
 let prevSampleScriptText = null;
 let saveSampleScriptButton = null;
@@ -145,6 +146,12 @@ function makeScriptEditable() {
         if (sampleScriptHeader) {
             const sampleScriptLinks = document.createElement('span');
 
+            function newSeparator() {
+                const separator = document.createElement('span');
+                separator.innerText = ' | ';
+                return separator;
+            }
+
             const sampleScriptEditLink = document.createElement('a');
             sampleScriptEditLink.href = 'about:blank';
             sampleScriptEditLink.innerText = 'Edit';
@@ -160,9 +167,6 @@ function makeScriptEditable() {
                 return false;
             });
 
-            const separator = document.createElement('span');
-            separator.innerText = ' | ';
-
             const sampleScriptCopyLink = document.createElement('a');
             sampleScriptCopyLink.href = 'about:blank';
             sampleScriptCopyLink.innerText = 'Copy';
@@ -175,9 +179,23 @@ function makeScriptEditable() {
                 return false;
             });
 
+            const sampleScriptPopOutLink = document.createElement('a');
+            sampleScriptPopOutLink.href = 'about:blank';
+            sampleScriptPopOutLink.innerText = 'Pop Out';
+            sampleScriptPopOutLink.title = 'Pop out sample script into small window';
+            sampleScriptPopOutLink.className = 'text-xs';
+            sampleScriptPopOutLink.addEventListener('click', function (event) {
+                finishEditingSampleScript();
+                popOutSampleScript();
+                event.preventDefault();
+                return false;
+            });
+
             sampleScriptLinks.appendChild(sampleScriptEditLink);
-            sampleScriptLinks.appendChild(separator);
+            sampleScriptLinks.appendChild(newSeparator());
             sampleScriptLinks.appendChild(sampleScriptCopyLink);
+            sampleScriptLinks.appendChild(newSeparator());
+            sampleScriptLinks.appendChild(sampleScriptPopOutLink);
 
             sampleScriptHeader.parentNode.insertBefore(sampleScriptLinks, sampleScriptHeader.nextElementSibling);
             sampleScriptHeader.style.display = 'inline-block';
@@ -217,6 +235,21 @@ function makeScriptEditable() {
 
 function copySampleScriptToClipboard(event) {
     Browser.copyToClipboardAndNotify(sampleScriptField.innerText, 'Copied sample script to clipboard', event);
+}
+
+function popOutSampleScript() {
+    if (!sampleScriptPopOut || sampleScriptPopOut.closed) {
+        sampleScriptPopOut = window.open('', 'sample-script', 'width=400,height=300,toolbar=0,location=0,status=0,menubar=0');
+    }
+    updateSampleScriptInPopOut();
+}
+
+function updateSampleScriptInPopOut() {
+    if (sampleScriptPopOut && !sampleScriptPopOut.closed) {
+        sampleScriptPopOut.document.open();
+        sampleScriptPopOut.document.write(sampleScriptField.innerHTML);
+        sampleScriptPopOut.focus();
+    }
 }
 
 function openScriptEditor(target) {
