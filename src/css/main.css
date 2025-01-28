@@ -138,6 +138,8 @@ span.matching-tag {
     display: block;
     position: absolute !important;
     right: 0;
+    height: calc(100vh - 72px);
+    overflow-y: scroll;
     background-color: white;
 }
 
