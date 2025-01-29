@@ -8,16 +8,7 @@ import * as SampleScript from './sample-script';
 import * as Tags from './tags';
 import * as VoiceMatch from './voice-match';
 
-Array.from(document.querySelectorAll('span.tag'))
-    .filter(el => el.innerText.indexOf(' Ad ') > 0)
-    .forEach(function (el) {
-        // Highlight in-perp ads in red and other ads in green.
-        Browser.safeCall(Tags.highlightInPerpAds, el);
-        // Make the ad licensing more concise (e.g., "0 Years: 0 Months: 5 Weeks" to "5 Weeks")
-        Browser.safeCall(Tags.simplifyLicensingParts, el);
-        // Link to GVAA Rate Guide
-        Browser.safeCall(Tags.addLinkToRateGuide, el);
-    });
+Browser.safeCall(Tags.improveAdTags);
 
 function addRateGuideLinkToCategory() {
     const categoryHeading = Job.getCategoryHeading();

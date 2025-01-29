@@ -1,4 +1,6 @@
-export function highlightInPerpAds(el) {
+import * as Browser from "./browser";
+
+function highlightInPerpAds(el) {
     if (el.innerText.indexOf('In Perpetuity') > 0) {
         el.classList.add('in-perp-ad');
     } else {
@@ -6,7 +8,7 @@ export function highlightInPerpAds(el) {
     }
 }
 
-export function simplifyLicensingParts(el) {
+function simplifyLicensingParts(el) {
     const licensingParts = el.innerText.split(" • ");
 
     if (licensingParts.length === 3) {
@@ -39,4 +41,17 @@ export function addLinkToRateGuide(el) {
     gvaaIcon.className = 'gvaa-icon';
     gvaaLink.appendChild(gvaaIcon);
     el.appendChild(gvaaLink);
+}
+
+export function improveAdTags() {
+    Array.from(document.querySelectorAll('span.tag'))
+        .filter(el => el.innerText.indexOf(' Ad ') > 0)
+        .forEach(function (el) {
+            // Highlight in-perp ads in red and other ads in green.
+            Browser.safeCall(highlightInPerpAds, el);
+            // Make the ad licensing more concise (e.g., "0 Years: 0 Months: 5 Weeks" to "5 Weeks")
+            Browser.safeCall(simplifyLicensingParts, el);
+            // Link to GVAA Rate Guide
+            Browser.safeCall(addLinkToRateGuide, el);
+        });
 }

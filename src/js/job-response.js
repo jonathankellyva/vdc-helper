@@ -3,6 +3,9 @@ import * as Budgets from './budgets';
 import * as Job from './job';
 import * as ResponseTemplates from './response-templates';
 import * as Storage from './storage';
+import * as Tags from "./tags";
+
+Browser.safeCall(Tags.improveAdTags);
 
 function getCategoryFromResponsePage() {
     let category = Job.getCategory();
