@@ -1,6 +1,7 @@
 import * as Browser from './browser';
 import * as Budgets from './budgets';
 import * as Job from './job';
+import * as PerfDetails from './perf-details';
 import * as ResponseTemplates from './response-templates';
 import * as Storage from './storage';
 import * as Tags from "./tags";
@@ -28,6 +29,10 @@ const category = Browser.safeCall(getCategoryFromResponsePage);
 const earningsField = document.querySelector('input[name="earnings"]');
 const quoteField = document.querySelector('input[name="quote"]');
 const budget = Browser.safeCall(Budgets.getBudgetFromJobHighlights);
+
+// Hide Performance Details sections that just say "N/A" anyway.
+
+Browser.safeCall(PerfDetails.hideEmptyPerfDetailsSections);
 
 // Highlight live directed session tags in gold on the response page.
 

@@ -4,6 +4,7 @@ import * as ClientDetails from './client-details';
 import * as EmbeddedElements from './embedded-elements';
 import * as Job from './job';
 import * as Links from './links';
+import * as PerfDetails from './perf-details';
 import * as SampleScript from './sample-script';
 import * as Tags from './tags';
 import * as VoiceMatch from './voice-match';
@@ -69,36 +70,7 @@ Browser.safeCall(highlightLiveDirectedSessions);
 
 // Hide Performance Details sections that just say "N/A" anyway.
 
-function hideEmptyPerfDetailsSections() {
-    Array.from(document.querySelectorAll('h5'))
-        .filter(el => el.innerText === 'Other Project Requirements'
-            || el.innerText === 'Reference Link').forEach(function (el) {
-        if (el.nextElementSibling && el.nextElementSibling.innerText.trim() === 'N/A') {
-            if (el.previousElementSibling) {
-                // Hide the preceding <hr> tab
-                el.previousElementSibling.style.display = 'none';
-            }
-            // Hide the header (e.g., "Other Project Requirements")
-            el.style.display = 'none';
-            // Hide the "N/A"
-            el.nextElementSibling.style.display = 'none';
-        }
-    });
-
-    const referenceFileWrapper = document.getElementById('reference-file-wrapper');
-    if (referenceFileWrapper && referenceFileWrapper.previousElementSibling) {
-        const noReferenceFiles = Array.from(referenceFileWrapper.querySelectorAll('p'))
-            .filter(el => el.innerText.trim() === 'N/A').length > 0;
-        if (noReferenceFiles) {
-            // Hide the preceding <hr> tab
-            referenceFileWrapper.previousElementSibling.style.display = 'none';
-            // Hide the empty Reference Files section
-            referenceFileWrapper.style.display = 'none';
-        }
-    }
-}
-
-Browser.safeCall(hideEmptyPerfDetailsSections);
+Browser.safeCall(PerfDetails.hideEmptyPerfDetailsSections);
 
 // Make the "missing info" flagged job alert stand out more by making it red instead of blue.
 
