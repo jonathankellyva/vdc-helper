@@ -16,6 +16,7 @@ function getCategoryFromResponsePage() {
             if (categorySpan) {
                 category = categorySpan.innerText.trim();
             }
+            Browser.safeCall(Tags.addLinkToRateGuide, categorySpan);
         }
     });
     
