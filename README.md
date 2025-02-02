@@ -54,9 +54,11 @@ Thank you,
 
 #### Notifications
 
-* Pop up notifications when you receive a new job invitation or when a client listens to or
+Unfortunately, this feature is at least temporarily disabled because Voices.com seems to have made a change that broke it.
+
+* ~~Pop up notifications when you receive a new job invitation or when a client listens to or
   shortlists one of your auditions. Clicking on the notification will open the corresponding
-  job in a new tab.
+  job in a new tab.~~
 
 #### Job Details Page
 
