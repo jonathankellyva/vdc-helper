@@ -1,6 +1,9 @@
 import * as Notifications from './notifications';
 import * as Storage from './storage';
 
+// Temporarily disabled until it is fixed
+const CHECK_JOB_DATA = false;
+
 const STATUS_REGEX = />([^<]+)</;
 
 function getJobStatus(job) {
@@ -136,6 +139,9 @@ function getMemberId() {
 }
 
 export function check() {
+    if (!CHECK_JOB_DATA) {
+        return;
+    }
     getMemberId().then(memberId => {
         if (memberId) {
             console.log(`Logged in as ${memberId}; checking for jobs`);
