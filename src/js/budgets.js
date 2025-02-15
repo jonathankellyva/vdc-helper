@@ -47,7 +47,7 @@ export function addPFHToBudgetIfApplicable() {
         if (pfhMax) {
             const pfhField = document.createElement('div');
             pfhField.className = 'text-xxs';
-            pfhField.innerText = pfhMin ? `(\$${pfhMin} - \$${pfhMax} PFH)` : `(\$${pfhMax} PFH)`;
+            pfhField.innerText = pfhMin && pfhMin < pfhMax ? `(\$${pfhMin} - \$${pfhMax} PFH)` : `(\$${pfhMax} PFH)`;
             budget.field.parentNode.insertBefore(pfhField, budget.field.nextSibling);
         }
     }
