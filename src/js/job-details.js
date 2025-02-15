@@ -169,3 +169,15 @@ Browser.safeCall(ClientDetails.moveClientDetails);
 // Help determine cause of <100% VoiceMatch
 
 Browser.safeCall(VoiceMatch.analyze);
+
+// Get rid of terrible wrapping on the Job Details page. (The Performance Details section uses the
+// `break-word` CSS class, which sets `word-break: break-all`, which adds line breaks in the
+// middle of words. I have no idea why they do this because it is terrible for readability.)
+
+function fixWrapping() {
+    Array.from(document.querySelectorAll('p.break-word')).forEach(el => {
+        el.classList.remove('break-word');
+    });
+}
+
+Browser.safeCall(fixWrapping);
