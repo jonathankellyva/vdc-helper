@@ -215,6 +215,7 @@ function makeScriptEditable() {
 
         saveSampleScriptButton = document.createElement('button');
         saveSampleScriptButton.id = 'save-sample-script';
+        saveSampleScriptButton.className = 'btn-primary btn btn-md';
         saveSampleScriptButton.textContent = 'Save';
         saveSampleScriptButton.style.marginTop = '10px';
         saveSampleScriptButton.style.marginRight = '10px';
@@ -223,6 +224,7 @@ function makeScriptEditable() {
 
         resetSampleScriptButton = document.createElement('button');
         resetSampleScriptButton.id = 'reset-sample-script';
+        resetSampleScriptButton.className = 'btn-primary btn btn-md';
         resetSampleScriptButton.textContent = 'Reset';
         resetSampleScriptButton.style.marginTop = '10px';
         resetSampleScriptButton.style.display = 'none';
