@@ -123,7 +123,8 @@ Unfortunately, this feature is at least temporarily disabled because Voices.com 
 
 * Add a [GVAA Rate Guide](https://globalvoiceacademy.com/gvaa-rate-guide-2/) link next to the category.
 
-* For audiobooks, display PFH rates under the Budget in the Job Highlights.
+* Calculate and display PFH (Per Finished Hour) rates under the Budget in the Job Highlights for
+  audiobooks and anything else that is longer than 20 mins.
 
 * In Licensing Details, highlight in-perp ads in red and other ads in green so they stand out.
   Also, make ad licensing durations more concise and readable.
@@ -143,8 +144,9 @@ Unfortunately, this feature is at least temporarily disabled because Voices.com 
 * Highlight in-perp ads in red and other ads in green, and add GVAA links, just like is done on the
   Job Details page.
 
-* For audiobooks, display PFH rates under the Job Budget in the Job Highlights and under the
-  Your Earnings and Your Quote fields.
+* Calculate and display PFH (Per Finished Hour) rates under the Job Budget in the Job Highlights
+  section and under the Your Earnings and Your Quote fields, both for audiobooks and for anything
+  else that is longer than 20 mins.
 
 #### Jobs List Pages
 

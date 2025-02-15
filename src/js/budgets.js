@@ -40,7 +40,7 @@ export function addPFHToBudgetIfApplicable() {
     const budget = getBudgetFromJobHighlights();
     const estimatedLengthInHours = Job.getEstimatedLength().totalHours;
 
-    if (category === 'Audiobooks' && budget && budget.field && budget.max && estimatedLengthInHours) {
+    if (estimatedLengthInHours && budget && budget.field && budget.max && (category === 'Audiobooks' || estimatedLengthInHours >= 1/3)) {
         const pfhMin = Math.round(budget.min / estimatedLengthInHours);
         const pfhMax = Math.round(budget.max / estimatedLengthInHours);
 

@@ -39,7 +39,7 @@ Browser.safeCall(highlightLiveDirectedSessionOnResponsePage);
 
 Browser.safeCall(Budgets.highlightLowBudgets, budget);
 
-// For audiobooks, display PFH rates next to Job Budget, Your Earnings, and Your Quote fields.
+// For audiobooks or any longer scripts, display PFH rates next to Job Budget, Your Earnings, and Your Quote fields.
 
 function displayAudiobookRates() {
     const estimatedLengthInHours = Job.getEstimatedLength().totalHours;

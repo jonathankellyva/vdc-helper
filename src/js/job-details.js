@@ -151,7 +151,7 @@ Browser.safeCall(EmbeddedElements.displayAuditionPlayer);
 
 Browser.safeCall(Budgets.highlightLowBudgets, Browser.safeCall(Budgets.getBudgetFromJobHighlights));
 
-// For audiobooks, display PFH rates under Budget.
+// For audiobooks or any longer scripts, display PFH rates under Budget.
 
 Browser.safeCall(Budgets.addPFHToBudgetIfApplicable);
 
