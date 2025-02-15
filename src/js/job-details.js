@@ -131,9 +131,9 @@ function makeLinksClickable() {
 
 Browser.safeCall(makeLinksClickable);
 
-// Embed YouTube videos directly into the page.
+// Embed YouTube and Vimeo videos directly into the page.
 
-Browser.safeCall(EmbeddedElements.embedYouTubeVideos);
+Browser.safeCall(EmbeddedElements.embedVideos);
 
 // Embed supported reference files directly in the page so that you don't have to download them.
 

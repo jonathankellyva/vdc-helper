@@ -21,12 +21,26 @@ function parseTimeToSeconds(time) {
     return seconds;
 }
 
-function parseYouTubeLink(a) {
+function getVimeoTimestampFromUrlHash(hash) {
+    if (!hash) return null;
+    const match = hash.match(/t=([0-9ms]+)/);
+    return match ? match[1] : null;
+}
+
+function parseVideoLink(a) {
     try {
         const url = new URL(a.href);
+        let type = null;
 
         if (url.host.endsWith('youtube.com') || url.host.endsWith('youtu.be')) {
+            type = 'youtube';
+        } else if (url.host.endsWith('vimeo.com')) {
+            type = 'vimeo';
+        }
+
+        if (type) {
             return {
+                type: type,
                 url: url,
                 params: new URLSearchParams(url.search),
             };
@@ -37,22 +51,38 @@ function parseYouTubeLink(a) {
     return undefined;
 }
 
-export function embedYouTubeVideos() {
+export function embedVideos() {
     Array.from(document.querySelectorAll('div.overview-section')).forEach(div => {
         Array.from(div.querySelectorAll('a')).forEach(a => {
-            const ytLink = parseYouTubeLink(a);
-            if (ytLink) {
-                const videoId = ytLink.params.get('v') || ytLink.url.pathname.split("/").pop();
-                const startSecs = parseTimeToSeconds(ytLink.params.get('t'));
-                const videoEmbedURL = `https://www.youtube.com/embed/${videoId}` + (startSecs ? `?start=${startSecs}` : '');
-                const iframe = document.createElement('iframe');
+            const videoLink = parseVideoLink(a);
 
-                iframe.src = videoEmbedURL;
-                iframe.allowFullscreen = true;
-                iframe.width = '100%';
-                iframe.height = '384px';
+            if (videoLink) {
+                let videoEmbedURL = null;
 
-                a.parentNode.appendChild(iframe);
+                if (videoLink.type === 'youtube') {
+                    const videoId = videoLink.params.get('v') || videoLink.url.pathname.split("/").pop();
+                    const startSecs = parseTimeToSeconds(videoLink.params.get('t'));
+                    videoEmbedURL = `https://www.youtube.com/embed/${videoId}` + (startSecs ? `?start=${startSecs}` : '');
+                } else if (videoLink.type === 'vimeo') {
+                    const pathParts = videoLink.url.pathname.split("/");
+                    const videoId = pathParts[1];
+
+                    const privateHash = pathParts.length > 2 ? pathParts[2] : null;
+                    if (privateHash) {
+                        videoLink.params.set('h', privateHash);
+                    }
+
+                    videoEmbedURL = `https://player.vimeo.com/video/${videoId}?${videoLink.params.toString()}`;
+                }
+
+                if (videoEmbedURL) {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = videoEmbedURL;
+                    iframe.allowFullscreen = true;
+                    iframe.width = '100%';
+                    iframe.height = '384px';
+                    a.parentNode.appendChild(iframe);
+                }
             }
         });
     });
