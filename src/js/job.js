@@ -156,7 +156,7 @@ export function getEstimatedLength() {
 
     if (jobHighlights) {
         Array.from(document.querySelectorAll('p')).forEach(el => {
-            if (el.innerText === 'Estimated Length') {
+            if (el.innerText === 'Estimated Length' || el.innerText === 'Finished Minutes') {
                 const lengthSpan = el.parentNode.querySelector('span.text-dark');
                 if (lengthSpan) {
                     const lengthPattern = /(\d+)h: (\d+)m: (\d+)s/;
