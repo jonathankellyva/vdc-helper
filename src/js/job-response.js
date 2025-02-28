@@ -1,6 +1,7 @@
 import * as Browser from './browser';
 import * as Budgets from './budgets';
 import * as Job from './job';
+import * as ResponseTemplates from './response-templates';
 import * as Storage from './storage';
 
 function getCategoryFromResponsePage() {
@@ -110,9 +111,15 @@ const revisionPolicy = document.getElementById('revision_policy');
 
 let selectedTemplateId = null;
 
-function selectDefaultResponseTemplate() {
+function getResponseFormToken() {
+    const responseForm = document.getElementById('talent-audition-form');
+    const tokenInput = responseForm?.querySelector('input[name="_token"]');
+    return tokenInput?.value;
+}
+
+async function selectDefaultResponseTemplate() {
     Storage.SYNC.get('default-template-id')
-        .then(defaultTemplateId => {
+        .then(async defaultTemplateId => {
             if (templateChoicesDropdown && templateSelector && selectedTemplateItem) {
                 defaultTemplateCheckbox.id = 'default-template-checkbox';
                 defaultTemplateCheckbox.type = 'checkbox';
@@ -171,40 +178,35 @@ function selectDefaultResponseTemplate() {
                 templateObserver.observe(templateSelector, {childList: true});
 
                 if (defaultTemplateId && notes && revisionPolicy && notes.value === '') {
-                    fetch(`https://www.voices.com/talent/jobs/member_template/${defaultTemplateId}`, {
-                        method: 'GET',
-                    })
-                        .then(response => response.text())
-                        .then(responseText => {
-                            const responseData = JSON.parse(responseText);
-                            if (responseData.status === 'success' && responseData.data) {
-                                notes.value = responseData.data.template || '';
-                                revisionPolicy.value = responseData.data.revision_policy || '';
-                                if (liveSessionPolicy) {
-                                    liveSessionPolicy.value = responseData.data.lds_policy || '';
-                                }
+                    const templateData = await ResponseTemplates.getTemplate(defaultTemplateId, getResponseFormToken());
 
-                                defaultTemplateCheckbox.checked = true;
-                                defaultTemplateCheckbox.style.display = 'inline';
-                                defaultTemplateCheckboxLabel.style.display = 'inline';
+                    if (templateData) {
+                        notes.value = templateData.template || '';
+                        revisionPolicy.value = templateData.revision_policy || '';
+                        if (liveSessionPolicy) {
+                            liveSessionPolicy.value = templateData.lds_policy || '';
+                        }
 
-                                selectedTemplateItem.classList.remove('choices__placeholder');
-                                selectedTemplateItem.innerText = responseData.data.title;
+                        defaultTemplateCheckbox.checked = true;
+                        defaultTemplateCheckbox.style.display = 'inline';
+                        defaultTemplateCheckboxLabel.style.display = 'inline';
 
-                                if (proposalBorderWrap
-                                    && !proposalBorderWrap.classList.contains('proposal-border-template-selected')) {
-                                    proposalBorderWrap.classList.add('proposal-border-template-selected')
-                                }
+                        selectedTemplateItem.classList.remove('choices__placeholder');
+                        selectedTemplateItem.innerText = templateData.title;
 
-                                const deleteButton = document.createElement('button');
-                                deleteButton.className = 'choices__button';
-                                deleteButton.setAttribute('aria-label', `Remove item: ${defaultTemplateId}`);
-                                deleteButton.setAttribute('data-button', '');
-                                deleteButton.textContent = 'Remove item';
+                        if (proposalBorderWrap
+                            && !proposalBorderWrap.classList.contains('proposal-border-template-selected')) {
+                            proposalBorderWrap.classList.add('proposal-border-template-selected')
+                        }
 
-                                selectedTemplateItem.appendChild(deleteButton);
-                            }
-                        });
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'choices__button';
+                        deleteButton.setAttribute('aria-label', `Remove item: ${defaultTemplateId}`);
+                        deleteButton.setAttribute('data-button', '');
+                        deleteButton.textContent = 'Remove item';
+
+                        selectedTemplateItem.appendChild(deleteButton);
+                    }
                 }
             }
         });
