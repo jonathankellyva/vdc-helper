@@ -1,7 +1,5 @@
 import * as Notifications from './notifications';
 
-/*
-
 let pinAlertsMenu = false;
 
 const helpLink = document.getElementById('Help');
@@ -189,5 +187,3 @@ function checkUnreadNotifications() {
 
 window.setInterval(checkUnreadNotifications, 2000);
 checkUnreadNotifications();
-
-*/

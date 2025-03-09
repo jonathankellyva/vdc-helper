@@ -1,10 +1,20 @@
 import * as Notifications from './notifications';
 import * as Storage from './storage';
 
-// Temporarily disabled until it is fixed
-const CHECK_JOB_DATA = false;
-
 const STATUS_REGEX = />([^<]+)</;
+
+const TOKEN_PATTERN = /<input type="hidden" name="_token" value="([^"]+)"/;
+
+async function getJobsListToken() {
+    return await fetch(`https://www.voices.com/talent/jobs/open`, {
+        method: 'GET',
+    })
+        .then(response => response.text())
+        .then(responseText => {
+            const match = responseText.match(TOKEN_PATTERN);
+            return match ? match[1] : null;
+        });
+}
 
 function getJobStatus(job) {
     if (job && job.status_button) {
@@ -40,10 +50,11 @@ function listJobs(jobs, requestData = {}, offset = 0, limit = 100) {
 
     const filteringByListened = requestData.filter.by.includes('show:listened');
     
-    fetch(`https://www.voices.com/talent/jobs_pagination?offset=${offset}&limit=${limit}`, {
+    fetch(`https://www.voices.com/talent/jobs/jobs_pagination/?offset=${offset}&limit=${limit}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'x-requested-with': 'XMLHttpRequest',
         },
         body: JSON.stringify(requestData),
     })
@@ -101,8 +112,9 @@ function listJobs(jobs, requestData = {}, offset = 0, limit = 100) {
         });
 }
 
-function listHiringJobs(savedJobData) {
+function listHiringJobs(savedJobData, token) {
     const requestData = {
+        '_token' : token,
         filter: {
             by: [
                 'status:open',
@@ -113,8 +125,9 @@ function listHiringJobs(savedJobData) {
     listJobs(savedJobData, requestData);
 }
 
-function listAnsweredJobs(savedJobData, listened) {
+function listAnsweredJobs(savedJobData, token, listened) {
     const requestData = {
+        '_token' : token,
         filter: {
             by: [
                 'status:answered',
@@ -138,20 +151,16 @@ function getMemberId() {
         });
 }
 
-export function check() {
-    if (!CHECK_JOB_DATA) {
-        return;
+export async function check() {
+    const memberId = await getMemberId();
+    if (memberId) {
+        console.log(`Logged in as ${memberId}; checking for jobs`);
+        const savedJobData = await Storage.LOCAL.get('jobs', {});
+        const token = await getJobsListToken();
+        listAnsweredJobs(savedJobData, token, true);
+        listHiringJobs(savedJobData, token);
+        listAnsweredJobs(savedJobData, token);
+    } else {
+        console.log('Not logged in');
     }
-    getMemberId().then(memberId => {
-        if (memberId) {
-            console.log(`Logged in as ${memberId}; checking for jobs`);
-            Storage.LOCAL.get('jobs', {}).then(savedJobData => {
-                listAnsweredJobs(savedJobData, true);
-                listHiringJobs(savedJobData);
-                listAnsweredJobs(savedJobData);
-            });
-        } else {
-            console.log('Not logged in');
-        }
-    });
 }
