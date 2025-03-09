@@ -32,7 +32,7 @@ function parseVideoLink(a) {
         const url = new URL(a.href);
         let type = null;
 
-        if (url.host.endsWith('youtube.com') || url.host.endsWith('youtu.be')) {
+        if ((url.host.endsWith('youtube.com') || url.host.endsWith('youtu.be')) && !url.pathname.startsWith('/@')) {
             type = 'youtube';
         } else if (url.host.endsWith('vimeo.com')) {
             type = 'vimeo';
