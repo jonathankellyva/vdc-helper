@@ -11,7 +11,11 @@ export function safeCall(func, ...args) {
 }
 
 export function openNewTab(url, active = true) {
-    if (chrome.tabs) {
+    if (typeof browser !== 'undefined' && browser.tabs) {
+        // Firefox
+        browser.tabs.create({ url: url, active: active });
+    } else if (chrome.tabs) {
+        // Chrome
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             const activeTab = tabs.length > 0 ? tabs[0] : null;
 
