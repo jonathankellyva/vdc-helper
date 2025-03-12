@@ -9,6 +9,7 @@ build_js: src/js
 	    src/js/job-details.js \
 	    src/js/job-response.js \
 	    src/js/jobs-list.js \
+	    src/js/popout.js \
 	    src/js/statistics.js \
 	    --dist-dir dist/js \
             --no-optimize \

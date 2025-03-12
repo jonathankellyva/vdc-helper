@@ -33,7 +33,6 @@ function handleLongPress(event) {
 
 let sampleScriptField = document.querySelector('p.readmore-content');
 let sampleScriptTextarea = null;
-let sampleScriptPopOut = null;
 let originalSampleScriptText = null;
 let prevSampleScriptText = null;
 let saveSampleScriptButton = null;
@@ -98,6 +97,7 @@ function resetSampleScript() {
     resetSampleScriptButton.style.display = 'none';
 
     updateSampleScriptWordCounts();
+    updateSampleScriptPopOut();
 }
 
 function cancelEditingSampleScript() {
@@ -110,6 +110,7 @@ function finishEditingSampleScript() {
     if (editingSampleScript) {
         closeEditor(sampleScriptTextarea.value);
     }
+    updateSampleScriptPopOut();
 }
 
 function onSampleScriptKeyDown(event) {
@@ -185,8 +186,12 @@ function makeScriptEditable() {
             sampleScriptPopOutLink.title = 'Pop out sample script into small window';
             sampleScriptPopOutLink.className = 'text-xs';
             sampleScriptPopOutLink.addEventListener('click', function (event) {
-                finishEditingSampleScript();
-                popOutSampleScript();
+                try {
+                    finishEditingSampleScript();
+                    popOutSampleScript();
+                } catch (e) {
+                    console.error(e);
+                }
                 event.preventDefault();
                 return false;
             });
@@ -235,23 +240,28 @@ function makeScriptEditable() {
     }
 }
 
+function popOutSampleScript() {
+    chrome.runtime.sendMessage({
+        action: 'popOutSampleScript',
+        jobId: Job.JOB_ID,
+        jobTitle: Job.JOB_TITLE,
+        content: sampleScriptField.innerHTML,
+        updateOnly: false
+    });
+}
+
+function updateSampleScriptPopOut() {
+    chrome.runtime.sendMessage({
+        action: 'popOutSampleScript',
+        jobId: Job.JOB_ID,
+        jobTitle: Job.JOB_TITLE,
+        content: sampleScriptField.innerHTML,
+        updateOnly: true
+    });
+}
+
 function copySampleScriptToClipboard(event) {
     Browser.copyToClipboardAndNotify(sampleScriptField.innerText, 'Copied sample script to clipboard', event);
-}
-
-function popOutSampleScript() {
-    if (!sampleScriptPopOut || sampleScriptPopOut.closed) {
-        sampleScriptPopOut = window.open('', 'sample-script', 'width=400,height=300,toolbar=0,location=0,status=0,menubar=0');
-    }
-    updateSampleScriptInPopOut();
-}
-
-function updateSampleScriptInPopOut() {
-    if (sampleScriptPopOut && !sampleScriptPopOut.closed) {
-        sampleScriptPopOut.document.open();
-        sampleScriptPopOut.document.write(sampleScriptField.innerHTML);
-        sampleScriptPopOut.focus();
-    }
 }
 
 function openScriptEditor(target) {

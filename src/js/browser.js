@@ -10,6 +10,30 @@ export function safeCall(func, ...args) {
     }
 }
 
+export async function getWindow(winId) {
+    return new Promise((resolve) => {
+        if (!winId) {
+            resolve(null);
+        } else {
+            return chrome.windows.get(winId, { populate: true }, (win) => {
+                resolve(chrome.runtime.lastError ? null : win);
+            });
+        }
+    });
+}
+
+export function openNewWindow(windowSpec) {
+    if (typeof browser !== 'undefined' && browser.windows) {
+        // Firefox
+        return browser.windows.create(windowSpec);
+    } else if (chrome.windows) {
+        // Chrome
+        return chrome.windows.create(windowSpec);
+    } else {
+        console.error('could not open window');
+    }
+}
+
 export function openNewTab(url, active = true) {
     if (typeof browser !== 'undefined' && browser.tabs) {
         // Firefox
