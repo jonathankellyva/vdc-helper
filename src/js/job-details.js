@@ -144,3 +144,7 @@ function fixWrapping() {
 }
 
 Browser.safeCall(fixWrapping);
+
+// Periodically update the job's status, number of responses, etc.
+
+Browser.safeCall(Job.scheduleUpdates);

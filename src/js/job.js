@@ -91,12 +91,160 @@ export function abbreviateLocation(location) {
     return location;
 }
 
+export function getJobTitleDetails() {
+    return getJobTitleDetailsForDoc(document);
+}
+
+export function getJobTitleDetailsForDoc(doc) {
+    return doc.getElementById('job_title_details');
+}
+
+export function getStatusField() {
+    return getStatusFieldForDoc(document);
+}
+
+export function getStatusFieldForDoc(doc) {
+    const jobTitleDetails = getJobTitleDetailsForDoc(doc);
+    return jobTitleDetails ? Array.from(jobTitleDetails.querySelectorAll('span.status'))
+        .find(el => {
+            const text = el.innerText.trim();
+            return text => text === 'Hiring' || text === 'Deciding' || text === 'Completed';
+        }) : null;
+}
+
+export function getStatus() {
+    return getStatusForDoc(document);
+}
+
+export function getStatusForDoc(doc) {
+    const statusField = getStatusFieldForDoc(document);
+    return statusField ? statusField.innerText.trim() : null;
+}
+
+function getResponsesField() {
+    return getResponsesFieldForDoc(document);
+}
+
+function getResponsesFieldForDoc(doc) {
+    const jobHighlights = getJobHighlightsForDoc(doc);
+
+    if (jobHighlights) {
+        const responsesHeader = Array.from(jobHighlights.querySelectorAll('p'))
+            .find(el => el.innerText === 'Responses');
+        return responsesHeader ? responsesHeader.parentNode.querySelector('span.text-dark') : null;
+    }
+
+    return null;
+}
+
+function getSpotlightActionMenus() {
+    return getSpotlightActionMenusForDoc(document);
+}
+
+function getSpotlightActionMenusForDoc(doc) {
+    const jobTitleDetails = getJobTitleDetailsForDoc(doc);
+    return jobTitleDetails ? jobTitleDetails.querySelector('div.spotlight-action-menus') : null;
+}
+
+function getButtonTitles(container) {
+    return Array.from(container.querySelectorAll('.btn'))
+        .map(btn => btn.getAttribute('data-bs-original-title') || btn.innerText);
+}
+
+let visibilityHandler = null;
+let updateThread = null;
+let numFailedUpdatesInARow = 0;
+let numUpdates = 0;
+
+export function scheduleUpdates(interval = 30000) {
+    if (visibilityHandler === null) {
+        visibilityHandler = function () {
+            if (document.hidden) {
+                descheduleUpdates();
+            } else {
+                scheduleUpdates();
+                update();
+            }
+        };
+        document.addEventListener("visibilitychange", visibilityHandler);
+    }
+
+    if (getStatus() === 'Hiring') {
+        descheduleUpdates();
+        updateThread = window.setInterval(update, interval);
+    }
+}
+
+function descheduleUpdates() {
+    if (updateThread !== null) {
+        window.clearInterval(updateThread);
+        updateThread = null;
+        numUpdates = 0;
+        numFailedUpdatesInARow = 0;
+    }
+}
+
+function update() {
+    if (getStatus() === 'Hiring') {
+        fetch('https://www.voices.com/talent/jobs/posting/' + getJobId(), {
+                method: 'GET',
+            })
+                .then(response => response.text())
+                .then(responseText => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(responseText, "text/html");
+
+                    numUpdates++;
+                    if (numUpdates >= 20) {
+                        scheduleUpdates(300000);
+                    }
+
+                    const currStatusField = getStatusField();
+                    const newStatusField = getStatusFieldForDoc(doc);
+                    if (currStatusField && newStatusField) {
+                        currStatusField.innerText = newStatusField.innerText;
+                        currStatusField.className = newStatusField.className;
+                        currStatusField.setAttribute('data-bs-original-title', newStatusField.getAttribute('title'));
+                    }
+
+                    const currActionMenu = getSpotlightActionMenus();
+                    const newActionMenu = getSpotlightActionMenusForDoc(doc);
+                    if (currActionMenu && newActionMenu) {
+                        const currButtonTitles = getButtonTitles(currActionMenu);
+                        const newButtonTitles = getButtonTitles(newActionMenu);
+                        if (currButtonTitles !== newButtonTitles) {
+                            currActionMenu.innerHTML = newActionMenu.innerHTML;
+                        }
+                    }
+
+                    const currResponsesField = getResponsesField();
+                    const newResponsesField = getResponsesFieldForDoc(doc);
+                    if (currResponsesField && newResponsesField) {
+                        currResponsesField.innerText = newResponsesField.innerText;
+                    }
+
+                    numFailedUpdatesInARow = 0;
+                }).catch(e => {
+                    numFailedUpdatesInARow++;
+                    if (numFailedUpdatesInARow >= 10) {
+                        descheduleUpdates();
+                    }
+                });
+    } else {
+        descheduleUpdates();
+    }
+}
+
 export function getJobHighlights() {
-    const jobHighlights = document.getElementById('job-highlights');
+    return getJobHighlightsForDoc(document);
+}
+
+function getJobHighlightsForDoc(doc) {
+    const jobHighlights = doc.getElementById('job-highlights');
     if (jobHighlights) {
         return jobHighlights;
     }
-    const jobHighlightsHeader = Array.from(document.querySelectorAll('h4'))
+    const jobHighlightsHeader = Array.from(doc.querySelectorAll('h4'))
         .find(el => el.innerText.trim() === 'Job Highlights')
     if (jobHighlightsHeader) {
         return jobHighlightsHeader.nextElementSibling;
