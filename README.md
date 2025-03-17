@@ -54,11 +54,9 @@ Thank you,
 
 #### Notifications
 
-Unfortunately, this feature is at least temporarily disabled because Voices.com seems to have made a change that broke it.
-
-* ~~Pop up notifications when you receive a new job invitation or when a client listens to or
+* Pop up notifications when you receive a new job invitation or when a client listens to or
   shortlists one of your auditions. Clicking on the notification will open the corresponding
-  job in a new tab.~~
+  job in a new tab.
 
 #### Job Details Page
 
@@ -134,6 +132,8 @@ Unfortunately, this feature is at least temporarily disabled because Voices.com 
 
 * Highlight Live Directed Session tags (i.e., the little bubbles that say "Zoom", "Source Connect",
   etc.) in gold so that they stand out.
+
+* Periodically refresh the number of responses and the job status without having to refresh the whole page.
 
 #### Job Response Editor
 
