@@ -61,15 +61,6 @@
       "js": [
         "js/statistics.js"
       ]
-    },
-    {
-      "matches": ["https://www.voices.com/talent/*"],
-      "css": [
-        "css/main.css"
-      ],
-      "js": [
-        "js/alerts-menu.js"
-      ]
     }
   ]
 }
