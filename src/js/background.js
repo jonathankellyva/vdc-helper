@@ -5,6 +5,8 @@ import * as Storage from './storage';
 
 const currVersion = chrome.runtime.getManifest().version;
 
+const CHECK_JOBS = false;
+
 chrome.runtime.onInstalled.addListener(function() {
     Storage.SYNC.get('first-use').then(firstUse => {
         if (!firstUse) {
@@ -21,7 +23,9 @@ chrome.runtime.onInstalled.addListener(function() {
     
     chrome.alarms.create('alarm', { periodInMinutes: 1 });
 
-    Jobs.check();
+    if (CHECK_JOBS) {
+        Jobs.check();
+    }
     Notifications.showNew();
 });
 
